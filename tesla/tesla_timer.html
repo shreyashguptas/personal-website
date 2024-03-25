@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tesla Countdown</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="tesla_timer.css">
+</head>
+<body>
+  <div class="container">
+    <img src="Tesla_Logo.png" alt="Tesla Logo">
+    <h2>Countdown till I own it</h2>
+    <div class="countdown">
+      <div class="time">
+        <span id="years"></span>
+        <div class="label">Years</div>
+      </div>
+      <div class="time">
+        <span id="months"></span>
+        <div class="label">Months</div>
+      </div>
+      <div class="time">
+        <span id="days"></span>
+        <div class="label">Days</div>
+      </div>
+      <div class="time">
+        <span id="hours"></span>
+        <div class="label">Hours</div>
+      </div>
+      <div class="time">
+        <span id="minutes"></span>
+        <div class="label">Minutes</div>
+      </div>
+      <div class="time">
+        <span id="seconds"></span>
+        <div class="label">Seconds</div>
+      </div>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="toggleSwitch">
+      <span class="slider round"></span>
+    </label>
+    <span id="toggleLabel">Click here if you bought it</span>
+  </div>
+  <script src="tesla_timer.js"></script>
+</body>
+</html>
