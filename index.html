@@ -10,6 +10,11 @@
     <header>
         <div class="container">
             <h1 class="logo">Shreyash Gupta</h1>
+            <div class="hamburger-menu">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
             <nav>
                 <ul>
                     <!-- <li><a href="#projects">Projects</a></li> -->
@@ -40,5 +45,13 @@
             <p>© 2024 Shreyash Gupta</p>
         </div>
     </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const hamburger = document.querySelector('.hamburger-menu');
+            hamburger.addEventListener('click', function () {
+                hamburger.classList.toggle('active');
+            });
+        });
+    </script>
 </body>
 </html>
