@@ -1,8 +1,9 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
+    background-color: #101010;
+    color: #ffffff;
 }
 
 .container {
@@ -11,118 +12,105 @@ body {
     overflow: hidden;
 }
 
-header {
-    background: #35424a;
-    color: white;
-    padding-top: 30px;
-    min-height: 70px;
-    border-bottom: #e8491d 3px solid;
+.top-nav ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #101010;
+    padding: 1rem 1.5rem;
 }
 
-header a {
-    color: #ffffff;
+.top-nav li {
+    margin-left: 5rem;
+}
+
+.top-nav a {
     text-decoration: none;
-    text-transform: uppercase;
-    font-size: 16px;
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: #ffffff;
 }
 
-header li {
-    float: left;
-    display: inline;
-    padding: 0 20px 0 20px;
-}
-
-header #branding {
-    float: left;
-}
-
-header #branding h1 {
-    margin: 0;
-}
-
-header nav {
-    float: right;
-    margin-top: 10px;
-}
-
-header .highlight, header .current a {
+.top-nav a:hover {
     color: #e8491d;
-    font-weight: bold;
 }
 
-header a:hover {
-    color: #cccccc;
-    font-weight: bold;
+.hero {
+    position: relative;
+    text-align: center;
 }
 
-main {
-    margin: 30px 0;
+.portrait {
+    width: 100%;
+    height: auto;
+}
+
+.hero-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.sinair {
+    font-size: 40rem; /* Adjust font size as needed to fit on one line */
+    font-weight: bold;
+    color: #ffffff;
+    white-space: nowrap; /* Prevents the text from wrapping */
+    overflow: hidden; /* Hides any overflow */
+    position: absolute; /* Position it over the image */
+    z-index: -1; /* Position the text behind the image */
+    width: 100%; /* Full width to allow for scrolling */
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    left: 100%; /* Start the animation from the right */
+    top: 50%; /* Adjust as needed to align with the image */
+    transform: translateY(-50%); /* Center vertically */
+    animation: flowRightToLeft 15s linear infinite;
+}
+
+@keyframes flowRightToLeft {
+    from {
+        left: 100%; /* Start from the right */
+    }
+    to {
+        left: -100%; /* End at the left */
+    }
+}
+
+.services-icons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+.service-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 1rem;
+    color: #ffffff;
+}
+
+.service-icon i {
+    font-size: 2rem; /* Adjust icon size */
+    margin-bottom: 0.5rem;
+}
+
+.service-icon span {
+    font-size: 1rem;
+    text-align: center;
 }
 
 footer {
     padding: 20px;
     margin-top: 20px;
     color: #ffffff;
-    background-color: #35424a;
+    background-color: #101010;
     text-align: center;
-}
-
-.hamburger-menu {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    width: 2rem;
-    height: 2rem;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    z-index: 10;
-}
-
-.hamburger-menu .bar {
-    width: 2rem;
-    height: 0.25rem;
-    background: #333;
-    border-radius: 10px;
-    transition: all 0.3s linear;
-    position: relative;
-    transform-origin: 1px;
-}
-
-@media (max-width: 768px) {
-    .hamburger-menu {
-        display: block;
-    }
-
-    header nav {
-        width: 100%;
-        display: none;
-    }
-
-    header nav ul {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    header nav ul li {
-        margin: 10px 0;
-    }
-
-    .hamburger-menu.active .bar:nth-child(1) {
-        transform: translateY(8px) rotate(45deg);
-    }
-
-    .hamburger-menu.active .bar:nth-child(2) {
-        opacity: 0;
-    }
-
-    .hamburger-menu.active .bar:nth-child(3) {
-        transform: translateY(-8px) rotate(-45deg);
-    }
-
-    .hamburger-menu.active ~ nav {
-        display: block;
-    }
 }

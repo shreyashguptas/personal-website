@@ -1,0 +1,29 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.blog-container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+.blog-post {
+    background-color: #fff;
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+}
+
+.blog-title {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.blog-content {
+    color: #666;
+}
