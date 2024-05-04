@@ -20,7 +20,7 @@ window.onload = function() {
 
   const imageContainer = document.getElementById('imageContainer');
 
-  const imageNames = ['IMG_4001.JPG'];
+  const imageNames = ['IMG_4001.png'];
 
   imageNames.forEach(imageName => {
     const img = document.createElement('img');
