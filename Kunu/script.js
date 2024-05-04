@@ -18,17 +18,16 @@ window.onload = function() {
   document.getElementById('timer').innerHTML = `${years} years, ${months} months, ${days} days, and ${hours} hours`;
 
 
-// Client-side script
-window.onload = function() {
   const imageContainer = document.getElementById('imageContainer');
 
-  // Replace with your actual image names
   const imageNames = ['IMG_4001.JPG'];
 
   imageNames.forEach(imageName => {
     const img = document.createElement('img');
     img.src = `Kunu/Gallery/${imageName}`;
+    img.onerror = function() {
+      console.error(`Failed to load image: Kunu/Gallery/${imageName}`);
+    };
     imageContainer.appendChild(img);
   });
-
-}};
+};
