@@ -17,18 +17,18 @@ window.onload = function() {
   // Update the timer display
   document.getElementById('timer').innerHTML = `${years} years, ${months} months, ${days} days, and ${hours} hours`;
 
-};
 
 // Client-side script
 window.onload = function() {
   const imageContainer = document.getElementById('imageContainer');
 
   // Replace with your actual image names
-  const imageNames = ['IMG_4001.JPG', 'image2.jpg', 'image3.jpg'];
+  const imageNames = ['IMG_4001.JPG'];
 
   imageNames.forEach(imageName => {
     const img = document.createElement('img');
     img.src = `Kunu/Gallery/${imageName}`;
     imageContainer.appendChild(img);
   });
-};
+
+}};
