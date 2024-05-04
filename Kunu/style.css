@@ -1,0 +1,59 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+#dog-image {
+    margin-top: 50px;
+    background-image: url('Kunu_main.png');
+}
+
+#dog-info {
+    margin-top: 50px;
+}
+
+#clock {
+    margin-top: 30px;
+}
+
+#timer {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+form {
+    margin-top: 40px;
+}
+
+label, input[type="file"] {
+    display: block;
+    margin-bottom: 10px;
+}
+
+button[type="submit"] {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: #3e8e41;
+}
+
+
