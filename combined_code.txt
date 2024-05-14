@@ -1,0 +1,166 @@
+--- index.html ---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Name</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav class="top-nav">
+                <ul>
+                    <li><a href="#about">ABOUT</a></li>
+                    <li><a href="Contact Page/contact_page.html">CONTACT</a></li>
+                </ul>
+            </nav>
+            <div class="hero">
+                <img src="headshot.png" alt="Portrait" class="portrait">
+            </div>
+        </div>
+    </header>
+    <main>
+       <section id="TSLA" class="container">
+            <h2>TSLA</h2>
+            <a href="tesla/tesla_timer.html">View page</a>
+        </section>
+        <section id="Aston martin" class="container">
+            <h2>Aston Martin</h2>
+            <a href="aston_martin/aston_martin_timer.html">View page</a>
+        </section>
+        <section id="newSection" class="container">
+            <h2>Click on your own risk...</h2>
+            <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Link to risky stuff</a>
+        </section>
+        <section id="Kunu!" class="container">
+            <h2>Kunu the Cutest pup!</h2>
+            <a href="Kunu/Kunu.html">Link to Kunu's page</a>
+        </section>
+    </main>
+    <footer>
+        <div class="container">
+            <p>© 2024 Shreyash Gupta</p>
+        </div>
+    </footer>
+</body>
+</html>
+
+--- styles.css ---
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #101010;
+    color: #ffffff;
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
+}
+
+.top-nav ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #101010;
+    padding: 1rem 1.5rem;
+}
+
+.top-nav li {
+    margin-left: 5rem;
+}
+
+.top-nav a {
+    text-decoration: none;
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: #ffffff;
+}
+
+.top-nav a:hover {
+    color: #e8491d;
+}
+
+.hero {
+    position: relative;
+    text-align: center;
+}
+
+.portrait {
+    width: 100%;
+    height: auto;
+}
+
+.hero-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.sinair {
+    font-size: 40rem; /* Adjust font size as needed to fit on one line */
+    font-weight: bold;
+    color: #ffffff;
+    white-space: nowrap; /* Prevents the text from wrapping */
+    overflow: hidden; /* Hides any overflow */
+    position: absolute; /* Position it over the image */
+    z-index: -1; /* Position the text behind the image */
+    width: 100%; /* Full width to allow for scrolling */
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    left: 100%; /* Start the animation from the right */
+    top: 50%; /* Adjust as needed to align with the image */
+    transform: translateY(-50%); /* Center vertically */
+    animation: flowRightToLeft 15s linear infinite;
+}
+
+@keyframes flowRightToLeft {
+    from {
+        left: 100%; /* Start from the right */
+    }
+    to {
+        left: -100%; /* End at the left */
+    }
+}
+
+.services-icons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+.service-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 1rem;
+    color: #ffffff;
+}
+
+.service-icon i {
+    font-size: 2rem; /* Adjust icon size */
+    margin-bottom: 0.5rem;
+}
+
+.service-icon span {
+    font-size: 1rem;
+    text-align: center;
+}
+
+footer {
+    padding: 20px;
+    margin-top: 20px;
+    color: #ffffff;
+    background-color: #101010;
+    text-align: center;
+}

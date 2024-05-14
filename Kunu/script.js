@@ -16,11 +16,12 @@ window.onload = function() {
 
   // Update the timer display
   document.getElementById('timer').innerHTML = `${years} years, ${months} months, ${days} days, and ${hours} hours`;
+};
 
-
+window.onload = function() {
   const imageContainer = document.getElementById('imageContainer');
 
-  const imageNames = ['IMG_4001.png'];
+  const imageNames = ['IMG_4850.JPG'];
 
   imageNames.forEach(imageName => {
     const img = document.createElement('img');
