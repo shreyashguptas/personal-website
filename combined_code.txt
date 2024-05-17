@@ -27,13 +27,12 @@
         <section id="about" class="scroll-section">
             <div class="container">
                 <h2>About Me</h2>
-                <p>Hi, I'm Shreyash Gupta. Welcome to my personal website!</p>
+                <p>Hi, I'm Shreyash Gupta. Welcome to my personal website! I am a software developer with a passion for creating innovative solutions. I specialize in web development, and I love working with the latest technologies to build amazing user experiences. In my free time, I enjoy exploring new places, reading tech blogs, and spending time with my dog, Kunu.</p>
             </div>
         </section>
         <section class="scroll-section">
             <div class="container">
                 <div class="grid">
-                    <div class="grid-item">
                     <div class="grid-item">
                         <h3>Aston Martin</h3>
                         <a href="aston_martin/aston_martin_timer.html">View page</a>
