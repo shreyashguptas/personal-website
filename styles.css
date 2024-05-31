@@ -1,192 +1,59 @@
+/* General Styles */
+:root {
+    --primary-color: #000; /* Black as primary color */
+    --secondary-color: #2E8B57; /* Nature's green as secondary color */
+}
+
 body {
-    font-family: 'Roboto', sans-serif;
+    background-color: var(--primary-color);
+    color: #fff;
+    transition: all .3s ease;
+    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #000;
-    color: #fff;
-    overflow-x: hidden; /* Disable horizontal scrolling */
+    box-sizing: border-box;
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 20px;
+/* Dark mode toggle (You can use JavaScript or a checkbox input for this) */
+body.dark-mode {
+    background-color: var(--secondary-color);
 }
 
-.top-nav ul {
-    list-style: none;
-    padding: 0;
+#social-media, #navigation-bar {
     display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    background-color: #333;
-    padding: 1rem 0;
+    justify-content: space-evenly;
+    padding: 20px;
+    background-color: var(--primary-color);
+    position: sticky;
+    top: 0;
 }
 
-.top-nav li {
-    margin-left: 2rem;
-}
-
-.top-nav a {
+#social-media a, #navigation-bar a {
+    color: #fff;
     text-decoration: none;
-    font-size: 1.2rem;
-    font-weight: 500;
-    color: #fff;
-    transition: color 0.3s ease;
+    transition: all .3s ease;
+    padding: 10px;
 }
 
-.top-nav a:hover {
-    color: #00ff00;
+#social-media a:hover, #navigation-bar a:hover {
+    color: var(--secondary-color);
 }
 
-.hero {
-    text-align: center;
-    padding: 4rem 0;
-    position: relative;
-    height: 100vh; /* Full viewport height */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.portrait {
-    width: 1000px;
-    height: 1000px;
-    z-index: 1;
-    position: relative;
-}
-
-.name-overlay {
-    font-size: 700px;
-    color: #fff;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-10%, -100%);
-    white-space: nowrap;
-    animation: scroll-text 5s infinite linear;
-    z-index: 1;
-}
-
-@keyframes scroll-text {
-    0% { left: 100%; }
-    100% { left: -100%; }
-}
-
-.scroll-container {
-    scroll-snap-type: y mandatory;
-    overflow-y: scroll;
-    height: 100vh; /* Full viewport height */
-}
-
-.scroll-section {
-    scroll-snap-align: start;
-    height: 100vh; /* Full viewport height */
+#intro-section {
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 100vh; /* Make it cover the full viewport height */
+    background: url('path_to_your_image.jpg') no-repeat center center/cover;
+    position: relative;
 }
 
-section {
-    padding: 4rem 0;
-}
-
-h2 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-}
-
-.grid-item {
-    background-color: #333;
-    padding: 2rem;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+#intro-section h1 {
+    font-size: 3em;
     text-align: center;
 }
 
-.grid-item h3 {
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
-}
-
-.grid-item a {
-    display: inline-block;
-    padding: 0.8rem 1.5rem;
-    background-color: #00ff00;
-    color: #000;
-    text-decoration: none;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-}
-
-.grid-item a:hover {
-    background-color: #007bff;
-}
-
-footer {
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    padding: 1rem 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.footer-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.footer-left, .footer-right {
-    display: flex;
-    align-items: center;
-}
-
-.footer-portrait {
-    width: 50px;
-    height: auto;
-    margin-right: 1rem;
-}
-
-.social-links a {
-    color: #fff;
-    margin-right: 1rem;
-    font-size: 1.5rem;
-    transition: color 0.3s ease;
-}
-
-.social-links a:hover {
-    color: #00ff00;
-}
-
-.footer-right ul {
-    list-style: none;
-    padding: 0;
-    display: flex;
-}
-
-.footer-right li {
-    margin-left: 2rem;
-}
-
-.footer-right a {
-    text-decoration: none;
-    color: #fff;
-    transition: color 0.3s ease;
-}
-
-.footer-right a:hover {
-    color: #00ff00;
+main section {
+    padding: 50px;
+    border-bottom: 1px solid #fff;
 }
