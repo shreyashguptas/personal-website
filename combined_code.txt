@@ -6,6 +6,7 @@
     <title>My Personal Website</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="favicon.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <nav id="navigation-bar">
@@ -13,6 +14,7 @@
         <div class="nav-links">
             <a href="#about-me">About Me</a>
             <a href="#my-work">My Work</a>
+            <a href="#blogs">Blogs</a>
             <a href="#contact-me">Contact Me</a>
         </div>
         <div class="hamburger-menu">
@@ -21,6 +23,7 @@
             <div class="menu">
                 <a href="#about-me">About Me</a>
                 <a href="#my-work">My Work</a>
+                <a href="#blogs">Blogs</a>
                 <a href="#contact-me">Contact Me</a>
             </div>
         </div>
@@ -37,11 +40,17 @@
         <h2>My Work</h2>
         <p>Check out my projects on GitHub! Here are some examples of my work...</p>
     </section>
+    <section id="blogs">
+        <h2>Blogs</h2>
+        <p>Read my latest blog posts</p>
+        <a href="blogs/blogs.html" class="blog-button">Read Blogs</a>
+    </section>
     <section id="contact-me">
-        <h2>Contact Me</h2>
-        <p>You can reach me at
+        <div class="contact-box">
+            <h2>Contact Me</h2>
+            <p class="contact-subtitle">Get in touch with me via email.</p>
             <a href="mailto:your-email@example.com" class="email-button">Email Me</a>
-        </p>
+        </div>
     </section>
     <footer id="social-media">
         <div class="footer-content">
@@ -62,6 +71,7 @@
                     <h3>LINKS</h3>
                     <a href="#about-me">About Me</a>
                     <a href="#my-work">My Work</a>
+                    <a href="#blogs">Blogs</a>
                     <a href="#contact-me">Contact Me</a>
                 </div>
             </div>
@@ -77,13 +87,14 @@
     --primary-color: #000; /* Black as primary color */
     --secondary-color: #2E8B57; /* Nature's green as secondary color */
     --footer-bg-color: #333; /* Dark gray for footer background */
+    --contact-box-bg-color: #444; /* Darker gray for contact box background */
 }
 
 body {
     background-color: var(--primary-color);
     color: #fff;
     transition: all .3s ease;
-    font-family: Arial, sans-serif;
+    font-family: 'IBM Plex Mono', monospace;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -144,7 +155,7 @@ body {
 }
 
 main section {
-    padding: 50px;
+    padding: 50px 10px;
     border-bottom: 1px solid #fff;
     height: 100vh;
     display: flex;
@@ -153,7 +164,7 @@ main section {
     text-align: center;
 }
 
-.email-button {
+.email-button, .blog-button {
     display: inline-block;
     padding: 10px 20px;
     background-color: var(--secondary-color);
@@ -164,7 +175,7 @@ main section {
     transition: background-color 0.3s ease;
 }
 
-.email-button:hover {
+.email-button:hover, .blog-button:hover {
     background-color: #1e6b47;
 }
 
@@ -179,6 +190,8 @@ footer {
     justify-content: center;
     align-items: center;
     gap: 40px;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 .footer-left {
@@ -228,8 +241,22 @@ footer {
     text-decoration: underline;
 }
 
+.contact-box {
+    background-color: var(--contact-box-bg-color);
+    padding: 20px;
+    text-align: center;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 300px;
+}
+
+.contact-subtitle {
+    margin-top: 10px;
+    font-size: 1.2em;
+}
+
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
     .nav-links {
         display: none;
     }
@@ -257,6 +284,26 @@ footer {
     #menu-toggle:checked + .menu-icon + .menu {
         display: flex;
     }
+
+    body {
+        font-size: 1.2em;
+    }
+
+    .hero-text {
+        font-size: 4em;
+    }
+
+    .email-button, .blog-button {
+        font-size: 2em;
+    }
+
+    h2 {
+        font-size: 2em;
+    }
+
+    p {
+        font-size: 1.2em;
+    }
 }
 
 --- app.js ---
@@ -277,4 +324,5 @@ const sections = document.querySelectorAll('section');
 sections.forEach(section => {
     section.style.scrollSnapAlign = 'start';
 });
+
 
