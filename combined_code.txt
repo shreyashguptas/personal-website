@@ -4,37 +4,70 @@
 <head>
     <meta charset="UTF-8">
     <title>My Personal Website</title>
-    <!-- Link CSS here -->
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="favicon.png" type="image/png">
 </head>
 <body>
     <nav id="navigation-bar">
-        <a href="#about-me">About Me</a>
-        <a href="#my-work">My Work</a>
-        <a href="#contact-me">Contact Me</a>
+        <a href="#hero"><img src="Navbar_logo.png" alt="Logo" class="nav-logo"></a>
+        <div class="nav-links">
+            <a href="#about-me">About Me</a>
+            <a href="#my-work">My Work</a>
+            <a href="#contact-me">Contact Me</a>
+        </div>
+        <div class="hamburger-menu">
+            <input type="checkbox" id="menu-toggle">
+            <label for="menu-toggle" class="menu-icon">&#9776;</label>
+            <div class="menu">
+                <a href="#about-me">About Me</a>
+                <a href="#my-work">My Work</a>
+                <a href="#contact-me">Contact Me</a>
+            </div>
+        </div>
     </nav>
-    <header id="intro-section">
-        <h1>Welcome to My Personal Website!</h1>
-    </header>
-    <main>
-        <section id="about-me">
-            <h2>About Me</h2>
-            <p>This is a section about me. I am passionate about web development.</p>
-        </section>
-        <section id="my-work">
-            <h2>My Work</h2>
-            <p>Check out my projects on GitHub! Here are some examples of my work...</p>
-        </section>
-        <section id="contact-me">
-            <h2>Contact Me</h2>
-            <p>You can reach me at myemail@example.com.</p>
-        </section>
-    </main>
+    <section id="hero" class="hero">
+        <img src="headshot.png" alt="Your Name" class="profile-picture">
+        <p class="hero-text"> Welcome to my Personal Website </p>
+    </section>
+    <section id="about-me">
+        <h2>About Me</h2>
+        <p>This is a section about me. I am passionate about web development.</p>
+    </section>
+    <section id="my-work">
+        <h2>My Work</h2>
+        <p>Check out my projects on GitHub! Here are some examples of my work...</p>
+    </section>
+    <section id="contact-me">
+        <h2>Contact Me</h2>
+        <p>You can reach me at
+            <a href="mailto:your-email@example.com" class="email-button">Email Me</a>
+        </p>
+    </section>
     <footer id="social-media">
-        <a href="#">LinkedIn</a>
-        <a href="#">Twitter</a>
-        <a href="#">GitHub</a>
+        <div class="footer-content">
+            <div class="footer-left">
+                <img src="Footer_signature.png" alt="Signature" class="signature">
+                <div class="social-icons">
+                    <a href="https://linkedin.com/in/shreyashgupta5"><img src="Footer_logo/LinkedIn.png" alt="LinkedIn"></a>
+                    <a href="https://x.com/ShreyashGuptas"><img src="Footer_logo/X.png" alt="X"></a>
+                    <a href="https://github.com/shreyashguptas"><img src="Footer_logo/Github.png" alt="GitHub"></a>
+                </div>
+            </div>
+            <div class="footer-right">
+                <div class="footer-column">
+                    <h3>WORK</h3>
+                    <p>Github links here</p>
+                </div>
+                <div class="footer-column">
+                    <h3>LINKS</h3>
+                    <a href="#about-me">About Me</a>
+                    <a href="#my-work">My Work</a>
+                    <a href="#contact-me">Contact Me</a>
+                </div>
+            </div>
+        </div>
     </footer>
+    <script src="app.js"></script>
 </body>
 </html>
 
@@ -43,6 +76,7 @@
 :root {
     --primary-color: #000; /* Black as primary color */
     --secondary-color: #2E8B57; /* Nature's green as secondary color */
+    --footer-bg-color: #333; /* Dark gray for footer background */
 }
 
 body {
@@ -55,14 +89,9 @@ body {
     box-sizing: border-box;
 }
 
-/* Dark mode toggle (You can use JavaScript or a checkbox input for this) */
-body.dark-mode {
-    background-color: var(--secondary-color);
-}
-
 #social-media, #navigation-bar {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-between;
     padding: 20px;
     background-color: var(--primary-color);
     position: sticky;
@@ -76,26 +105,176 @@ body.dark-mode {
     padding: 10px;
 }
 
-#social-media a:hover, #navigation-bar a:hover {
-    color: var(--secondary-color);
+#navigation-bar a:hover {
+    background-color: var(--secondary-color);
+    color: #fff;
 }
 
-#intro-section {
+.nav-logo {
+    height: 40px;
+}
+
+.nav-links {
     display: flex;
-    justify-content: center;
+    gap: 20px;
     align-items: center;
-    height: 100vh; /* Make it cover the full viewport height */
-    background: url('path_to_your_image.jpg') no-repeat center center/cover;
-    position: relative;
 }
 
-#intro-section h1 {
-    font-size: 3em;
+.hamburger-menu {
+    display: none;
+}
+
+.hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
+    height: 100vh;
+    justify-content: center;
+}
+
+.profile-picture {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+}
+
+.hero-text {
+    margin-top: 20px;
 }
 
 main section {
     padding: 50px;
     border-bottom: 1px solid #fff;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
+
+.email-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: var(--secondary-color);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1.2em;
+    transition: background-color 0.3s ease;
+}
+
+.email-button:hover {
+    background-color: #1e6b47;
+}
+
+footer {
+    background-color: var(--footer-bg-color);
+    color: #fff;
+    padding: 20px;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+}
+
+.footer-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.signature {
+    width: 100px;
+    height: auto;
+}
+
+.social-icons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.social-icons img {
+    width: 24px;
+    height: 24px;
+}
+
+.footer-right {
+    display: flex;
+    gap: 20px;
+}
+
+.footer-column {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.footer-column h3 {
+    margin-bottom: 10px;
+}
+
+.footer-column p, .footer-column a {
+    margin: 5px 0;
+    color: #fff;
+    text-decoration: none;
+}
+
+.footer-column a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+
+    .hamburger-menu {
+        display: block;
+    }
+
+    .menu {
+        display: none;
+        flex-direction: column;
+        background-color: var(--primary-color);
+        position: absolute;
+        top: 60px;
+        right: 20px;
+        width: 200px;
+        border: 1px solid #fff;
+    }
+
+    .menu a {
+        padding: 10px;
+        border-bottom: 1px solid #fff;
+    }
+
+    #menu-toggle:checked + .menu-icon + .menu {
+        display: flex;
+    }
+}
+
+--- app.js ---
+document.addEventListener('scroll', function() {
+    const navbar = document.getElementById('myNavbar');
+    if (window.scrollY > 0) {
+        navbar.classList.add('scroll');
+    } else {
+        navbar.classList.remove('scroll');
+    }
+});
+
+// Smooth scroll and snap
+document.documentElement.style.scrollBehavior = 'smooth';
+document.documentElement.style.scrollSnapType = 'y mandatory';
+
+const sections = document.querySelectorAll('section');
+sections.forEach(section => {
+    section.style.scrollSnapAlign = 'start';
+});
 
