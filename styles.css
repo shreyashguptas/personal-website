@@ -9,7 +9,7 @@ body {
     background-color: var(--primary-color);
     color: #fff;
     transition: all .3s ease;
-    font-family: Arial, sans-serif;
+    font-family: 'IBM Plex Mono', monospace;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
