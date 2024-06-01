@@ -79,7 +79,7 @@ main section {
     text-align: center;
 }
 
-.email-button {
+.email-button, .blog-button {
     display: inline-block;
     padding: 10px 20px;
     background-color: var(--secondary-color);
@@ -90,7 +90,7 @@ main section {
     transition: background-color 0.3s ease;
 }
 
-.email-button:hover {
+.email-button:hover, .blog-button:hover {
     background-color: #1e6b47;
 }
 
@@ -184,5 +184,21 @@ footer {
 
     #menu-toggle:checked + .menu-icon + .menu {
         display: flex;
+    }
+
+    body {
+        font-size: 1.2em;
+    }
+
+    .hero-text, .email-button, .blog-button {
+        font-size: 1.5em;
+    }
+
+    h2 {
+        font-size: 1.8em;
+    }
+
+    p {
+        font-size: 1.2em;
     }
 }
