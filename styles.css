@@ -65,15 +65,14 @@ hr {
 }
 
 .social-icons img {
-    width: 24px;  /* Set the width of the icons */
-    height: 24px;  /* Set the height of the icons */
+    width: 24px;
+    height: 24px;
 }
 
 :root {
-    --secondary-color: #494949; /* Updated secondary color */
+    --secondary-color: #494949;
 }
 
-/* Add this CSS to style the Projects section */
 .project-item {
     display: flex;
     align-items: center;
@@ -81,10 +80,10 @@ hr {
 }
 
 .project-item img {
-    width: 150px; /* Placeholder size for project images */
-    height: 150px; /* Placeholder size for project images */
+    width: 150px;
+    height: 150px;
     margin-right: 20px;
-    background-color: #ccc; /* Placeholder background color */
+    background-color: #ccc;
 }
 
 .project-details {
@@ -102,30 +101,44 @@ hr {
     color: #666;
 }
 
-/* Add this CSS to style the box behind the text */
 .text-box::before {
     content: '';
     position: absolute;
-    background-color: #464646; /* Box color */
+    background-color: #464646;
     top: -20px;
     bottom: -20px;
     left: -70px;
     right: -70px;
-    z-index: -1; /* Ensure the box is behind the text */
-    padding: 20px; /* Adjust padding as needed */
-    border-radius: 0; /* Remove rounded corners */
+    z-index: -1;
+    padding: 20px;
+    border-radius: 0;
 }
 
 .text-box {
-    color: #d6c6a4; /* Text color */
-    position: relative; /* Ensure the pseudo-element is positioned correctly */
-    display: inline-block; /* Ensure the box wraps around the content */
-    text-align: center; /* Center the text */
-    margin-bottom: 20px; /* Add space below the box */
+    color: #d6c6a4;
+    position: relative;
+    display: inline-block;
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 .text-box + img {
-    margin-top: 20px; /* Add space above the image */
-    margin-bottom: 20px; /* Add space below the image */
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
+@media (max-width: 768px) {
+    h1.display-1 {
+        font-size: 100px;
+    }
+
+    .text-box::before {
+        left: -20px;
+        right: -20px;
+    }
+
+    .project-item img {
+        width: 100px;
+        height: 100px;
+    }
+}

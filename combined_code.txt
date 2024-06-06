@@ -1,102 +1,103 @@
 --- index.html ---
 <!DOCTYPE html>
-<meta http-equiv="refresh" content="3">
+<!-- <head><meta http-equiv="refresh" content="4"></head> -->
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shreyash Gupta - Data Scientist & AI Enthusiast</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">  <!-- Ensure correct path -->
-    <style>
-        body {
-            background-color: #d3c39e;
-            font-family: 'IBM Plex Mono', monospace;  /* Apply font globally */
-        }
-        h1.display-1 {
-            font-size: 120px;
-            font-weight: bold;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"> <!-- Add this line -->
 </head>
+
 <body>
     <div class="container">
         <div class="text-center mt-5">
             <h1 class="display-1">WANTED</h1>
+        
+            <hr>
+
             <div class="position-relative d-inline-block mt-3">
                 <img src="Images/headshot.png" alt="Shreyash Gupta" class="img-fluid rounded" style="width: 25%; height: auto;">
             </div>
-            <h2 class="mt-3">Shreyash Gupta</h2>
-            <p class="lead">Data Scientist & AI Enthusiast</p>
+
+            <div style="height: 30px;"></div>
+
+            <div class="hero-text">
+                <div class="text-box">
+                    <h2 class="hero-text mt-3">Shreyash Gupta</h2>
+                    <div class="hero-sub-text">
+                        <p class="hero-sub-text lead">Data Scientist & AI Enthusiast</p>
+                    </div>
+                </div>
+            </div>
         </div>
+        <div style="height: 20px;"></div>
         <hr>
-        <section class="mt-5">
-            <h3>About</h3>
-            <p>As a self-taught Data Scientist and AI Enthusiast, I am driven by an insatiable passion for the fields of AI and data. A fast learner always seeking new knowledge, I thrive on mastering cutting-edge tools and technologies to enhance my workflow. Getting acquainted with innovative solutions that streamline processes and unlock possibilities in AI and data is truly exciting for me. My relentless curiosity fuels my continuous growth in these ever-evolving domains. </p>
+
+        <section class="mt-5 about-section">
+            <div class="about-container">
+                <h3>About</h3>
+                <p>As a self-taught Data Scientist and AI Enthusiast, I am driven by an insatiable passion for the fields of AI and data. A fast learner always seeking new knowledge, I thrive on mastering cutting-edge tools and technologies to enhance my workflow. Getting acquainted with innovative solutions that streamline processes and unlock possibilities in AI and data is truly exciting for me. My relentless curiosity fuels my continuous growth in these ever-evolving domains.</p>
+            </div>
         </section>
+
         <hr>
+
         <section class="mt-5">
             <h3>Experience</h3>
             <div class="mb-4">
-                <h4>Data Analyst</h4>
-                <p>University of Arkansas, Fayetteville, AR<br>August 2023 – Present</p>
-                <p>At the University of Arkansas, I lead Power BI project designs and executions, develop and implement unified data source strategies for live report connections, and collaborate on enhancing data modeling techniques to streamline the ELT strategy.</p>
+                <h4>Data Analyst GA - Part-time</h4>
+                <p>University of Arkansas, Fayetteville, AR<br>August 2023 – May 2024</p>
+                <p>As a Data Analyst GA, I streamlined data integration and analysis to support strategic decisions in the Division of Student Affairs.</p>
             </div>
             <div class="mb-4">
-                <h4>Developer Applications</h4>
-                <p>TYSON Foods, Springdale, AR<br>June 2021 – May 2023</p>
-                <p>At TYSON Foods, I delivered crucial reports for inventory optimization, strategized on enterprise-wide Power BI tool usage, collaborated with teams to enhance report functionalities, and created essential documentation for a heavily used Data Ingestion tool.</p>
+                <h4>Developer Applications, Insight as a Service (IaaS)</h4>
+                <p>Tyson Foods, Springdale, AR<br>June 2021 – May 2023</p>
+                <p>Developed key data dashboards for project and hiring management, significantly enhancing executive decision-making and operational efficiency at Tyson Foods.</p>
+            </div>
+            <div class="mb-4">
+                <h4>Entrepreneur</h4>
+                <p>Self-employed, New Delhi, India<br>June 2020 – November 2022</p>
+                <p>Led a startup team to develop a comprehensive communication platform for educational institutions, implementing SCRUM and strategic leadership to foster organizational transparency and privacy.</p>
             </div>
         </section>
+
         <hr>
-        <section class="mt-5">
-            <h3>Services</h3>
-            <ul>
-                <li>Brand Identity</li>
-                <li>User Interface (UI) Design</li>
-                <li>Print and Graphic Design</li>
-                <li>Web Development (Front-End)</li>
-                <li>Creative Consultation</li>
-            </ul>
-        </section>
-        <hr>
+        
         <section class="mt-5">
             <h3>Stack</h3>
             <div class="stack-item">
-                <span>Framer</span>
+                <span>Python</span>
                 <div class="progress">
                     <div class="progress-bar" role="progressbar" style="width: 95%;" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
             </div>
             <div class="stack-item">
-                <span>Figma</span>
+                <span>Perplexity/ChatGPT/Local LLM's</span>
                 <div class="progress">
                     <div class="progress-bar" role="progressbar" style="width: 95%;" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
             </div>
             <div class="stack-item">
-                <span>Chat GPT</span>
+                <span>Machine Learning</span>
                 <div class="progress">
                     <div class="progress-bar" role="progressbar" style="width: 90%;" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
             </div>
             <div class="stack-item">
-                <span>Illustrator</span>
-                <div class="progress">
-                    <div class="progress-bar" role="progressbar" style="width: 80%;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-            </div>
-            <div class="stack-item">
-                <span>Photoshop</span>
+                <span>VSCode</span>
                 <div class="progress">
                     <div class="progress-bar" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
             </div>
             <div class="stack-item">
-                <span>Notion</span>
+                <span>Linux Command Line</span>
                 <div class="progress">
-                    <div class="progress-bar" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                    <div class="progress-bar" role="progressbar" style="width: 65%;" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
             </div>
             <div class="stack-item">
@@ -111,188 +112,96 @@
                     <div class="progress-bar" role="progressbar" style="width: 60%;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
             </div>
-            <div class="stack-item">
-                <span>React</span>
-                <div class="progress">
-                    <div class="progress-bar" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+        </section>
+
+        <hr>
+        
+        <h3>Acts Committed</h3>
+        <ul class="list-unstyled">
+            <li class="media mb-3">
+                <img src="project1.png" class="mr-3" alt="IMDb Movie Review Sentiment Analysis">
+                <div class="media-body">
+                    <h5 class="mt-0 mb-1">IMDb Movie Review Sentiment Analysis</h5>
+                    <p>Category: Data Science<br>Date: January 2023 – Present</p>
                 </div>
-            </div>
+            </li>
+            <li class="media mb-3">
+                <img src="project2.png" class="mr-3" alt="MeToo Movement Impact on the IMDb Ratings">
+                <div class="media-body">
+                    <h5 class="mt-0 mb-1">MeToo Movement Impact on the IMDb Ratings</h5>
+                    <p>Category: Data Science<br>Date: August 2023 – December 2023</p>
+                </div>
+            </li>
+        </ul>
         </section>
+
         <hr>
-        <section class="mt-5">
-            <h3>Acts Committed</h3>
-            <ul class="list-unstyled">
-                <li class="media mb-3">
-                    <img src="project1.png" class="mr-3" alt="TeamWave Website in Framer">
-                    <div class="media-body">
-                        <h5 class="mt-0 mb-1">TeamWave Website in Framer</h5>
-                        <p>Category: Web Design<br>Date: Apr 8, 2022</p>
-                    </div>
-                </li>
-                <li class="media mb-3">
-                    <img src="project2.png" class="mr-3" alt="Spendly Website in Framer">
-                    <div class="media-body">
-                        <h5 class="mt-0 mb-1">Spendly Website in Framer</h5>
-                        <p>Category: Web Design<br>Date: Mar 15, 2022</p>
-                    </div>
-                </li>
-                <li class="media mb-3">
-                    <img src="project3.png" class="mr-3" alt="Vector Website in Framer">
-                    <div class="media-body">
-                        <h5 class="mt-0 mb-1">Vector Website in Framer</h5>
-                        <p>Category: Web Design<br>Date: Feb 28, 2022</p>
-                    </div>
-                </li>
-                <li class="media mb-3">
-                    <img src="project4.png" class="mr-3" alt="TheDecor Portfolio in Framer">
-                    <div class="media-body">
-                        <h5 class="mt-0 mb-1">TheDecor Portfolio in Framer</h5>
-                        <p>Category: Web Design<br>Date: Feb 6, 2022</p>
-                    </div>
-                </li>
-                <li class="media mb-3">
-                    <img src="project5.png" class="mr-3" alt="ArtSpotter Blog in Framer">
-                    <div class="media-body">
-                        <h5 class="mt-0 mb-1">ArtSpotter Blog in Framer</h5>
-                        <p>Category: Web Design<br>Date: Jan 12, 2022</p>
-                    </div>
-                </li>
-            </ul>
-        </section>
-        <hr>
+
         <section class="mt-5">
             <h3>Witnesses Statements</h3>
             <div class="mb-4">
-                <h4>Mei Tanaka</h4>
-                <p>TechPro Solutions</p>
-                <p>"Mikhail's web design skills transformed our outdated website into a modern and user-friendly platform. His attention to detail and dedication to understanding our brand made the process smooth and enjoyable. We're thrilled with the results!"</p>
+                <h4>Teah-Marie Bynion</h4>
+                <p>Director of Analysis & Reporting - Student Affairs</p>
+                <p>"Shreyash Gupta has been an invaluable asset to our Data Analytics team at the University of Arkansas. One of Shreyash's most appreciated characteristics is that he does not shy away from issues, rather he is eager to solve them and looks forward to providing innovative solutions. In addition, he not only is receptive to feedback but he actively seeks out input in order to continuously improve projects. With that, while he is thorough in incorporating feedback he is an incredibly quick at doing so. I am always impressed with the speed and quality in which he is able to execute projects. Finally, Shreyash is able to strike the perfect balance of being able to take on projects independently while also contributing to the team and collaborate with other units. I cannot overstate the contributions Shreyash has made to our team."</p>
             </div>
             <div class="mb-4">
-                <h4>Andrei Kozlov</h4>
-                <p>Creative Marketing Agency</p>
-                <p>"Mikhail's creative flair and ability to craft visually stunning websites are unmatched. He takes the time to understand our client's unique needs and translates them into captivating web experiences. His work consistently exceeds expectations."</p>
+                <h4>Payton Marlin</h4>
+                <p>Technical Analyst || @ Lennar</p>
+                <p>"Shreyash's eagerness to learn and grow is truly impressive, and he is always looking for new opportunities to expand his knowledge and skills.
+
+                    In my interactions with Shreyash, I have been consistently impressed by his innovative thinking and ability to generate fresh ideas that are both practical and effective. He is a natural problem-solver and has a keen eye for identifying opportunities for improvement.
+                    Beyond his impressive professional skills, Shreyash is also a wonderful colleague and a pleasure to work with. He is always approachable and willing to lend a helping hand, and his positive attitude and sense of humor make him a valuable member of any team."</p>
             </div>
+            <!-- <div class="mb-4">
+                <h4>Manoj Gupta</h4>
+                <p>Head Geophysics Data Acquisition at Vedanta Limited, Cairn Oil and Gas</p>
+                <p>"• Proactive dissemination in pursuit of and to achieve goals, deliver enriched standards and indoctrinate work culture through team members. Greater alertness towards generic and 'job' specific risks, preempting risks that prevail or can materialize according to work and subsequent reinforcement of mitigation measures to be adopted.
+                    • Instill practice of encouragement, positivity and accomplishment goals through dialogue, education.
+                    • Provide opportunities to gain first hand training and experience, furthering knowledge base to reap more universal productive and competency capabilities.
+                    • Acquainted with personnel strengths, weaknesses, providing directional steerage to develop and advance project-based skill sets, team integration.
+                    • Authority on creating performance impetus, address defects and flaws to counter potential pitfalls that
+                    otherwise would impact project.
+                    • Encouraged broad contribution from all stakeholders to collectively resolve and reduce inherent impact within project."</p>
+            </div> -->
             <div class="mb-4">
-                <h4>Emily Carter</h4>
-                <p>E-commerce Emporium</p>
-                <p>"We turned to Mikhail for our e-commerce website overhaul, and she delivered beyond our wildest dreams. Her expertise in e-commerce integration, coupled with a UX design finesse, led to a significant increase in our online sales. We couldn't be happier!"</p>
-            </div>
-            <div class="mb-4">
-                <h4>Zeynep Arslan</h4>
-                <p>Startup Innovators</p>
-                <p>"Working with Mikhail as a freelancer has been a fantastic experience. His creativity and design skills are excellent, and he is an excellent communicator. He delivered a website that aligns perfectly with our brand identity. We highly recommend his services."</p>
+                <h4>Supriya Thorbole</h4>
+                <p>Data & Analytics Leader</p>
+                <p>"Shreyash is enthusiastic, eager to learn and always ready for a challenge. In the past few months of his internship he has worked on everything data, all the way from analysis, ingestion, transformation to visualization."</p>
             </div>
         </section>
+
         <hr>
+        
         <section class="mt-5">
             <h3>Have a Project Idea?</h3>
-            <p>After investigations, we gathered more clues about Mikhail. If you want to connect with him or send him a message, check below:</p>
-            <p>Email: <a href="mailto:mikhail@wanted.design">mikhail@wanted.design</a><br>Phone: +01 222 333 4444</p>
+            <p>If you want to connect with me or send me an email, check below:</p>
+            <p>Email: <a href="mailto:shreyash.gupta@shreyashg.com">shreyash.gupta@shreyashg.com</a><br>
             <div class="social-links">
-                <a href="#" class="mr-3">Twitter</a>
+                <a href="#" class="mr-3">X</a>
                 <a href="#" class="mr-3">LinkedIn</a>
-                <a href="#" class="mr-3">Instagram</a>
-                <a href="#">Facebook</a>
-            </div>
-            <form class="mt-4">
-                <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label for="name">Name</label>
-                        <input type="text" class="form-control" id="name" placeholder="Name">
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="email">Email</label>
-                        <input type="email" class="form-control" id="email" placeholder="Email">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="message">Message</label>
-                    <textarea class="form-control" id="message" rows="3" placeholder="Message"></textarea>
-                </div>
-                <button type="submit" class="btn btn-dark">Send Message</button>
-            </form>
-        </section>
-        <hr>
-        <section class="mt-5">
-            <h3>Witnesses Statements</h3>
-            <div class="mb-4">
-                <h4>Mei Tanaka</h4>
-                <p>TechPro Solutions</p>
-                <p>"Mikhail's web design skills transformed our outdated website into a modern and user-friendly platform. His attention to detail and dedication to understanding our brand made the process smooth and enjoyable. We're thrilled with the results!"</p>
-            </div>
-            <div class="mb-4">
-                <h4>Andrei Kozlov</h4>
-                <p>Creative Marketing Agency</p>
-                <p>"Mikhail's creative flair and ability to craft visually stunning websites are unmatched. He takes the time to understand our client's unique needs and translates them into captivating web experiences. His work consistently exceeds expectations."</p>
-            </div>
-            <div class="mb-4">
-                <h4>Emily Carter</h4>
-                <p>E-commerce Emporium</p>
-                <p>"We turned to Mikhail for our e-commerce website overhaul, and she delivered beyond our wildest dreams. Her expertise in e-commerce integration, coupled with a UX design finesse, led to a significant increase in our online sales. We couldn't be happier!"</p>
-            </div>
-            <div class="mb-4">
-                <h4>Zeynep Arslan</h4>
-                <p>Startup Innovators</p>
-                <p>"Working with Mikhail as a freelancer has been a fantastic experience. His creativity and design skills are excellent, and he is an excellent communicator. He delivered a website that aligns perfectly with our brand identity. We highly recommend his services."</p>
+                <a href="#" class="mr-3">Github</a>
             </div>
         </section>
-        <hr>
-        <section class="mt-5">
-            <h3>Have a Project Idea?</h3>
-            <p>After investigations, we gathered more clues about Mikhail. If you want to connect with him or send him a message, check below:</p>
-            <p>Email: <a href="mailto:mikhail@wanted.design">mikhail@wanted.design</a><br>Phone: +01 222 333 4444</p>
-            <div class="social-links">
-                <a href="#" class="mr-3">Twitter</a>
-                <a href="#" class="mr-3">LinkedIn</a>
-                <a href="#" class="mr-3">Instagram</a>
-                <a href="#">Facebook</a>
-            </div>
-            <form class="mt-4">
-                <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label for="name">Name</label>
-                        <input type="text" class="form-control" id="name" placeholder="Name">
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="email">Email</label>
-                        <input type="email" class="form-control" id="email" placeholder="Email">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="message">Message</label>
-                    <textarea class="form-control" id="message" rows="3" placeholder="Message"></textarea>
-                </div>
-                <button type="submit" class="btn btn-dark">Send Message</button>
-            </form>
-        </section>
-        <hr>
-        <section class="mt-5">
-            <h3>Witnesses Statements</h3>
-            <div class="mb-4">
-                <h4>Mei Tanaka</h4>
-                <p>TechPro Solutions</p>
-        <footer class="mt-5 text-center">
-            <p>&copy; Copyright 2023</p>
-            <p>Made by UX/UI Cristian</p>
-            <p><a href="#">Home</a> | <a href="#">Licensing</a> | <a href="#">404</a></p>
-        </footer>
     </div>
+    <div style="height: 50px;"></div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
 
---- style.css ---
+
+--- styles.css ---
 body {
     font-family: 'IBM Plex Mono', monospace;
-    background-color: #d6c6a4;
-    color: #333;
+    background-color: #d7c49a;
+    color: #464646;
 }
 
 h1.display-1 {
-    font-size: 200px;  /* Increase the font size as needed */
+    font-size: 250px;
     font-weight: bold;
+    font-family: 'Bebas Neue', cursive;
 }
 
 h2 {
@@ -301,7 +210,7 @@ h2 {
 }
 
 h3 {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     font-weight: bold;
 }
 
@@ -311,7 +220,16 @@ h4 {
 }
 
 hr {
-    border-top: 1px dashed #333;
+    border: none;
+    height: 2px;
+    background: repeating-linear-gradient(
+        to right,
+        #333,
+        #333 5px,
+        transparent 5px,
+        transparent 10px
+    );
+    margin: 20px 0;
 }
 
 .stack-item {
@@ -340,18 +258,71 @@ hr {
     text-decoration: underline;
 }
 
-footer {
-    margin-top: 3rem;
-    padding: 1rem 0;
-    background-color: #333;
-    color: #fff;
+.social-icons img {
+    width: 24px;  /* Set the width of the icons */
+    height: 24px;  /* Set the height of the icons */
 }
 
-footer a {
-    color: #fff;
-    text-decoration: none;
+:root {
+    --secondary-color: #494949; /* Updated secondary color */
 }
 
-footer a:hover {
-    text-decoration: underline;
+/* Add this CSS to style the Projects section */
+.project-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
 }
+
+.project-item img {
+    width: 150px; /* Placeholder size for project images */
+    height: 150px; /* Placeholder size for project images */
+    margin-right: 20px;
+    background-color: #ccc; /* Placeholder background color */
+}
+
+.project-details {
+    flex: 1;
+}
+
+.project-details h5 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.project-details p {
+    margin: 5px 0;
+    color: #666;
+}
+
+/* Add this CSS to style the box behind the text */
+.text-box::before {
+    content: '';
+    position: absolute;
+    background-color: #464646; /* Box color */
+    top: -20px;
+    bottom: -20px;
+    left: -70px;
+    right: -70px;
+    z-index: -1; /* Ensure the box is behind the text */
+    padding: 20px; /* Adjust padding as needed */
+    border-radius: 0; /* Remove rounded corners */
+}
+
+.text-box {
+    color: #d6c6a4; /* Text color */
+    position: relative; /* Ensure the pseudo-element is positioned correctly */
+    display: inline-block; /* Ensure the box wraps around the content */
+    text-align: center; /* Center the text */
+    margin-bottom: 20px; /* Add space below the box */
+}
+
+.text-box + img {
+    margin-top: 20px; /* Add space above the image */
+    margin-bottom: 20px; /* Add space below the image */
+}
+
+--- app.js ---
+
+
