@@ -7,7 +7,7 @@ body {
 h1.display-1 {
     font-size: 250px;
     font-weight: bold;
-    font-family: 'Bebas Neue', cursive; /* Update this line */
+    font-family: 'Bebas Neue', cursive;
 }
 
 h2 {
@@ -35,6 +35,7 @@ hr {
         transparent 5px,
         transparent 10px
     );
+    margin: 20px 0;
 }
 
 .stack-item {
