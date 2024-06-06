@@ -17,33 +17,76 @@ body {
 }
 
 .navbar {
-    padding-top: 5%; /* Add top padding to move the navbar down */
+    display: flex;
+    justify-content: space-between; /* Ensures space between logo and nav links */
+    align-items: center;
+    padding: 0 5%;
+    background-color: rgba(0, 0, 0, 0.8);
+    transition: background-color 0.3s ease;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    border: none; /* Add this line if the dash is caused by a border */
+}
+
+.navbar.scroll {
+    background-color: rgba(0, 0, 0, 0.9); /* Slightly more opaque when scrolling */
 }
 
 .nav-logo {
-    height: 40px;
+    height: 40px; /* Adjust size as needed */
+    margin-right: 20px; /* Add space between logo and links */
+}
+
+.navbar-nav {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    margin-left: auto; /* Pushes nav items to the right */
+}
+
+@media (min-width: 1000px) {
+    .navbar-nav {
+        margin-left: auto; /* Push the nav items to the right on large screens */
+    }
+}
+
+.nav-item {
+    margin: 10px 30px; /* Consistent margin for spacing */
+}
+
+.nav-link {
+    color: #fff; /* White text color */
+    text-decoration: none; /* No underline */
+    font-size: 1em; /* Adjust font size as needed */
+}
+
+.nav-link:hover {
+    text-decoration: underline; /* Underline on hover */
 }
 
 .hero {
     height: 100vh;
-    padding-left: 30%; /* Add padding to the left to move text towards the middle */
-    padding-right: 10px; /* Add padding to the right */
-    max-width: 1500px; /* Limit the width of the hero section */
-    margin: 0 auto; /* Center the hero section */
+    padding-left: 20%; /* Reduced from 30% to move text to the left */
+    padding-right: 10px;
+    max-width: 1500px;
+    margin: 0 auto;
 }
 
 .hero-text {
-    font-size: 130px; /* Updated font size for h1 */
-    margin: 220px 0; /* Updated margin */
-    max-width: 1500px; /* Limit the width of the text */
+    font-size: 160px;
+    margin: 320px 0; /* Increased top margin to center vertically */
+    max-width: 1500px;
 }
 
 section {
-    padding: 100px 10px; /* Updated padding to add 100px space before and after sections */
-    padding-left: 30%; /* Add padding to the left for all sections */
-    padding-right: 10px; /* Add padding to the right for all sections */
-    max-width: 1500px; /* Limit the width of all sections */
-    margin: 0 auto; /* Center all sections */
+    padding: 10px 10px;
+    padding-left: 20%; /* Reduced from 30% to align with the hero text */
+    padding-right: 10px;
+    max-width: 1500px;
+    margin: 0 auto;
 }
 
 .email-button, .blog-button {
@@ -65,46 +108,32 @@ footer {
     background-color: var(--footer-bg-color);
     color: #fff;
     padding: 20px;
-    padding-left: 30%; /* Add padding to the left for the footer */
-    padding-right: 10px; /* Add padding to the right for the footer */
+    padding-left: 20%; /* Adjusted to match other sections */
+    padding-right: 10px;
     max-width: 1500px; /* Limit the width of the footer */
     margin: 0 auto; /* Center the footer */
+    display: flex; /* Ensure footer contents are in a row */
+    justify-content: space-between; /* Space out the left and right sections */
 }
 
-.footer-content {
+footer .container {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    gap: 40px;
-    max-width: 1500px; /* Limit the width of the footer content */
-    margin: 0 auto;
+    padding: 20px; /* Increase padding around the container */
+    gap: 40px; /* Increase gap between .footer-left and .footer-right */
 }
 
 .footer-left {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-}
-
-.signature {
-    width: 100px;
-    height: auto;
-}
-
-.social-icons {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.social-icons img {
-    width: 24px;
-    height: 24px;
+    align-items: center;
 }
 
 .footer-right {
     display: flex;
-    gap: 20px;
+    flex-direction: row; /* Ensure the WORK and LINKS sections are in a row */
+    gap: 20px; /* Space between WORK and LINKS sections */
 }
 
 .footer-column {
@@ -137,4 +166,14 @@ footer {
 .contact-link:hover {
     text-decoration: underline; /* Keep the underline on hover */
     cursor: pointer; /* Change cursor to pointer on hover */
+}
+
+.social-icons img {
+    width: 24px;  /* Set the width of the icons */
+    height: 24px;  /* Set the height of the icons */
+}
+
+.signature {
+    width: 100px; /* Adjust width as needed */
+    height: auto; /* Maintain aspect ratio */
 }
