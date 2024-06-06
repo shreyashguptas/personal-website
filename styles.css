@@ -1,164 +1,66 @@
-/* General Styles */
-:root {
-    --primary-color: #000; /* Black as primary color */
-    --secondary-color: #2E8B57; /* Nature's green as secondary color */
-    --footer-bg-color: #333; /* Dark gray for footer background */
-    --contact-box-bg-color: #444; /* Darker gray for contact box background */
-}
-
 body {
-    background-color: var(--primary-color);
-    color: #fff;
-    transition: all .3s ease;
     font-family: 'IBM Plex Mono', monospace;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+    background-color: #d7c49a;
+    color: #464646;
 }
 
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 5%; /* Increased top padding and added horizontal padding */
-    background-color: rgba(0, 0, 0, 0.8);
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 1000;
+h1.display-1 {
+    font-size: 250px;
+    font-weight: bold;
+    font-family: 'Bebas Neue', cursive; /* Update this line */
 }
 
-.navbar-nav {
-    display: flex;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    margin-left: auto; /* Push the nav items to the right */
+h2 {
+    font-size: 2rem;
+    font-weight: bold;
 }
 
-.nav-item {
-    margin: 0 15px;
+h3 {
+    font-size: 1.75rem;
+    font-weight: bold;
 }
 
-.nav-link {
-    color: #fff;
+h4 {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+hr {
+    border: none;
+    height: 2px;
+    background: repeating-linear-gradient(
+        to right,
+        #333,
+        #333 5px,
+        transparent 5px,
+        transparent 10px
+    );
+}
+
+.stack-item {
+    margin-bottom: 1rem;
+}
+
+.stack-item span {
+    display: block;
+    font-weight: bold;
+}
+
+.progress {
+    height: 10px;
+}
+
+.progress-bar {
+    background-color: #333;
+}
+
+.social-links a {
+    color: #333;
     text-decoration: none;
 }
 
-.nav-logo {
-    height: 50px; /* Increased size from 40px to 50px */
-    margin-right: 20px; /* Add space between logo and links */
-}
-
-@media (min-width: 1000px) {
-    .navbar-nav {
-        margin-left: auto; /* Push the nav items to the right on large screens */
-    }
-}
-
-.nav-link:hover {
-    text-decoration: underline; /* Underline on hover */
-}
-
-.hero {
-    height: 100vh;
-    padding-left: 20%; /* Reduced from 30% to move text to the left */
-    padding-right: 10px;
-    max-width: 1500px;
-    margin: 0 auto;
-}
-
-.hero-text {
-    font-size: 160px;
-    margin: 320px 0; /* Increased top margin to center vertically */
-    max-width: 1500px;
-}
-
-section {
-    padding: 10px 10px;
-    padding-left: 20%; /* Reduced from 30% to align with the hero text */
-    padding-right: 10px;
-    max-width: 1500px;
-    margin: 0 auto;
-}
-
-.email-button, .blog-button {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: var(--secondary-color);
-    color: #fff;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 1.2em;
-    transition: background-color 0.3s ease;
-}
-
-.email-button:hover, .blog-button:hover {
-    background-color: #1e6b47;
-}
-
-footer {
-    background-color: var(--footer-bg-color);
-    color: #fff;
-    padding: 20px;
-    padding-left: 20%; /* Adjusted to match other sections */
-    padding-right: 10px;
-    max-width: 1500px; /* Limit the width of the footer */
-    margin: 0 auto; /* Center the footer */
-    display: flex; /* Ensure footer contents are in a row */
-    justify-content: space-between; /* Space out the left and right sections */
-}
-
-footer .container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px; /* Increase padding around the container */
-    gap: 40px; /* Increase gap between .footer-left and .footer-right */
-}
-
-.footer-left {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.footer-right {
-    display: flex;
-    flex-direction: row; /* Ensure the WORK and LINKS sections are in a row */
-    gap: 20px; /* Space between WORK and LINKS sections */
-}
-
-.footer-column {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.footer-column h3 {
-    margin-bottom: 10px;
-}
-
-.footer-column p, .footer-column a {
-    margin: 5px 0;
-    color: #fff;
-    text-decoration: none;
-}
-
-.footer-column a:hover {
+.social-links a:hover {
     text-decoration: underline;
-}
-
-.contact-link {
-    font-size: 130px; /* Font size for the contact link */
-    color: #fff; /* Keep the text color white */
-    text-decoration: underline; /* Add underline to the text */
-    font-weight: bold; /* Make the text bold */
-}
-
-.contact-link:hover {
-    text-decoration: underline; /* Keep the underline on hover */
-    cursor: pointer; /* Change cursor to pointer on hover */
 }
 
 .social-icons img {
@@ -166,7 +68,63 @@ footer .container {
     height: 24px;  /* Set the height of the icons */
 }
 
-.signature {
-    width: 100px; /* Adjust width as needed */
-    height: auto; /* Maintain aspect ratio */
+:root {
+    --secondary-color: #494949; /* Updated secondary color */
 }
+
+/* Add this CSS to style the Projects section */
+.project-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.project-item img {
+    width: 150px; /* Placeholder size for project images */
+    height: 150px; /* Placeholder size for project images */
+    margin-right: 20px;
+    background-color: #ccc; /* Placeholder background color */
+}
+
+.project-details {
+    flex: 1;
+}
+
+.project-details h5 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.project-details p {
+    margin: 5px 0;
+    color: #666;
+}
+
+/* Add this CSS to style the box behind the text */
+.text-box::before {
+    content: '';
+    position: absolute;
+    background-color: #464646; /* Box color */
+    top: -20px;
+    bottom: -20px;
+    left: -70px;
+    right: -70px;
+    z-index: -1; /* Ensure the box is behind the text */
+    padding: 20px; /* Adjust padding as needed */
+    border-radius: 0; /* Remove rounded corners */
+}
+
+.text-box {
+    color: #d6c6a4; /* Text color */
+    position: relative; /* Ensure the pseudo-element is positioned correctly */
+    display: inline-block; /* Ensure the box wraps around the content */
+    text-align: center; /* Center the text */
+    margin-bottom: 20px; /* Add space below the box */
+}
+
+.text-box + img {
+    margin-top: 20px; /* Add space above the image */
+    margin-bottom: 20px; /* Add space below the image */
+}
+

@@ -1,249 +1,357 @@
 --- index.html ---
 <!DOCTYPE html>
+<meta http-equiv="refresh" content="3">
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>My Personal Website</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" href="favicon.png" type="image/png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shreyash Gupta - Data Scientist & AI Enthusiast</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">  <!-- Ensure correct path -->
+    <style>
+        body {
+            background-color: #d3c39e;
+            font-family: 'IBM Plex Mono', monospace;  /* Apply font globally */
+        }
+        h1.display-1 {
+            font-size: 120px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <nav id="navigation-bar" class="navbar navbar-expand-lg navbar-dark bg-dark py-5">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#hero"><img src="Navbar_logo.png" alt="Logo" class="nav-logo"></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="#about-me">About Me</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#my-work">My Work</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#blogs">Blogs</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#contact-me">Contact Me</a></li>
-                </ul>
+    <div class="container">
+        <div class="text-center mt-5">
+            <h1 class="display-1">WANTED</h1>
+            <div class="position-relative d-inline-block mt-3">
+                <img src="Images/headshot.png" alt="Shreyash Gupta" class="img-fluid rounded" style="width: 25%; height: auto;">
             </div>
+            <h2 class="mt-3">Shreyash Gupta</h2>
+            <p class="lead">Data Scientist & AI Enthusiast</p>
         </div>
-    </nav>
-    <section id="hero" class="hero d-flex flex-column justify-content-center">
-        <div class="container">
-            <h1 class="hero-text">Welcome to my Personal Website</h1>
-        </div>
-    </section>
-    <section id="about-me" class="py-5">
-        <div class="container">
-            <h2>About Me</h2>
-            <p>This is a section about me. I am passionate about web development.</p>
-        </div>
-    </section>
-    <section id="my-work" class="py-5">
-        <div class="container">
-            <h2>My Work</h2>
-            <p>Check out my projects on GitHub! Here are some examples of my work...</p>
-        </div>
-    </section>
-    <section id="blogs" class="py-5">
-        <div class="container">
-            <h2>Blogs</h2>
-            <p>Read my latest blog posts</p>
-            <a href="blogs/blogs.html" class="btn btn-secondary">Read Blogs</a>
-        </div>
-    </section>
-    <section id="contact-me" class="py-5">
-        <div class="container">
-            <a href="mailto:shreyash.gupta@shreyashg.com" class="contact-link">Get in Touch</a>
-        </div>
-    </section>
-    <footer id="social-media" class="bg-dark text-white py-4">
-        <div class="container d-flex justify-content-between">
-            <div class="footer-left">
-                <img src="Footer_signature.png" alt="Signature" class="signature">
-                <div class="social-icons mt-2">
-                    <a href="https://linkedin.com/in/shreyashgupta5"><img src="Footer_logo/LinkedIn.png" alt="LinkedIn"></a>
-                    <a href="https://x.com/ShreyashGuptas"><img src="Footer_logo/X.png" alt="X"></a>
-                    <a href="https://github.com/shreyashguptas"><img src="Footer_logo/Github.png" alt="GitHub"></a>
+        <hr>
+        <section class="mt-5">
+            <h3>About</h3>
+            <p>As a self-taught Data Scientist and AI Enthusiast, I am driven by an insatiable passion for the fields of AI and data. A fast learner always seeking new knowledge, I thrive on mastering cutting-edge tools and technologies to enhance my workflow. Getting acquainted with innovative solutions that streamline processes and unlock possibilities in AI and data is truly exciting for me. My relentless curiosity fuels my continuous growth in these ever-evolving domains. </p>
+        </section>
+        <hr>
+        <section class="mt-5">
+            <h3>Experience</h3>
+            <div class="mb-4">
+                <h4>Data Analyst</h4>
+                <p>University of Arkansas, Fayetteville, AR<br>August 2023 – Present</p>
+                <p>At the University of Arkansas, I lead Power BI project designs and executions, develop and implement unified data source strategies for live report connections, and collaborate on enhancing data modeling techniques to streamline the ELT strategy.</p>
+            </div>
+            <div class="mb-4">
+                <h4>Developer Applications</h4>
+                <p>TYSON Foods, Springdale, AR<br>June 2021 – May 2023</p>
+                <p>At TYSON Foods, I delivered crucial reports for inventory optimization, strategized on enterprise-wide Power BI tool usage, collaborated with teams to enhance report functionalities, and created essential documentation for a heavily used Data Ingestion tool.</p>
+            </div>
+        </section>
+        <hr>
+        <section class="mt-5">
+            <h3>Services</h3>
+            <ul>
+                <li>Brand Identity</li>
+                <li>User Interface (UI) Design</li>
+                <li>Print and Graphic Design</li>
+                <li>Web Development (Front-End)</li>
+                <li>Creative Consultation</li>
+            </ul>
+        </section>
+        <hr>
+        <section class="mt-5">
+            <h3>Stack</h3>
+            <div class="stack-item">
+                <span>Framer</span>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: 95%;" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
             </div>
-            <div class="footer-right d-flex">
-                <div class="footer-column me-4">
-                    <h3>WORK</h3>
-                    <p>Github links here</p>
-                </div>
-                <div class="footer-column">
-                    <h3>LINKS</h3>
-                    <a href="#about-me">About Me</a>
-                    <a href="#my-work">My Work</a>
-                    <a href="#blogs">Blogs</a>
-                    <a href="#contact-me">Contact Me</a>
+            <div class="stack-item">
+                <span>Figma</span>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: 95%;" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
             </div>
-        </div>
-    </footer>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0/js/bootstrap.bundle.min.js"></script>
-    <script src="app.js"></script>
+            <div class="stack-item">
+                <span>Chat GPT</span>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: 90%;" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+            <div class="stack-item">
+                <span>Illustrator</span>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: 80%;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+            <div class="stack-item">
+                <span>Photoshop</span>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+            <div class="stack-item">
+                <span>Notion</span>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+            <div class="stack-item">
+                <span>HTML</span>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: 65%;" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+            <div class="stack-item">
+                <span>CSS</span>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: 60%;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+            <div class="stack-item">
+                <span>React</span>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+        </section>
+        <hr>
+        <section class="mt-5">
+            <h3>Acts Committed</h3>
+            <ul class="list-unstyled">
+                <li class="media mb-3">
+                    <img src="project1.png" class="mr-3" alt="TeamWave Website in Framer">
+                    <div class="media-body">
+                        <h5 class="mt-0 mb-1">TeamWave Website in Framer</h5>
+                        <p>Category: Web Design<br>Date: Apr 8, 2022</p>
+                    </div>
+                </li>
+                <li class="media mb-3">
+                    <img src="project2.png" class="mr-3" alt="Spendly Website in Framer">
+                    <div class="media-body">
+                        <h5 class="mt-0 mb-1">Spendly Website in Framer</h5>
+                        <p>Category: Web Design<br>Date: Mar 15, 2022</p>
+                    </div>
+                </li>
+                <li class="media mb-3">
+                    <img src="project3.png" class="mr-3" alt="Vector Website in Framer">
+                    <div class="media-body">
+                        <h5 class="mt-0 mb-1">Vector Website in Framer</h5>
+                        <p>Category: Web Design<br>Date: Feb 28, 2022</p>
+                    </div>
+                </li>
+                <li class="media mb-3">
+                    <img src="project4.png" class="mr-3" alt="TheDecor Portfolio in Framer">
+                    <div class="media-body">
+                        <h5 class="mt-0 mb-1">TheDecor Portfolio in Framer</h5>
+                        <p>Category: Web Design<br>Date: Feb 6, 2022</p>
+                    </div>
+                </li>
+                <li class="media mb-3">
+                    <img src="project5.png" class="mr-3" alt="ArtSpotter Blog in Framer">
+                    <div class="media-body">
+                        <h5 class="mt-0 mb-1">ArtSpotter Blog in Framer</h5>
+                        <p>Category: Web Design<br>Date: Jan 12, 2022</p>
+                    </div>
+                </li>
+            </ul>
+        </section>
+        <hr>
+        <section class="mt-5">
+            <h3>Witnesses Statements</h3>
+            <div class="mb-4">
+                <h4>Mei Tanaka</h4>
+                <p>TechPro Solutions</p>
+                <p>"Mikhail's web design skills transformed our outdated website into a modern and user-friendly platform. His attention to detail and dedication to understanding our brand made the process smooth and enjoyable. We're thrilled with the results!"</p>
+            </div>
+            <div class="mb-4">
+                <h4>Andrei Kozlov</h4>
+                <p>Creative Marketing Agency</p>
+                <p>"Mikhail's creative flair and ability to craft visually stunning websites are unmatched. He takes the time to understand our client's unique needs and translates them into captivating web experiences. His work consistently exceeds expectations."</p>
+            </div>
+            <div class="mb-4">
+                <h4>Emily Carter</h4>
+                <p>E-commerce Emporium</p>
+                <p>"We turned to Mikhail for our e-commerce website overhaul, and she delivered beyond our wildest dreams. Her expertise in e-commerce integration, coupled with a UX design finesse, led to a significant increase in our online sales. We couldn't be happier!"</p>
+            </div>
+            <div class="mb-4">
+                <h4>Zeynep Arslan</h4>
+                <p>Startup Innovators</p>
+                <p>"Working with Mikhail as a freelancer has been a fantastic experience. His creativity and design skills are excellent, and he is an excellent communicator. He delivered a website that aligns perfectly with our brand identity. We highly recommend his services."</p>
+            </div>
+        </section>
+        <hr>
+        <section class="mt-5">
+            <h3>Have a Project Idea?</h3>
+            <p>After investigations, we gathered more clues about Mikhail. If you want to connect with him or send him a message, check below:</p>
+            <p>Email: <a href="mailto:mikhail@wanted.design">mikhail@wanted.design</a><br>Phone: +01 222 333 4444</p>
+            <div class="social-links">
+                <a href="#" class="mr-3">Twitter</a>
+                <a href="#" class="mr-3">LinkedIn</a>
+                <a href="#" class="mr-3">Instagram</a>
+                <a href="#">Facebook</a>
+            </div>
+            <form class="mt-4">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" placeholder="Name">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" placeholder="Email">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea class="form-control" id="message" rows="3" placeholder="Message"></textarea>
+                </div>
+                <button type="submit" class="btn btn-dark">Send Message</button>
+            </form>
+        </section>
+        <hr>
+        <section class="mt-5">
+            <h3>Witnesses Statements</h3>
+            <div class="mb-4">
+                <h4>Mei Tanaka</h4>
+                <p>TechPro Solutions</p>
+                <p>"Mikhail's web design skills transformed our outdated website into a modern and user-friendly platform. His attention to detail and dedication to understanding our brand made the process smooth and enjoyable. We're thrilled with the results!"</p>
+            </div>
+            <div class="mb-4">
+                <h4>Andrei Kozlov</h4>
+                <p>Creative Marketing Agency</p>
+                <p>"Mikhail's creative flair and ability to craft visually stunning websites are unmatched. He takes the time to understand our client's unique needs and translates them into captivating web experiences. His work consistently exceeds expectations."</p>
+            </div>
+            <div class="mb-4">
+                <h4>Emily Carter</h4>
+                <p>E-commerce Emporium</p>
+                <p>"We turned to Mikhail for our e-commerce website overhaul, and she delivered beyond our wildest dreams. Her expertise in e-commerce integration, coupled with a UX design finesse, led to a significant increase in our online sales. We couldn't be happier!"</p>
+            </div>
+            <div class="mb-4">
+                <h4>Zeynep Arslan</h4>
+                <p>Startup Innovators</p>
+                <p>"Working with Mikhail as a freelancer has been a fantastic experience. His creativity and design skills are excellent, and he is an excellent communicator. He delivered a website that aligns perfectly with our brand identity. We highly recommend his services."</p>
+            </div>
+        </section>
+        <hr>
+        <section class="mt-5">
+            <h3>Have a Project Idea?</h3>
+            <p>After investigations, we gathered more clues about Mikhail. If you want to connect with him or send him a message, check below:</p>
+            <p>Email: <a href="mailto:mikhail@wanted.design">mikhail@wanted.design</a><br>Phone: +01 222 333 4444</p>
+            <div class="social-links">
+                <a href="#" class="mr-3">Twitter</a>
+                <a href="#" class="mr-3">LinkedIn</a>
+                <a href="#" class="mr-3">Instagram</a>
+                <a href="#">Facebook</a>
+            </div>
+            <form class="mt-4">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" placeholder="Name">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" placeholder="Email">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea class="form-control" id="message" rows="3" placeholder="Message"></textarea>
+                </div>
+                <button type="submit" class="btn btn-dark">Send Message</button>
+            </form>
+        </section>
+        <hr>
+        <section class="mt-5">
+            <h3>Witnesses Statements</h3>
+            <div class="mb-4">
+                <h4>Mei Tanaka</h4>
+                <p>TechPro Solutions</p>
+        <footer class="mt-5 text-center">
+            <p>&copy; Copyright 2023</p>
+            <p>Made by UX/UI Cristian</p>
+            <p><a href="#">Home</a> | <a href="#">Licensing</a> | <a href="#">404</a></p>
+        </footer>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
 
---- styles.css ---
-/* General Styles */
-:root {
-    --primary-color: #000; /* Black as primary color */
-    --secondary-color: #2E8B57; /* Nature's green as secondary color */
-    --footer-bg-color: #333; /* Dark gray for footer background */
-    --contact-box-bg-color: #444; /* Darker gray for contact box background */
-}
-
+--- style.css ---
 body {
-    background-color: var(--primary-color);
-    color: #fff;
-    transition: all .3s ease;
     font-family: 'IBM Plex Mono', monospace;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+    background-color: #d6c6a4;
+    color: #333;
 }
 
-.navbar {
-    padding-top: 5%; /* Add top padding to move the navbar down */
+h1.display-1 {
+    font-size: 200px;  /* Increase the font size as needed */
+    font-weight: bold;
 }
 
-.nav-logo {
-    height: 40px;
+h2 {
+    font-size: 2rem;
+    font-weight: bold;
 }
 
-.hero {
-    height: 100vh;
-    padding-left: 30%; /* Add padding to the left to move text towards the middle */
-    padding-right: 10px; /* Add padding to the right */
-    max-width: 1500px; /* Limit the width of the hero section */
-    margin: 0 auto; /* Center the hero section */
+h3 {
+    font-size: 1.5rem;
+    font-weight: bold;
 }
 
-.hero-text {
-    font-size: 130px; /* Updated font size for h1 */
-    margin: 220px 0; /* Updated margin */
-    max-width: 1500px; /* Limit the width of the text */
+h4 {
+    font-size: 1.25rem;
+    font-weight: bold;
 }
 
-section {
-    padding: 100px 10px; /* Updated padding to add 100px space before and after sections */
-    padding-left: 30%; /* Add padding to the left for all sections */
-    padding-right: 10px; /* Add padding to the right for all sections */
-    max-width: 1500px; /* Limit the width of all sections */
-    margin: 0 auto; /* Center all sections */
+hr {
+    border-top: 1px dashed #333;
 }
 
-.email-button, .blog-button {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: var(--secondary-color);
-    color: #fff;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 1.2em;
-    transition: background-color 0.3s ease;
+.stack-item {
+    margin-bottom: 1rem;
 }
 
-.email-button:hover, .blog-button:hover {
-    background-color: #1e6b47;
+.stack-item span {
+    display: block;
+    font-weight: bold;
 }
 
-footer {
-    background-color: var(--footer-bg-color);
-    color: #fff;
-    padding: 20px;
-    padding-left: 30%; /* Add padding to the left for the footer */
-    padding-right: 10px; /* Add padding to the right for the footer */
-    max-width: 1500px; /* Limit the width of the footer */
-    margin: 0 auto; /* Center the footer */
+.progress {
+    height: 10px;
 }
 
-.footer-content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 40px;
-    max-width: 1500px; /* Limit the width of the footer content */
-    margin: 0 auto;
+.progress-bar {
+    background-color: #333;
 }
 
-.footer-left {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.signature {
-    width: 100px;
-    height: auto;
-}
-
-.social-icons {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.social-icons img {
-    width: 24px;
-    height: 24px;
-}
-
-.footer-right {
-    display: flex;
-    gap: 20px;
-}
-
-.footer-column {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.footer-column h3 {
-    margin-bottom: 10px;
-}
-
-.footer-column p, .footer-column a {
-    margin: 5px 0;
-    color: #fff;
+.social-links a {
+    color: #333;
     text-decoration: none;
 }
 
-.footer-column a:hover {
+.social-links a:hover {
     text-decoration: underline;
 }
 
-.contact-link {
-    font-size: 130px; /* Font size for the contact link */
-    color: #fff; /* Keep the text color white */
-    text-decoration: underline; /* Add underline to the text */
-    font-weight: bold; /* Make the text bold */
+footer {
+    margin-top: 3rem;
+    padding: 1rem 0;
+    background-color: #333;
+    color: #fff;
 }
 
-.contact-link:hover {
-    text-decoration: underline; /* Keep the underline on hover */
-    cursor: pointer; /* Change cursor to pointer on hover */
+footer a {
+    color: #fff;
+    text-decoration: none;
 }
 
---- app.js ---
-document.addEventListener('scroll', function() {
-    const navbar = document.getElementById('myNavbar');
-    if (window.scrollY > 0) {
-        navbar.classList.add('scroll');
-    } else {
-        navbar.classList.remove('scroll');
-    }
-});
-
-// Smooth scroll and snap
-document.documentElement.style.scrollBehavior = 'smooth';
-document.documentElement.style.scrollSnapType = 'y mandatory';
-
-const sections = document.querySelectorAll('section');
-sections.forEach(section => {
-    section.style.scrollSnapAlign = 'start';
-});
-
-
+footer a:hover {
+    text-decoration: underline;
+}
