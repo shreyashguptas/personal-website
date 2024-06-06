@@ -18,20 +18,31 @@ body {
 
 .navbar {
     display: flex;
-    justify-content: space-between; /* Ensures space between logo and nav links */
+    justify-content: space-between;
     align-items: center;
     padding: 0 5%;
     background-color: rgba(0, 0, 0, 0.8);
-    transition: background-color 0.3s ease;
     position: fixed;
     top: 0;
     width: 100%;
     z-index: 1000;
-    border: none; /* Add this line if the dash is caused by a border */
 }
 
-.navbar.scroll {
-    background-color: rgba(0, 0, 0, 0.9); /* Slightly more opaque when scrolling */
+.navbar-nav {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    margin-left: auto;
+}
+
+.nav-item {
+    margin: 0 15px;
+}
+
+.nav-link {
+    color: #fff;
+    text-decoration: none;
 }
 
 .nav-logo {
@@ -39,28 +50,10 @@ body {
     margin-right: 20px; /* Add space between logo and links */
 }
 
-.navbar-nav {
-    display: flex;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    margin-left: auto; /* Pushes nav items to the right */
-}
-
 @media (min-width: 1000px) {
     .navbar-nav {
         margin-left: auto; /* Push the nav items to the right on large screens */
     }
-}
-
-.nav-item {
-    margin: 10px 30px; /* Consistent margin for spacing */
-}
-
-.nav-link {
-    color: #fff; /* White text color */
-    text-decoration: none; /* No underline */
-    font-size: 1em; /* Adjust font size as needed */
 }
 
 .nav-link:hover {
