@@ -75,13 +75,19 @@ hr {
 
 .project-item {
     display: flex;
-    align-items: center;
+    align-items: flex-start; /* Align items to the top */
     margin-bottom: 20px;
+    flex-direction: column; /* Default to column for mobile */
+}
+@media (min-width: 768px) {
+    .project-item {
+        flex-direction: row;
+    }
 }
 
 .project-item img {
-    width: 150px;
-    height: 150px;
+    width: 100%; /* Full width on mobile */
+    height: auto; /* Maintain aspect ratio */
     margin-right: 20px;
     background-color: #ccc;
 }
