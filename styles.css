@@ -14,8 +14,13 @@ h1, h2, h3, h4, h5, p {
     text-align: left; /* Align text to the left */
 }
 
+.hero-text img {
+    margin-right: 20px; /* Add some space between the image and text */
+    align-items: left;
+}
+
 .hero-text h2, .hero-sub-text {
-    font-size: 3rem; /* Double the current size */
+    font-size: 2.5rem; /* Double the current size */
 }
 
 .intro-text {
@@ -111,6 +116,10 @@ h3 {
     color: #fff; /* White on hover */
 }
 
+.social-links {
+    margin-bottom: 20px; /* Add margin for spacing */
+}
+
 /* Miscellaneous */
 hr {
     border: none;
@@ -127,4 +136,19 @@ hr {
 
 .mt-5:last-of-type {
     margin-bottom: 60px;
+}
+
+/* Footer */
+.footer {
+    color: #fff;
+    text-align: left; /* Align text to the left */
+    margin-top: 20px; /* Add margin for better spacing */
+}
+
+.version-box {
+    border: 2px solid #2E8B57; /* Tree green */
+    border-radius: 20px;
+    padding: 5px 10px;
+    background-color: transparent;
+    margin-right: 10px; /* Add margin for spacing */
 }
