@@ -137,3 +137,7 @@ hr {
         height: 100px;
     }
 }
+
+.mt-5:last-of-type {
+    margin-bottom: 60px;
+}
