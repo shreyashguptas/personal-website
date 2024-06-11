@@ -146,6 +146,7 @@ hr {
     color: #fff;
     text-align: left; /* Align text to the left */
     margin-top: 20px; /* Add margin for better spacing */
+    margin-bottom: 20px;
 }
 
 .version-box {
