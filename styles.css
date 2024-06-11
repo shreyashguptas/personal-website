@@ -3,6 +3,20 @@ body {
     font-family: 'IBM Plex Mono', monospace;
     background-color: #000; /* Black background */
     color: #fff; /* White text */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.container {
+    width: 100%;
+    padding: 0 15px;
+    margin: 0 auto;
+}
+
+.img-fluid {
+    max-width: 100%;
+    height: auto;
 }
 
 h1, h2, h3, h4, h5, p {
@@ -12,6 +26,8 @@ h1, h2, h3, h4, h5, p {
 /* Hero Section */
 .hero-text, .hero-sub-text, .intro-text {
     text-align: left; /* Align text to the left */
+    margin: 0 auto;
+    padding: 0 15px;
 }
 
 .hero-text img {
@@ -29,9 +45,26 @@ h1, h2, h3, h4, h5, p {
 
 /* Projects Section */
 .new-gallery {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
     gap: 20px;
+}
+
+@media (min-width: 1200px) {
+    .new-gallery {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+    .new-gallery {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 767px) {
+    .new-gallery {
+        grid-template-columns: 1fr;
+    }
 }
 
 .new-gallery-item {
