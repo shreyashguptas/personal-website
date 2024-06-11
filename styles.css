@@ -141,3 +141,35 @@ hr {
 .mt-5:last-of-type {
     margin-bottom: 60px;
 }
+
+.new-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.new-gallery-item {
+    flex: 1 1 calc(33.333% - 20px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    background-color: #fff;
+    text-align: center;
+}
+
+.new-gallery-item img {
+    width: 100%;
+    height: auto;
+    max-width: 150px; /* Adjust the size as needed */
+    margin-bottom: 10px;
+}
+
+.new-gallery-item-text h5 {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin: 10px 0 5px;
+}
+
+.new-gallery-item-text p {
+    color: #666;
+    margin: 0;
+}
