@@ -1,3 +1,4 @@
+/* General Styles */
 body {
     font-family: 'IBM Plex Mono', monospace;
     background-color: #000; /* Black background */
@@ -8,110 +9,20 @@ h1, h2, h3, h4, h5, p {
     color: #fff; /* White text */
 }
 
-h1.display-1 {
-    font-size: 250px;
-    font-weight: bold;
-    font-family: 'Bebas Neue', cursive;
+/* Hero Section */
+.hero-text, .hero-sub-text, .intro-text {
+    text-align: left; /* Align text to the left */
 }
 
-h2 {
-    font-size: 2rem;
+.hero-text h2, .hero-sub-text {
+    font-size: 3rem; /* Double the current size */
 }
 
-h3 {
-    font-size: 1.75rem;
+.intro-text {
+    font-size: 1.5rem; /* Smaller size for 'I am' and 'and I work in the' */
 }
 
-h4 {
-    font-size: 1.25rem;
-}
-
-hr {
-    border: none;
-    height: 2px;
-    background: repeating-linear-gradient(
-        to right,
-        #fff, /* White */
-        #fff 5px,
-        transparent 5px,
-        transparent 10px
-    );
-    margin: 20px 0;
-}
-
-.stack-item {
-    margin-bottom: 1rem;
-}
-
-.stack-item span {
-    display: block;
-    font-weight: bold;
-}
-
-.progress {
-    height: 10px;
-}
-
-.progress-bar {
-    background-color: #2E8B57; /* Tree green */
-}
-
-.social-links a {
-    color: #2E8B57; /* Tree green */
-    text-decoration: none;
-}
-
-.social-links a:hover {
-    color: #fff; /* White on hover */
-}
-
-.project-item {
-    display: flex;
-    align-items: flex-start;
-    margin-bottom: 20px;
-    flex-direction: column;
-}
-
-@media (min-width: 768px) {
-    .project-item {
-        flex-direction: row;
-    }
-}
-
-.project-item img {
-    width: 100%;
-    height: auto;
-    margin-right: 20px;
-    background-color: #ccc;
-}
-
-.project-details {
-    flex: 1;
-}
-
-.project-details h5 {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: bold;
-}
-
-.project-details p {
-    margin: 5px 0;
-    color: #666;
-}
-
-.text-box::before {
-    display: none; /* Remove the background box */
-}
-
-.hero-text h2 {
-    font-size: 5rem; /* Double the current size */
-}
-
-.hero-sub-text {
-    font-size: 2rem; /* Double the current size */
-}
-
+/* Projects Section */
 .new-gallery {
     display: flex;
     flex-wrap: wrap;
@@ -127,21 +38,91 @@ hr {
 }
 
 .new-gallery-item img {
-    width: 100%;
-    height: auto;
     max-width: 150px; /* Adjust the size as needed */
     margin-bottom: 10px;
 }
 
-.new-gallery-item-text h5 {
-    font-size: 1.25rem;
-    font-weight: bold;
-    margin: 10px 0 5px;
+.project-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    flex-direction: column;
 }
 
-.new-gallery-item-text p {
-    color: #ccc; /* Light gray */
-    margin: 0;
+@media (min-width: 768px) {
+    .project-item {
+        flex-direction: row;
+    }
+}
+
+.project-item img, .new-gallery-item img {
+    width: 100%;
+    height: auto;
+    margin-right: 20px;
+    background-color: #ccc;
+}
+
+.project-details, .new-gallery-item-text p {
+    flex: 1;
+    color: #666;
+    margin: 5px 0;
+}
+
+.project-details h5, .new-gallery-item-text h5 {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+/* Stack Section */
+.stack-item {
+    margin-bottom: 1rem;
+}
+
+.stack-item span, .project-details h5, .new-gallery-item-text h5 {
+    display: block;
+    font-weight: bold;
+}
+
+.progress {
+    height: 10px;
+}
+
+.progress-bar {
+    background-color: #2E8B57; /* Tree green */
+}
+
+/* Work Experience Section */
+h4 {
+    font-size: 1.25rem;
+}
+
+/* Recommendations Section */
+h3 {
+    font-size: 1.75rem;
+}
+
+/* Social Links */
+.social-links a {
+    color: #2E8B57; /* Tree green */
+    text-decoration: none;
+}
+
+.social-links a:hover {
+    color: #fff; /* White on hover */
+}
+
+/* Miscellaneous */
+hr {
+    border: none;
+    height: 2px;
+    background: repeating-linear-gradient(
+        to right,
+        #fff, /* White */
+        #fff 5px,
+        transparent 5px,
+        transparent 10px
+    );
+    margin: 20px 0;
 }
 
 .mt-5:last-of-type {
