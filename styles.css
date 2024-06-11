@@ -176,9 +176,35 @@ hr {
 /* Footer */
 .footer {
     color: #fff;
-    text-align: left; /* Align text to the left */
-    margin-top: 20px; /* Add margin for better spacing */
+    text-align: left;
+    margin-top: 20px;
     margin-bottom: 20px;
+}
+
+.footer .container {
+    padding: 0px;
+}
+
+.footer-left, .footer-right {
+    text-align: center;
+}
+
+.footer-right {
+    gap: 10px;
+}
+
+@media (min-width: 768px) {
+    .footer {
+        text-align: left;
+    }
+
+    .footer-left, .footer-right {
+        text-align: left;
+    }
+
+    .footer-right {
+        gap: 10px;
+    }
 }
 
 .version-box {
