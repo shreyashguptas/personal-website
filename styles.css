@@ -27,11 +27,10 @@ h1, h2, h3, h4, h5, p {
 .hero-text, .hero-sub-text, .intro-text {
     text-align: left; /* Align text to the left */
     margin: 0 auto;
-    padding: 0 15px;
+    padding: 0;
 }
 
 .hero-text img {
-    margin-right: 20px; /* Add some space between the image and text */
     align-items: left;
 }
 
