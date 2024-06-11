@@ -104,6 +104,9 @@ h4 {
 /* Recommendations Section */
 h3 {
     font-size: 1.75rem;
+    text-align: left;
+    margin-bottom: 20px;
+    font-weight: bold;
 }
 
 /* Social Links */
