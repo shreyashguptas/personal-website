@@ -131,7 +131,7 @@
         <hr>
         <section class="mt-5">
             <h3>Have a Project Idea?</h3>
-            <p>If you want to connect, send me an email: <a href="mailto:shreyash.gupta@shreyashg.com">shreyash.gupta@shreyashg.com</a></p>
+            <p>If you want to connect, send me an email: <a href="mailto:shreyash@shreyashg.com">shreyash.gupta@shreyashg.com</a></p>
             <hr>
             <section class="mt-5">
                 <h3>Or find me on these Social platforms</h3>
