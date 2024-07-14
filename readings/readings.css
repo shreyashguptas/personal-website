@@ -1,0 +1,79 @@
+.readings-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.readings-content h1 {
+    font-size: 24px;
+    margin-bottom: 30px;
+}
+
+.readings-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.readings-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.readings-list li:last-child {
+    border-bottom: none;
+}
+
+.reading-info {
+    flex: 1;
+}
+
+.readings-list h2 {
+    font-size: 18px;
+    margin: 0 0 5px 0;
+}
+
+.readings-list h2 a {
+    text-decoration: none;
+    color: #333;
+}
+
+.readings-list h2 a:hover {
+    text-decoration: underline;
+}
+
+.reading-author {
+    display: block;
+    color: #999;
+    font-size: 14px;
+}
+
+.reading-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-end;
+    min-width: 200px;
+}
+
+.tag {
+    background-color: #f0f0f0;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #666;
+}
+
+@media (max-width: 600px) {
+    .readings-list li {
+        flex-direction: column;
+    }
+
+    .reading-tags {
+        justify-content: flex-start;
+        margin-top: 10px;
+    }
+}
