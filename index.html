@@ -1,37 +1,84 @@
-<h1>This is my WEBSITE</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shreyash Gupta</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="logo">SHREYASH GUPTA</div>
+        <nav>
+            <a href="https://shreyashgupta.substack.com/">Blog</a>
+            <a href="readings/readings.html">Reading</a>
+            <a href="projects/projects.html">Projects</a>
+            <a href="about/about.html">About</a>
+        </nav>
+    </header>
 
-<img src="images/headshot.png" alt="Headshot of me" width="150">
+    <main>
+        <section class="intro">
+            <p>Associate Director of Analysis and Strategy at the University of Arkansas, building a healthy culture of delivering analytics to organizations that serve students on campus. By night, democratizing financial power through innovative investment solutions.</p>
+        </section>
 
-<p>I have done 12 different iterations of this website and this is by far the best one...</p>
-    
-<p>I want to spend more time coding neural nets than figuring out if my header text floats out of a div. I will leave that problem for the web devs. And also this will load way faster than any other design.</p>
+        <div class="content">
+            <div class="column">
+                <h2>Projects</h2>
+                <ul id="projects-preview">
+                    <!-- This will be populated dynamically -->
+                </ul>
+                <a href="projects.html" class="view-all">View all projects</a>
+            </div>
+            <div class="column">
+                <h2>Reading</h2>
+                <ul>
+                    <li><a href="#"><span class="title">The Deficit Myth</span><span class="date">Stephanie Kelton</span></a></li>
+                    <li><a href="#"><span class="title">Stolen Focus</span><span class="date">Johann Hari</span></a></li>
+                    <li><a href="#"><span class="title">The Making of Prince of Persia</span><span class="date">Jordan Mechner</span></a></li>
+                </ul>
+            </div>
+            <div class="column">
+                <h2>Blogs</h2>
+                <ul>
+                    <li><a href="#"><span class="title">Perplexity</span><span class="date">App</span></a></li>
+                    <li><a href="#"><span class="title">256 Free Font Collection</span><span class="date">Fonts</span></a></li>
+                    <li><a href="#"><span class="title">FlowCat</span><span class="date">App</span></a></li>
+                </ul>
+            </div>
+        </div>
+    </main>
 
-            <h2>About Me</h2>
-            <p>By day: Associate Director of Analysis and Strategy at the University of Arkansas, building a healthy culture of delivering analytics to organizations that serve students on campus.</p>
-            <p>By night: Democratizing financial power by allowing professionals to invest without any prior knowledge and enabling those who want to reap the benefits of long-term investing, but know nothing about market operations, to do so free of cost.</p>
-
-            <h1>Projects</h1>
-
-                    <h3>CAPTCHA Recognition using CRNN</h3>
-                    <p>Project description goes here.</p>
-                    <a href="https://github.com/shreyashguptas/CAPTCHA-Recognition-using-CRNN">View Project</a>
-
-                    <h3>IMDb Movie Review Sentiment Analysis</h3>
-                    <p>Project description goes here.</p>
-                    <a href="https://github.com/shreyashguptas/IMDb_movie_review_sentiment_analysis.git">View Project</a>
-
-                    <h3>Stock Performance Correlation to News Sentiment</h3>
-                    <p>Project description goes here.</p>
-                    <a href="https://github.com/shreyashguptas/News_sentiment_correlation_project.git">View Project</a>
-
-                    <h3>MeToo Movement Impact on IMDb Ratings</h3>
-                    <p>Project description goes here.</p>
-                    <a href="https://github.com/shreyashguptas/MeToo-Movement-Impact-on-IMDb-ratings">View Project</a>
-
-        <h1>Socials</h1>
-        
-        <a href="https://x.com/ShreyashGuptas" style="display: inline-block; padding: 8px; background-color: #1DA1F2; color: white; text-decoration: none; border-radius: 4px; margin: 5px;">Twitter</a>
-
-        <a href="https://www.linkedin.com/in/shreyashgupta5/" style="display: inline-block; padding: 8px; background-color: #0077B5; color: white; text-decoration: none; border-radius: 4px; margin: 5px;">LinkedIn</a>
-
-        <a href="https://github.com/shreyashguptas" style="display: inline-block; padding: 8px; background-color: #333; color: white; text-decoration: none; border-radius: 4px; margin: 5px;">GitHub</a>
+    <footer>
+        <div>
+            <p>© 2024 Shreyash Gupta</p>
+            <div class="social-links">
+                <a href="https://github.com/shreyashguptas">GitHub</a>
+                <a href="https://www.linkedin.com/in/shreyashgupta5/">LinkedIn</a>
+                <a href="https://x.com/ShreyashGuptas">Twitter</a>
+            </div>
+            <p>Last updated on July 13, 2024</p>
+            <p>Visits from 247 cities in 71 countries</p>
+        </div>
+    </footer>
+    <script>
+        fetch('projects.html')
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const projects = doc.querySelectorAll('.projects-list li');
+                const previewList = document.getElementById('projects-preview');
+                
+                for (let i = 0; i < Math.min(5, projects.length); i++) {
+                    const li = document.createElement('li');
+                    const link = projects[i].querySelector('h2 a').cloneNode(true);
+                    const date = projects[i].querySelector('.project-date').cloneNode(true);
+                    li.appendChild(link);
+                    li.appendChild(date);
+                    previewList.appendChild(li);
+                }
+            });
+    </script>
+</body>
+</html>

@@ -4,396 +4,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shreyash Gupta - Data Scientist & AI Professional</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+    <title>Shreyash Gupta</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <div class="text-center mt-5 position-relative">
-            <div class="hero-text">
-                <p class="intro-text">Hi there!👋 I am</p>
-                <h2 class="hero-text mt-3">Shreyash Gupta</h2>
-                <p class="intro-text">and I am passionate about</p>
-                <p class="hero-sub-text lead">Data Science</p>
-                <p class="intro-text">along with developing with the latest AI models.</p>
+    <header>
+        <div class="logo">SHREYASH GUPTA</div>
+        <nav>
+            <a href="https://shreyashgupta.substack.com/">Blog</a>
+            <a href="readings/readings.html">Reading</a>
+            <a href="projects/projects.html">Projects</a>
+            <a href="about/about.html">About</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="intro">
+            <p>Associate Director of Analysis and Strategy at the University of Arkansas, building a healthy culture of delivering analytics to organizations that serve students on campus. By night, democratizing financial power through innovative investment solutions.</p>
+        </section>
+
+        <div class="content">
+            <div class="column">
+                <h2>Projects</h2>
+                <ul id="projects-preview">
+                    <!-- This will be populated dynamically -->
+                </ul>
+                <a href="projects.html" class="view-all">View all projects</a>
             </div>
-            <div class="position-relative d-inline-block mt-3">
-                <img src="Images/headshot.png" alt="Shreyash Gupta" class="img-fluid rounded" style="width: 25%; height: auto; float: left; margin-top: 0px;">
+            <div class="column">
+                <h2>Reading</h2>
+                <ul>
+                    <li><a href="#"><span class="title">The Deficit Myth</span><span class="date">Stephanie Kelton</span></a></li>
+                    <li><a href="#"><span class="title">Stolen Focus</span><span class="date">Johann Hari</span></a></li>
+                    <li><a href="#"><span class="title">The Making of Prince of Persia</span><span class="date">Jordan Mechner</span></a></li>
+                </ul>
+            </div>
+            <div class="column">
+                <h2>Blogs</h2>
+                <ul>
+                    <li><a href="#"><span class="title">Perplexity</span><span class="date">App</span></a></li>
+                    <li><a href="#"><span class="title">256 Free Font Collection</span><span class="date">Fonts</span></a></li>
+                    <li><a href="#"><span class="title">FlowCat</span><span class="date">App</span></a></li>
+                </ul>
             </div>
         </div>
-        <hr>
-        <section class="mt-5">
-            <h3>Projects I have worked on over the past few years</h3>
-            <div class="new-gallery">
-                <a href="https://github.com/shreyashguptas/IMDb_movie_review_sentiment_analysis" class="new-gallery-item">
-                    <img src="Images/IMDb Movie Review Sentiment Analysis.png" class="img-fluid" alt="IMDb Movie Review Sentiment Analysis">
-                    <div class="new-gallery-item-text">
-                        <h5>IMDb Movie Review Sentiment Analysis</h5>
-                        <p>Category: Data Science<br>Date: January 2023 – Present</p>
-                    </div>
-                </a>
-                <a href="https://github.com/shreyashguptas/MeToo-Movement-Impact-on-IMDb-ratings" class="new-gallery-item">
-                    <img src="Images/MeToo MOVEMENT IMPACT ON THE IMDb RATINGS.png" class="img-fluid" alt="MeToo Movement Impact on the IMDb Ratings">
-                    <div class="new-gallery-item-text">
-                        <h5>MeToo Movement Impact on the IMDb Ratings</h5>
-                        <p>Category: Data Science<br>Date: August 2023 – December 2023</p>
-                    </div>
-                </a>
+    </main>
+
+    <footer>
+        <div>
+            <p>© 2024 Shreyash Gupta</p>
+            <div class="social-links">
+                <a href="https://github.com/shreyashguptas">GitHub</a>
+                <a href="https://www.linkedin.com/in/shreyashgupta5/">LinkedIn</a>
+                <a href="https://x.com/ShreyashGuptas">Twitter</a>
             </div>
-        </section>
-        <hr>
-        <section class="mt-5">
-            <h3>My Stack of Tools and Knowledge</h3>
-            <div class="stack-item">
-                <span>Perplexity/ChatGPT/Local LLM's</span>
-                <div class="progress">
-                    <div class="progress-bar" role="progressbar" style="width: 99%;" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-            </div>
-            <div class="stack-item">
-                <span>Python</span>
-                <div class="progress">
-                    <div class="progress-bar" role="progressbar" style="width: 95%;" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-            </div>
-            <div class="stack-item">
-                <span>Machine Learning</span>
-                <div class="progress">
-                    <div class="progress-bar" role="progressbar" style="width: 90%;" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-            </div>
-            <div class="stack-item">
-                <span>VSCode</span>
-                <div class="progress">
-                    <div class="progress-bar" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-            </div>
-            <div class="stack-item">
-                <span>Github</span>
-                <div class="progress">
-                    <div class="progress-bar" role="progressbar" style="width: 70%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-            </div>
-            <div class="stack-item">
-                <span>Linux Command Line</span>
-                <div class="progress">
-                    <div class="progress-bar" role="progressbar" style="width: 65%;" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-            </div>
-            <div class="stack-item">
-                <span>HTML & CSS</span>
-                <div class="progress">
-                    <div class="progress-bar" role="progressbar" style="width: 65%;" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-            </div>
-        </section>
-        <hr>
-        <section class="mt-5">
-            <h3>A list of my professional work experience</h3>
-            <div class="mb-4">
-                <h4>Data Analyst GA - Part-time</h4>
-                <p>University of Arkansas, Fayetteville, AR<br>August 2023 – May 2024</p>
-                <p>As a Data Analyst GA, I streamlined data integration and analysis to support strategic decisions in the Division of Student Affairs.</p>
-            </div>
-            <div class="mb-4">
-                <h4>Developer Applications, Insight as a Service (IaaS)</h4>
-                <p>Tyson Foods, Springdale, AR<br>June 2021 – May 2023</p>
-                <p>I developed key data dashboards for project and hiring management, significantly enhancing executive decision-making and operational efficiency at Tyson Foods.</p>
-            </div>
-            <div class="mb-4">
-                <h4>Entrepreneur</h4>
-                <p>Self-employed, New Delhi, India<br>June 2020 – November 2022</p>
-                <p>I led a startup team to develop a comprehensive communication platform for educational institutions, implementing SCRUM and strategic leadership to foster organizational transparency and privacy.</p>
-            </div>
-        </section>
-        <hr>
-        <section class="mt-5">
-            <h3>A list of my recommendations from my professional network</h3>
-            <div class="mb-4">
-                <h4>Teah-Marie Bynion</h4>
-                <p>Director of Analysis & Reporting - Student Affairs</p>
-                <p>"Shreyash Gupta has been an invaluable asset to our Data Analytics team at the University of Arkansas. One of Shreyash's most appreciated characteristics is that he does not shy away from issues, rather he is eager to solve them and looks forward to providing innovative solutions. In addition, he not only is receptive to feedback but he actively seeks out input in order to continuously improve projects. With that, while he is thorough in incorporating feedback he is an incredibly quick at doing so. I am always impressed with the speed and quality in which he is able to execute projects. Finally, Shreyash is able to strike the perfect balance of being able to take on projects independently while also contributing to the team and collaborate with other units. I cannot overstate the contributions Shreyash has made to our team."</p>
-            </div>
-            <div class="mb-4">
-                <h4>Payton Marlin</h4>
-                <p>Technical Analyst || @ Lennar</p>
-                <p>"Shreyash's eagerness to learn and grow is truly impressive, and he is always looking for new opportunities to expand his knowledge and skills. In my interactions with Shreyash, I have been consistently impressed by his innovative thinking and ability to generate fresh ideas that are both practical and effective. He is a natural problem-solver and has a keen eye for identifying opportunities for improvement. Beyond his impressive professional skills, Shreyash is also a wonderful colleague and a pleasure to work with. He is always approachable and willing to lend a helping hand, and his positive attitude and sense of humor make him a valuable member of any team."</p>
-            </div>
-            <div class="mb-4">
-                <h4>Supriya Thorbole</h4>
-                <p>Data & Analytics Leader</p>
-                <p>"Shreyash is enthusiastic, eager to learn and always ready for a challenge. In the past few months of his internship he has worked on everything data, all the way from analysis, ingestion, transformation to visualization."</p>
-            </div>
-        </section>
-        <hr>
-        <section class="mt-5">
-            <h3>Have a Project Idea?</h3>
-            <p>If you want to connect, send me an email: <a href="mailto:shreyash@shreyashg.com">shreyash.gupta@shreyashg.com</a></p>
-            <hr>
-            <section class="mt-5">
-                <h3>Or find me on these Social platforms</h3>
-                <div class="social-links">
-                    <a href="https://x.com/ShreyashGuptas" class="mr-3">X</a>
-                    <a href="https://www.linkedin.com/in/shreyashgupta5/" class="mr-3">LinkedIn</a>
-                    <a href="https://github.com/shreyashguptas" class="mr-3">Github</a>
-                </div>
-            </section>
-            <footer class="footer mt-5 text-left">
-                <div class="container">
-                    <p><span class="version-box">v3.0.2</span> | <span id="last-updated"></span></p>
-                </div>
-            </footer>
-        </section>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+            <p>Last updated on July 13, 2024</p>
+            <p>Visits from 247 cities in 71 countries</p>
+        </div>
+    </footer>
     <script>
-        document.getElementById('last-updated').textContent = 'LAST UPDATED: ' + new Date(document.lastModified).toLocaleDateString('en-GB', {
-            day: '2-digit',
-            month: 'long',
-            year: 'numeric'
-        });
+        fetch('projects.html')
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const projects = doc.querySelectorAll('.projects-list li');
+                const previewList = document.getElementById('projects-preview');
+                
+                for (let i = 0; i < Math.min(5, projects.length); i++) {
+                    const li = document.createElement('li');
+                    const link = projects[i].querySelector('h2 a').cloneNode(true);
+                    const date = projects[i].querySelector('.project-date').cloneNode(true);
+                    li.appendChild(link);
+                    li.appendChild(date);
+                    previewList.appendChild(li);
+                }
+            });
     </script>
 </body>
 </html>
 
 --- styles.css ---
-/* General Styles */
 body {
-    font-family: 'IBM Plex Mono', monospace;
-    background-color: #000; /* Black background */
-    color: #fff; /* White text */
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
 }
 
-.container {
-    width: 100%;
-    padding: 0 15px;
-    margin: 0 auto;
-}
-
-.img-fluid {
-    max-width: 100%;
-    height: auto;
-}
-
-h1, h2, h3, h4, h5, p {
-    color: #fff; /* White text */
-}
-
-/* Hero Section */
-.hero-text, .hero-sub-text, .intro-text {
-    text-align: left; /* Align text to the left */
-    margin: 0 auto;
-    padding: 0;
-}
-
-.hero-text img {
-    align-items: left;
-}
-
-.hero-text h2, .hero-sub-text {
-    font-size: 2.5rem; /* Double the current size */
-}
-
-.intro-text {
-    font-size: 1.5rem; /* Smaller size for 'I am' and 'and I work in the' */
-}
-
-/* Projects Section */
-.new-gallery {
-    display: grid;
-    gap: 20px;
-}
-
-@media (min-width: 1200px) {
-    .new-gallery {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-@media (min-width: 768px) and (max-width: 1199px) {
-    .new-gallery {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 767px) {
-    .new-gallery {
-        grid-template-columns: 1fr;
-    }
-}
-
-.new-gallery-item {
-    flex: 1 1 calc(33.333% - 20px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 10px;
-    background-color: #333; /* Dark gray */
-    text-align: center;
-}
-
-.new-gallery-item img {
-    max-width: 150px; /* Adjust the size as needed */
-    margin-bottom: 10px;
-}
-
-.project-item {
+header {
     display: flex;
-    align-items: flex-start;
-    margin-bottom: 20px;
-    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
 }
 
-@media (min-width: 768px) {
-    .project-item {
-        flex-direction: row;
-    }
-}
-
-.project-item img, .new-gallery-item img {
-    width: 100%;
-    height: auto;
-    margin-right: 20px;
-    background-color: #ccc;
-}
-
-.project-details, .new-gallery-item-text p {
-    flex: 1;
-    color: #666;
-    margin: 5px 0;
-}
-
-.project-details h5, .new-gallery-item-text h5 {
-    font-size: 2rem;
+.logo {
+    font-size: 18px;
     font-weight: bold;
 }
 
-/* Stack Section */
-.stack-item {
-    margin-bottom: 1rem;
-}
-
-.stack-item span, .project-details h5, .new-gallery-item-text h5 {
-    display: block;
-    font-weight: bold;
-}
-
-.progress {
-    height: 10px;
-}
-
-.progress-bar {
-    background-color: #2E8B57; /* Tree green */
-}
-
-/* Work Experience Section */
-h4 {
-    font-size: 1.25rem;
-}
-
-/* Recommendations Section */
-h3 {
-    font-size: 1.75rem;
-    text-align: left;
-    margin-bottom: 20px;
-    font-weight: bold;
-}
-
-/* Social Links */
-.social-links a {
-    color: #2E8B57; /* Tree green */
+nav a {
+    margin-left: 20px;
     text-decoration: none;
+    color: #333;
+    font-size: 14px;
 }
 
-.social-links a:hover {
-    color: #fff; /* White on hover */
-}
-
-.social-links {
-    margin-bottom: 20px; /* Add margin for spacing */
-}
-
-/* Miscellaneous */
-hr {
-    border: none;
-    height: 2px;
-    background: repeating-linear-gradient(
-        to right,
-        #fff, /* White */
-        #fff 5px,
-        transparent 5px,
-        transparent 10px
-    );
-    margin: 20px 0;
-}
-
-.mt-5:last-of-type {
+.intro {
+    max-width: 600px;
     margin-bottom: 60px;
 }
 
-/* Footer */
-.footer {
-    color: #fff;
-    text-align: left;
-    margin-top: 20px;
+.content {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.column {
+    flex: 1;
+    min-width: 200px;
+    margin-right: 40px;
+}
+
+h2 {
+    font-size: 16px;
     margin-bottom: 20px;
+    font-weight: normal;
 }
 
-.footer .container {
-    padding: 0px;
+ul {
+    list-style-type: none;
+    padding: 0;
 }
 
-.footer-left, .footer-right {
-    text-align: center;
+li {
+    margin-bottom: 15px;
 }
 
-.footer-right {
-    gap: 10px;
+li a {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    text-decoration: none;
+    color: #333;
+    padding: 5px 0;
+    transition: background-color 0.2s;
 }
 
-@media (min-width: 768px) {
-    .footer {
-        text-align: left;
-    }
-
-    .footer-left, .footer-right {
-        text-align: left;
-    }
-
-    .footer-right {
-        gap: 10px;
-    }
+li a:hover {
+    background-color: #f0f0f0;
 }
 
-.version-box {
-    border: 2px solid #2E8B57; /* Tree green */
-    border-radius: 20px;
-    padding: 5px 10px;
-    background-color: transparent;
-    margin-right: 10px; /* Add margin for spacing */
+.title {
+    position: relative;
+    padding-right: 10px;
+    max-width: 70%;
 }
 
---- app.js ---
-// Smooth scroll and snap
-document.documentElement.style.scrollBehavior = 'smooth';
-document.documentElement.style.scrollSnapType = 'y mandatory';
+.title::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -10px;
+    left: calc(100% + 10px);
+    height: 1px;
+    background-color: #ccc;
+}
 
-const sections = document.querySelectorAll('section');
-sections.forEach(section => {
-    section.style.scrollSnapAlign = 'start';
-});
+.date {
+    color: #999;
+    font-size: 14px;
+    white-space: nowrap;
+    padding-left: 20px;
+}
 
-// Update last modified date
-document.getElementById('last-updated').textContent = 'LAST UPDATED: ' + new Date(document.lastModified).toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric'
-});
+footer {
+    margin-top: 60px;
+    font-size: 14px;
+    color: #999;
+    display: flex;
+    justify-content: space-between;
+}
 
+.social-links a {
+    margin-right: 10px;
+    color: #333;
+    text-decoration: none;
+}
 

@@ -1,0 +1,39 @@
+.about-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.about-content h1 {
+    font-size: 24px;
+    margin-bottom: 30px;
+}
+
+.about-text p {
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.about-images {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+}
+
+.about-img {
+    width: auto;
+    max-width: auto;
+    height: auto;
+    border-radius: auto;
+}
+
+@media (max-width: 600px) {
+    .about-images {
+        flex-direction: column;
+    }
+    
+    .about-img {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+}
