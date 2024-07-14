@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    fetch('projects.html')
+    fetch('projects/projects.html')
         .then(response => response.text())
         .then(html => {
             const parser = new DOMParser();
@@ -9,10 +9,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             for (let i = 0; i < Math.min(5, projects.length); i++) {
                 const li = document.createElement('li');
-                const link = projects[i].querySelector('h2 a').cloneNode(true);
-                const date = projects[i].querySelector('.project-date').cloneNode(true);
-                li.appendChild(link);
-                li.appendChild(date);
+                const title = projects[i].querySelector('h2 a').textContent;
+                const date = projects[i].querySelector('.project-date').textContent;
+                li.innerHTML = `<a href="#"><span class="title">${title}</span><span class="date">${date}</span></a>`;
                 previewList.appendChild(li);
             }
         });
