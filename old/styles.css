@@ -1,187 +1,216 @@
 /* General Styles */
-:root {
-    --primary-color: #000; /* Black as primary color */
-    --secondary-color: #2E8B57; /* Nature's green as secondary color */
-    --footer-bg-color: #333; /* Dark gray for footer background */
-    --contact-box-bg-color: #444; /* Darker gray for contact box background */
-}
-
 body {
-    background-color: var(--primary-color);
-    color: #fff;
-    transition: all .3s ease;
     font-family: 'IBM Plex Mono', monospace;
+    background-color: #000; /* Black background */
+    color: #fff; /* White text */
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 5%;
-    background-color: rgba(0, 0, 0, 0.8);
-    position: fixed;
-    top: 0;
+.container {
     width: 100%;
-    z-index: 1000;
-}
-
-.container-fluid {
-    width: 100%; /* Ensure it takes the full width */
-    display: flex;
-    justify-content: space-between; /* This will help push the nav items to the right */
-}
-
-.navbar-nav {
-    display: flex;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    margin-left: auto; /* Keeps items to the right */
-    margin-right: 150px; /* Adds more padding on the right and moves items slightly to the left */
-    margin-top: 20px;
-}
-
-.nav-item {
-    margin: 0 15px;
-}
-
-.nav-link {
-    color: #fff;
-    text-decoration: none;
-}
-
-.nav-logo {
-    height: 50px; /* Increased size from 40px to 50px */
-    margin-right: 20px; /* Add space between logo and links */
-    margin-top: 10px;
-}
-
-@media (min-width: 1000px) {
-    .navbar-nav {
-        margin-left: auto; /* Push the nav items to the right on large screens */
-    }
-}
-
-.nav-link:hover {
-    text-decoration: underline; /* Underline on hover */
-}
-
-.hero {
-    height: 100vh;
-    padding-left: 20%; /* Reduced from 30% to move text to the left */
-    padding-right: 10px;
-    max-width: 1500px;
-    margin: auto;
-}
-
-.hero-sub-text {
-    font-size: 48px; /* Set the font size for the sub-text */
-    color: #fff; /* Set the color of the text */
-    margin-bottom: auto; /* Reduced space between the sub-text and the main hero text */
-}
-
-.hero-text {
-    font-size: 160px;
-    margin: 320px 0; /* Increased top margin to center vertically */
-    max-width: 1500px;
-}
-
-section {
-    padding: 10px 10px;
-    padding-left: 20%; /* Reduced from 30% to align with the hero text */
-    padding-right: 10px;
-    max-width: 1500px;
+    padding: 0 15px;
     margin: 0 auto;
 }
 
-.email-button, .blog-button {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: var(--secondary-color);
-    color: #fff;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 1.2em;
-    transition: background-color 0.3s ease;
+.img-fluid {
+    max-width: 100%;
+    height: auto;
 }
 
-.email-button:hover, .blog-button:hover {
-    background-color: #1e6b47;
+h1, h2, h3, h4, h5, p {
+    color: #fff; /* White text */
 }
 
-footer {
-    background-color: var(--footer-bg-color);
-    color: #fff;
-    padding: 20px;
-    padding-left: 20%; /* Adjusted to match other sections */
-    padding-right: 10px;
-    max-width: 1500px; /* Limit the width of the footer */
-    margin: 0 auto; /* Center the footer */
-    display: flex; /* Ensure footer contents are in a row */
-    justify-content: space-between; /* Space out the left and right sections */
+/* Hero Section */
+.hero-text, .hero-sub-text, .intro-text {
+    text-align: left; /* Align text to the left */
+    margin: 0 auto;
+    padding: 0;
 }
 
-footer .container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px; /* Increase padding around the container */
-    gap: 40px; /* Increase gap between .footer-left and .footer-right */
+.hero-text img {
+    align-items: left;
 }
 
-.footer-left {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.hero-text h2, .hero-sub-text {
+    font-size: 2.5rem; /* Double the current size */
 }
 
-.footer-right {
-    display: flex;
-    flex-direction: row; /* Ensure the WORK and LINKS sections are in a row */
-    gap: 20px; /* Space between WORK and LINKS sections */
+.intro-text {
+    font-size: 1.5rem; /* Smaller size for 'I am' and 'and I work in the' */
 }
 
-.footer-column {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+/* Projects Section */
+.new-gallery {
+    display: grid;
+    gap: 20px;
 }
 
-.footer-column h3 {
+@media (min-width: 1200px) {
+    .new-gallery {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+    .new-gallery {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 767px) {
+    .new-gallery {
+        grid-template-columns: 1fr;
+    }
+}
+
+.new-gallery-item {
+    flex: 1 1 calc(33.333% - 20px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    background-color: #333; /* Dark gray */
+    text-align: center;
+}
+
+.new-gallery-item img {
+    max-width: 150px; /* Adjust the size as needed */
     margin-bottom: 10px;
 }
 
-.footer-column p, .footer-column a {
+.project-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    flex-direction: column;
+}
+
+@media (min-width: 768px) {
+    .project-item {
+        flex-direction: row;
+    }
+}
+
+.project-item img, .new-gallery-item img {
+    width: 100%;
+    height: auto;
+    margin-right: 20px;
+    background-color: #ccc;
+}
+
+.project-details, .new-gallery-item-text p {
+    flex: 1;
+    color: #666;
     margin: 5px 0;
-    color: #fff;
+}
+
+.project-details h5, .new-gallery-item-text h5 {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+/* Stack Section */
+.stack-item {
+    margin-bottom: 1rem;
+}
+
+.stack-item span, .project-details h5, .new-gallery-item-text h5 {
+    display: block;
+    font-weight: bold;
+}
+
+.progress {
+    height: 10px;
+}
+
+.progress-bar {
+    background-color: #2E8B57; /* Tree green */
+}
+
+/* Work Experience Section */
+h4 {
+    font-size: 1.25rem;
+}
+
+/* Recommendations Section */
+h3 {
+    font-size: 1.75rem;
+    text-align: left;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+/* Social Links */
+.social-links a {
+    color: #2E8B57; /* Tree green */
     text-decoration: none;
 }
 
-.footer-column a:hover {
-    text-decoration: underline;
+.social-links a:hover {
+    color: #fff; /* White on hover */
 }
 
-.contact-link {
-    font-size: 130px; /* Font size for the contact link */
-    color: #fff; /* Keep the text color white */
-    text-decoration: underline; /* Add underline to the text */
-    font-weight: bold; /* Make the text bold */
+.social-links {
+    margin-bottom: 20px; /* Add margin for spacing */
 }
 
-.contact-link:hover {
-    text-decoration: underline; /* Keep the underline on hover */
-    cursor: pointer; /* Change cursor to pointer on hover */
+/* Miscellaneous */
+hr {
+    border: none;
+    height: 2px;
+    background: repeating-linear-gradient(
+        to right,
+        #fff, /* White */
+        #fff 5px,
+        transparent 5px,
+        transparent 10px
+    );
+    margin: 20px 0;
 }
 
-.social-icons img {
-    width: 24px;  /* Set the width of the icons */
-    height: 24px;  /* Set the height of the icons */
+.mt-5:last-of-type {
+    margin-bottom: 60px;
 }
 
-.signature {
-    width: 100px; /* Adjust width as needed */
-    height: auto; /* Maintain aspect ratio */
+/* Footer */
+.footer {
+    color: #fff;
+    text-align: left;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.footer .container {
+    padding: 0px;
+}
+
+.footer-left, .footer-right {
+    text-align: center;
+}
+
+.footer-right {
+    gap: 10px;
+}
+
+@media (min-width: 768px) {
+    .footer {
+        text-align: left;
+    }
+
+    .footer-left, .footer-right {
+        text-align: left;
+    }
+
+    .footer-right {
+        gap: 10px;
+    }
+}
+
+.version-box {
+    border: 2px solid #2E8B57; /* Tree green */
+    border-radius: 20px;
+    padding: 5px 10px;
+    background-color: transparent;
+    margin-right: 10px; /* Add margin for spacing */
 }
