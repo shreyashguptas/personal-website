@@ -28,7 +28,7 @@
                 <ul id="projects-preview">
                     <!-- This will be populated dynamically -->
                 </ul>
-                <a href="projects.html" class="view-all">View all projects</a>
+                <a href="projects/projects.html" class="view-all">View all projects</a>
             </div>
             <div class="column">
                 <h2>Reading</h2>
@@ -58,27 +58,8 @@
                 <a href="https://x.com/ShreyashGuptas">Twitter</a>
             </div>
             <p>Last updated on July 13, 2024</p>
-            <p>Visits from 247 cities in 71 countries</p>
         </div>
     </footer>
-    <script>
-        fetch('projects.html')
-            .then(response => response.text())
-            .then(html => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                const projects = doc.querySelectorAll('.projects-list li');
-                const previewList = document.getElementById('projects-preview');
-                
-                for (let i = 0; i < Math.min(5, projects.length); i++) {
-                    const li = document.createElement('li');
-                    const link = projects[i].querySelector('h2 a').cloneNode(true);
-                    const date = projects[i].querySelector('.project-date').cloneNode(true);
-                    li.appendChild(link);
-                    li.appendChild(date);
-                    previewList.appendChild(li);
-                }
-            });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>

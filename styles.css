@@ -108,3 +108,15 @@ footer {
     color: #333;
     text-decoration: none;
 }
+
+.view-all {
+    display: inline-block;
+    margin-top: 20px;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+}
+
+.view-all:hover {
+    text-decoration: underline;
+}
