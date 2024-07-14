@@ -1,5 +1,10 @@
 const blogs = [
     {
+        title: "One Year of Python: From Novice to Enthusiast",
+        url: "https://shreyashgupta.substack.com/p/one-year-of-python-from-novice-to-enthusiast",
+        date: "Jul 14, 2024"
+    },
+    {
         title: "Harness Your Senses: The Art of Dual-Tasking Without Multitasking",
         url: "https://shreyashgupta.substack.com/p/harness-your-senses-the-art-of-dual",
         date: "Oct 12, 2023"
