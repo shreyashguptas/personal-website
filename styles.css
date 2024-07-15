@@ -8,13 +8,10 @@ body {
 }
 
 header {
-    margin-bottom: 40px;
-}
-
-.header-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 40px;
 }
 
 .logo {
@@ -25,10 +22,6 @@ header {
 .logo a {
     text-decoration: none;
     color: inherit;
-}
-
-.logo a:hover {
-    text-decoration: none;
 }
 
 nav {
@@ -43,15 +36,18 @@ nav a {
 }
 
 @media (max-width: 768px) {
-    .header-content {
+    header {
         flex-direction: column;
         align-items: flex-start;
     }
 
+    .logo {
+        margin-bottom: 20px;
+    }
+
     nav {
-        margin-top: 20px;
-        justify-content: center;
         width: 100%;
+        justify-content: center;
         flex-wrap: wrap;
     }
 
