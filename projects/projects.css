@@ -1,11 +1,15 @@
 .project-item {
     display: flex;
-    flex-wrap: wrap;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 30px;
     padding-bottom: 30px;
     border-bottom: 1px solid #eaeaea;
+}
+
+.projects-content h1 {
+    font-size: 24px;
+    margin-bottom: 30px;
 }
 
 .project-info {
