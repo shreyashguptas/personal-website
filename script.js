@@ -1,13 +1,37 @@
 document.addEventListener('DOMContentLoaded', function() {
     const lastUpdatedElement = document.getElementById('last-updated');
-    const currentDate = new Date();
-    const formattedDate = currentDate.toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-    });
-    lastUpdatedElement.textContent = `Last updated on ${formattedDate}`;
+    const username = 'shreyashguptas';
+    const repo = 'personal-website';
+
+    fetch(`https://api.github.com/repos/${username}/${repo}/commits`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.length > 0) {
+                const lastCommitDate = new Date(data[0].commit.author.date);
+                const formattedDate = lastCommitDate.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+                lastUpdatedElement.textContent = `Last updated on ${formattedDate}`;
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching last commit date:', error);
+            lastUpdatedElement.textContent = 'Last updated date unavailable';
+        });
 });
+
+// document.addEventListener('DOMContentLoaded', function() {
+//     const lastUpdatedElement = document.getElementById('last-updated');
+//     const currentDate = new Date();
+//     const formattedDate = currentDate.toLocaleDateString('en-US', { 
+//         year: 'numeric', 
+//         month: 'long', 
+//         day: 'numeric' 
+//     });
+//     lastUpdatedElement.textContent = `Last updated on ${formattedDate}`;
+// });
 
 // Add this function to your existing script.js
 function fetchBlogsPreview() {
