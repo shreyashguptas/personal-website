@@ -22,17 +22,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 });
 
-// document.addEventListener('DOMContentLoaded', function() {
-//     const lastUpdatedElement = document.getElementById('last-updated');
-//     const currentDate = new Date();
-//     const formattedDate = currentDate.toLocaleDateString('en-US', { 
-//         year: 'numeric', 
-//         month: 'long', 
-//         day: 'numeric' 
-//     });
-//     lastUpdatedElement.textContent = `Last updated on ${formattedDate}`;
-// });
-
 // Add this function to your existing script.js
 function fetchBlogsPreview() {
     fetch('blogs/blogs.js')
