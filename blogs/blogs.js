@@ -1,5 +1,10 @@
 const blogs = [
     {
+        title: "Talk to AI about your questions",
+        url: "https://shreyashgupta.substack.com/p/talk-to-ai-about-your-questions",
+        date: "Aug 30, 2024"
+    },
+    {
         title: "The Power of Iteration: Lessons from Kindergarteners and Building Websites",
         url: "https://shreyashgupta.substack.com/p/the-power-of-iteration-lessons-from",
         date: "Jul 22, 2024"
