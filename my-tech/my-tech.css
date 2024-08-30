@@ -1,0 +1,55 @@
+.my-tech-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.my-tech-content h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.intro {
+    margin-bottom: 40px;
+}
+
+.tech-list {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.tech-item {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.tech-image {
+    width: 200px;
+    height: auto;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.tech-info h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.tech-info p {
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+    .tech-item {
+        flex-direction: column;
+    }
+
+    .tech-image {
+        width: 100%;
+        max-width: 300px;
+        margin-bottom: 20px;
+    }
+}

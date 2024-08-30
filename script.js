@@ -93,6 +93,22 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchBlogsPreview();
 });
 
+function updateNavigation() {
+    const currentPage = window.location.pathname;
+    document.addEventListener('DOMContentLoaded', function() {
+        const navLinks = document.querySelectorAll('nav a');
+        navLinks.forEach(link => {
+            if (link.getAttribute('href') === currentPage || 
+                (currentPage.includes('/my-tech/') && link.getAttribute('href') === '/my-tech/index.html')) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    });
+}
+
+updateNavigation();
 
 const ParticleNetwork = (function() {
     const canvas = document.getElementById('particle-network');
