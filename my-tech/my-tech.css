@@ -32,6 +32,10 @@
     border-radius: 8px;
 }
 
+.tech-info {
+    flex: 1;
+}
+
 .tech-info h2 {
     font-size: 20px;
     margin-top: 0;
