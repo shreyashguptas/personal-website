@@ -65,3 +65,14 @@
         margin-top: 10px;
     }
 }
+
+.projects-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.projects-list {
+    list-style-type: none;
+    padding: 0;
+}
