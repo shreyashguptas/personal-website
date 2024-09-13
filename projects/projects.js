@@ -1,19 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const projectTitles = document.querySelectorAll('.project-title');
-    
-    projectTitles.forEach(title => {
-        title.addEventListener('click', function(e) {
-            const projectItem = this.closest('.project-item');
-            const details = projectItem.querySelector('.project-details');
-            
-            if (details) {
+    const projectItems = document.querySelectorAll('.project-item');
+
+    projectItems.forEach(item => {
+        const title = item.querySelector('.project-title');
+        if (title) {
+            title.addEventListener('click', function(e) {
                 e.preventDefault();
-                if (details.style.display === 'none' || details.style.display === '') {
-                    details.style.display = 'block';
-                } else {
-                    details.style.display = 'none';
-                }
-            }
-        });
+                item.classList.toggle('active');
+            });
+        }
     });
 });
