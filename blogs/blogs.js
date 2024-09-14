@@ -77,7 +77,7 @@ function populateBlogs() {
         const li = document.createElement('li');
         li.innerHTML = `
             <div class="blog-info">
-                <h2><a href="${blog.url}">${blog.title}</a></h2>
+                <h2><a href="${blog.url}" target="_blank" rel="noopener noreferrer">${blog.title}</a></h2>
                 <span class="blog-date">${blog.date}</span>
             </div>
         `;
