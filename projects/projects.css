@@ -100,3 +100,32 @@
     list-style-type: none;
     padding: 0;
 }
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.footer-left, .footer-right {
+    flex: 1;
+    min-width: 300px;
+}
+
+.footer-right {
+    display: flex;
+    justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+    }
+    
+    .footer-left, .footer-right {
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+}
