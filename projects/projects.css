@@ -28,11 +28,16 @@
 .project-title, a.project-title {
     color: inherit;
     text-decoration: none;
-    transition: color 0.3s ease, background-color 0.3s ease;
+    transition: color 0.3s ease, background-color 0.3s ease, text-decoration 0.3s ease;
     padding: 2px 4px;
     border-radius: 3px;
-    display: inline-block; /* Add this line */
-    margin-left: -4px; /* Add this line */
+    display: inline-block;
+    margin-left: -4px;
+}
+
+.project-title:hover, a.project-title:hover {
+    background-color: #f0f0f0;
+    text-decoration: underline;
 }
 
 .project-year {
