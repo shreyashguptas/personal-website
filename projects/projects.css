@@ -130,4 +130,20 @@
         justify-content: center;
         margin-bottom: 1rem;
     }
+
+    .footer-content {
+        display: flex;
+        flex-direction: column-reverse;
+    }
+
+    .footer-left {
+        order: 2;
+        text-align: center;
+    }
+
+    .footer-right {
+        order: 1;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
 }
