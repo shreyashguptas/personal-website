@@ -110,127 +110,33 @@ function updateNavigation() {
 
 updateNavigation();
 
-const ParticleNetwork = (function() {
-    const canvas = document.getElementById('particle-network');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-    const particleCount = 50;
-    const maxDistance = 150;
-    let animationFrame;
-    const nodeInfo = document.getElementById('node-info');
+// Add this new function to handle the profile image aspect ratio
+function adjustProfileImage() {
+    const container = document.getElementById('profile-image-container');
+    const img = document.getElementById('profile-image');
 
-    const nodeTypes = ['Input', 'Hidden', 'Output'];
-    const nodeColors = ['#64ffda', '#8892b0', '#ff6b6b'];
+    // Set the desired aspect ratio to match the previous animation container
+    const desiredAspectRatio = 16 / 9; // Adjust this ratio as needed
 
-    function init() {
-        sizeCanvas();
-        createParticles();
-        animate();
-        canvas.addEventListener('mousemove', showNodeInfo);
-        canvas.addEventListener('mouseout', hideNodeInfo);
-        window.addEventListener('resize', sizeCanvas);
-    }
+    const containerWidth = container.offsetWidth;
+    const containerHeight = containerWidth / desiredAspectRatio;
 
-    function sizeCanvas() {
-        const pixelRatio = window.devicePixelRatio || 1;
-        const containerWidth = canvas.offsetWidth;
-        const containerHeight = canvas.offsetHeight;
-        canvas.width = containerWidth * pixelRatio;
-        canvas.height = containerHeight * pixelRatio;
-        canvas.style.width = containerWidth + 'px';
-        canvas.style.height = containerHeight + 'px';
-        ctx.scale(pixelRatio, pixelRatio);
-    }
+    container.style.height = `${containerHeight}px`;
 
-    function createParticles() {
-        particles = [];
-        for (let i = 0; i < particleCount; i++) {
-            particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                radius: Math.random() * 3 + 2,
-                vx: (Math.random() - 0.5) * 0.5,
-                vy: (Math.random() - 0.5) * 0.5,
-                type: nodeTypes[Math.floor(Math.random() * nodeTypes.length)]
-            });
-        }
-    }
+    // Always crop and zoom to fill the width
+    img.style.width = '100%';
+    img.style.height = 'auto';
+    
+    // Calculate the crop
+    const scaleFactor = containerWidth / img.naturalWidth;
+    const newHeight = img.naturalHeight * scaleFactor;
+    const cropAmount = (newHeight - containerHeight) / 2;
 
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        updateParticles();
-        drawParticles();
-        connectParticles();
-        animationFrame = requestAnimationFrame(animate);
-    }
+    // Apply the crop
+    img.style.marginTop = `-${cropAmount}px`;
+    container.style.overflow = 'hidden';
+}
 
-    function updateParticles() {
-        particles.forEach(particle => {
-            particle.x += particle.vx;
-            particle.y += particle.vy;
-
-            if (particle.x < 0 || particle.x > canvas.width) particle.vx = -particle.vx;
-            if (particle.y < 0 || particle.y > canvas.height) particle.vy = -particle.vy;
-        });
-    }
-
-    function drawParticles() {
-        particles.forEach(particle => {
-            ctx.beginPath();
-            ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-            ctx.fillStyle = nodeColors[nodeTypes.indexOf(particle.type)];
-            ctx.fill();
-        });
-    }
-
-    function connectParticles() {
-        for (let i = 0; i < particles.length; i++) {
-            for (let j = i + 1; j < particles.length; j++) {
-                const dx = particles[i].x - particles[j].x;
-                const dy = particles[i].y - particles[j].y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-
-                if (distance < maxDistance) {
-                    ctx.beginPath();
-                    ctx.strokeStyle = `rgba(255, 255, 255, ${(maxDistance - distance) / maxDistance * 0.5})`;
-                    ctx.lineWidth = 0.5;
-                    ctx.moveTo(particles[i].x, particles[i].y);
-                    ctx.lineTo(particles[j].x, particles[j].y);
-                    ctx.stroke();
-                }
-            }
-        }
-    }
-
-    function showNodeInfo(event) {
-        const rect = canvas.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-
-        for (let particle of particles) {
-            const dx = particle.x - x;
-            const dy = particle.y - y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-
-            if (distance < particle.radius + 5) {
-                nodeInfo.style.display = 'block';
-                nodeInfo.style.left = (event.clientX + 10) + 'px';
-                nodeInfo.style.top = (event.clientY + 10) + 'px';
-                nodeInfo.textContent = `Type: ${particle.type} Node`;
-                return;
-            }
-        }
-
-        hideNodeInfo();
-    }
-
-    function hideNodeInfo() {
-        nodeInfo.style.display = 'none';
-    }
-
-    return {
-        init: init
-    };
-})();
-
-window.addEventListener('load', ParticleNetwork.init);
+// Call the adjustProfileImage function when the page loads and on window resize
+window.addEventListener('load', adjustProfileImage);
+window.addEventListener('resize', adjustProfileImage);
