@@ -11,6 +11,7 @@
 .projects-content h1 {
     font-size: 24px;
     margin-bottom: 30px;
+    padding-left: 4px; /* Add this line */
 }
 
 .project-info {
@@ -21,6 +22,7 @@
 .project-info h2 {
     margin: 0;
     font-size: 18px;
+    line-height: 1.2; /* Add this line */
 }
 
 .project-title, a.project-title {
@@ -29,10 +31,8 @@
     transition: color 0.3s ease, background-color 0.3s ease;
     padding: 2px 4px;
     border-radius: 3px;
-}
-
-.project-title:hover, a.project-title:hover {
-    background-color: rgba(0, 0, 0, 0.05);
+    display: inline-block; /* Add this line */
+    margin-left: -4px; /* Add this line */
 }
 
 .project-year {
@@ -40,6 +40,8 @@
     color: #999;
     font-size: 14px;
     margin-top: 5px;
+    padding-left: 0; /* Remove padding */
+    margin-left: 0; /* Add left margin to align with title */
 }
 
 .project-tags {
