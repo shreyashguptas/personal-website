@@ -115,8 +115,7 @@ function adjustProfileImage() {
     const container = document.getElementById('profile-image-container');
     const img = document.getElementById('profile-image');
 
-    if (!container || !img) return;
-
+    // Set the desired aspect ratio to match the previous animation container
     const desiredAspectRatio = 16 / 9; // Adjust this ratio as needed
 
     const containerWidth = container.offsetWidth;
@@ -138,32 +137,6 @@ function adjustProfileImage() {
     container.style.overflow = 'hidden';
 }
 
-// Use requestAnimationFrame for smoother performance
-window.addEventListener('load', () => requestAnimationFrame(adjustProfileImage));
-window.addEventListener('resize', () => requestAnimationFrame(adjustProfileImage));
-
-// Add this function to your existing script.js
-function lazyLoadImages() {
-    const images = document.querySelectorAll('img[data-src]');
-    const options = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.1
-    };
-
-    const imageObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const img = entry.target;
-                img.src = img.dataset.src;
-                img.removeAttribute('data-src');
-                imageObserver.unobserve(img);
-            }
-        });
-    }, options);
-
-    images.forEach(img => imageObserver.observe(img));
-}
-
-// Call this function after the DOM is loaded
-document.addEventListener('DOMContentLoaded', lazyLoadImages);
+// Call the adjustProfileImage function when the page loads and on window resize
+window.addEventListener('load', adjustProfileImage);
+window.addEventListener('resize', adjustProfileImage);
