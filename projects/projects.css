@@ -11,7 +11,7 @@
 .projects-content h1 {
     font-size: 24px;
     margin-bottom: 30px;
-    padding-left: 4px; /* Add this line */
+    padding-left: 0;
 }
 
 .project-info {
@@ -22,7 +22,7 @@
 .project-info h2 {
     margin: 0;
     font-size: 18px;
-    line-height: 1.2; /* Add this line */
+    line-height: 1.2;
 }
 
 .project-title, a.project-title {
@@ -45,8 +45,8 @@
     color: #999;
     font-size: 14px;
     margin-top: 5px;
-    padding-left: 0; /* Remove padding */
-    margin-left: 0; /* Add left margin to align with title */
+    padding-left: 0;
+    margin-left: 0;
 }
 
 .project-tags {
@@ -80,7 +80,7 @@
 }
 
 .project-item.active .project-details {
-    max-height: 1000px; /* Adjust this value based on your content */
+    max-height: 1000px;
     opacity: 1;
     padding: 15px;
     margin-top: 15px;

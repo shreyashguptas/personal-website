@@ -7,7 +7,7 @@
 .readings-content h1 {
     font-size: 24px;
     margin-bottom: 30px;
-    padding-left: 4px;
+    padding-left: 0;
 }
 
 .readings-list {
