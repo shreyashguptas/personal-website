@@ -4,7 +4,7 @@
 # Allow all bots but with crawl-delay
 User-agent: *
 Allow: /
-Crawl-delay: 10
+Crawl-delay: 50
 
 # Block access to certain resource files to reduce server load
 Disallow: /*.json$
