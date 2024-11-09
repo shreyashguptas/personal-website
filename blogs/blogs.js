@@ -1,5 +1,10 @@
 const blogs = [
     {
+        title: "Too Many Project Ideas, Too Little Time?",
+        url: "https://shreyashgupta.substack.com/p/too-many-project-ideas-too-little",
+        date: "Nov 9, 2024"
+    },
+    {
         title: "The Hidden Value of Coding",
         url: "https://shreyashgupta.substack.com/p/the-hidden-value-of-coding",
         date: "Sep 13, 2024"
