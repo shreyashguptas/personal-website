@@ -1,12 +1,29 @@
-export default function Blogs() {
-    return (
-      <div className="container mx-auto px-4 max-w-3xl">
-        <section className="mt-16">
-          <h1 className="text-2xl font-medium mb-6">Blogs</h1>
-          <p className="text-lg leading-relaxed text-gray-800">
-            Your blogs content will go here
-          </p>
-        </section>
-      </div>
-    )
+import { BlogList } from './components/blog-list'
+import { BlogPost } from './types'
+
+const posts: BlogPost[] = [
+  {
+    title: "Too Many Project Ideas, Too Little Time?",
+    date: "Nov 9, 2024",
+    url: "/blog/project-ideas"
+  },
+  {
+    title: "The Hidden Value of Coding",
+    date: "Sep 13, 2024",
+    url: "/blog/hidden-value-coding"
+  },
+  {
+    title: "Talk to AI about your questions",
+    date: "Aug 30, 2024",
+    url: "/blog/ai-questions"
   }
+]
+
+export default function BlogPage() {
+  return (
+    <div className="space-y-8">
+      <h1>Blogs</h1>
+      <BlogList posts={posts} />
+    </div>
+  )
+}
