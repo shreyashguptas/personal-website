@@ -7,4 +7,3 @@ export function getTopItems<T>(items: T[], count: number): T[] {
     return [...items].sort((a, b) => b.date.getTime() - a.date.getTime())
   }
   
-  

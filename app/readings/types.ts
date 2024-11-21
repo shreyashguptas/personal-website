@@ -6,4 +6,3 @@ export interface Reading {
     date: Date // Add this line
 }
   
-  
