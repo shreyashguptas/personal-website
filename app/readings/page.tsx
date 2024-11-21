@@ -1,20 +1,5 @@
-import { ReadingList } from './components/readings-list'
-import { Reading } from './types'
-
-const readings: Reading[] = [
-  {
-    title: "Truths",
-    author: "Vivek Ramaswamy",
-    tags: ["Politics", "Economics", "Social Issues"],
-    url: "https://www.amazon.com/dp/B0BT8ZSXZ7"
-  },
-  {
-    title: "100M$ Leads",
-    author: "Alex Hormozi",
-    tags: ["Business", "Lead Generation", "Sales"],
-    url: "https://www.amazon.com/dp/B0BN6H9QG9"
-  }
-]
+import { ReadingList } from './components/reading-list'
+import { readings } from './data'
 
 export default function ReadingsPage() {
   return (
@@ -24,3 +9,4 @@ export default function ReadingsPage() {
     </div>
   )
 }
+

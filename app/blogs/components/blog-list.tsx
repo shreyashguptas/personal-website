@@ -23,7 +23,7 @@ export function BlogList({ posts }: BlogListProps) {
               </h2>
             </Link>
             <p className="text-muted-foreground shrink-0">
-              {post.date}
+              {post.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
             </p>
           </div>
         </div>

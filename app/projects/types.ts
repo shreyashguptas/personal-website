@@ -3,4 +3,7 @@ export interface Project {
     year: string
     githubUrl: string
     tags: string[]
+    date: Date // Add this line
 }
+  
+  

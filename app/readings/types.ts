@@ -3,4 +3,7 @@ export interface Reading {
     author: string
     tags: string[]
     url?: string
-}  
+    date: Date // Add this line
+}
+  
+  

@@ -43,3 +43,4 @@ export function ProjectList({ projects }: ProjectListProps) {
     </div>
   )
 }
+
