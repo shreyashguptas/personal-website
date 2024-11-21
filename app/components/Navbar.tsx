@@ -9,27 +9,27 @@ export default function Navbar() {
         </div>
         <ul className="flex items-center space-x-8">
           <li>
-            <Link href="/" className="hover:text-gray-600 transition-colors">
+            <Link href="/" className="nav-link">
               Home
             </Link>
           </li>
           <li>
-            <Link href="/projects" className="hover:text-gray-600 transition-colors">
+            <Link href="/projects" className="nav-link">
               Projects
             </Link>
           </li>
           <li>
-            <Link href="/readings" className="hover:text-gray-600 transition-colors">
+            <Link href="/readings" className="nav-link">
               Readings
             </Link>
           </li>
           <li>
-            <Link href="/blogs" className="hover:text-gray-600 transition-colors">
+            <Link href="/blogs" className="nav-link">
               Blogs
             </Link>
           </li>
           <li>
-            <Link href="/about" className="hover:text-gray-600 transition-colors">
+            <Link href="/about" className="nav-link">
               About
             </Link>
           </li>
