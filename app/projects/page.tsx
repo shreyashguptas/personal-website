@@ -1,12 +1,26 @@
-export default function Projects() {
-    return (
-      <div className="container mx-auto px-4 max-w-3xl">
-        <section className="mt-16">
-          <h1 className="text-2xl font-medium mb-6">Projects</h1>
-          <p className="text-lg leading-relaxed text-gray-800">
-            Your projects content will go here
-          </p>
-        </section>
-      </div>
-    )
+import { ProjectList } from './components/project-list'
+import { Project } from './types'
+
+const projects: Project[] = [
+  {
+    title: "Raspberry Pi Camera Web Stream",
+    year: "2024",
+    githubUrl: "https://github.com/yourusername/raspberry-pi-camera",
+    tags: ["Raspberry Pi", "Python", "Web Stream"]
+  },
+  {
+    title: "Machine Learning Explained With Analogies",
+    year: "2024",
+    githubUrl: "https://github.com/yourusername/ml-analogies",
+    tags: ["PyTorch", "Machine Learning", "Python"]
   }
+]
+
+export default function ProjectsPage() {
+  return (
+    <div className="space-y-8">
+      <h1>Projects</h1>
+      <ProjectList projects={projects} />
+    </div>
+  )
+}
