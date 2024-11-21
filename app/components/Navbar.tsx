@@ -1,40 +1,18 @@
 import Link from 'next/link'
 
-export default function Navbar() {
+export function Navbar() {
   return (
-    <nav className="p-4">
-      <div className="container mx-auto flex justify-between items-center max-w-6xl">
-        <div className="text-xl font-bold">
-          <Link href="/">SHREYASH GUPTA</Link>
-        </div>
-        <ul className="flex items-center space-x-8">
-          <li>
-            <Link href="/" className="nav-link">
-              Home
-            </Link>
-          </li>
-          <li>
-            <Link href="/projects" className="nav-link">
-              Projects
-            </Link>
-          </li>
-          <li>
-            <Link href="/readings" className="nav-link">
-              Readings
-            </Link>
-          </li>
-          <li>
-            <Link href="/blogs" className="nav-link">
-              Blogs
-            </Link>
-          </li>
-          <li>
-            <Link href="/about" className="nav-link">
-              About
-            </Link>
-          </li>
-        </ul>
-      </div>
-    </nav>
+    <header className="flex justify-between items-center mb-12">
+      <Link href="/" className="text-xl font-bold">
+        SHREYASH GUPTA
+      </Link>
+      <nav className="space-x-6">
+        <Link href="/" className="hover:text-gray-600 transition-colors">Home</Link>
+        <Link href="/projects" className="hover:text-gray-600 transition-colors">Projects</Link>
+        <Link href="/readings" className="hover:text-gray-600 transition-colors">Readings</Link>
+        <Link href="/blogs" className="hover:text-gray-600 transition-colors">Blogs</Link>
+        <Link href="/about" className="hover:text-gray-600 transition-colors">About</Link>
+      </nav>
+    </header>
   )
 }

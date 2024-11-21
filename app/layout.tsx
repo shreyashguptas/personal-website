@@ -1,13 +1,13 @@
-import Navbar from './components/Navbar'
-import Footer from './components/Footer'
-import { Inter } from 'next/font/google'
 import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
+import { Navbar } from './components/navbar'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Shreyash Gupta\'s Personal Website',
-  description: 'A website about Shreyash Gupta aka ME!',
+  title: 'Shreyash Gupta',
+  description: 'Personal website of Shreyash Gupta - Analytics Leader and Technology Enthusiast',
 }
 
 export default function RootLayout({
@@ -18,12 +18,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="min-h-screen flex flex-col">
+        <div className="max-w-4xl mx-auto px-4 py-8">
           <Navbar />
-          <main className="flex-grow responsive">
+          <main>
             {children}
           </main>
-          <Footer />
         </div>
       </body>
     </html>
