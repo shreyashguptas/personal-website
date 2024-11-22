@@ -16,19 +16,24 @@ export default function Home() {
   return (
     <div className="space-y-16">
       <section className="space-y-6">
-        <h2>Introduction</h2>
-        <p className="text-lg text-muted-foreground">
-          As Associate Director at the University of Arkansas, I lead analytics for student-serving organizations. 
-          I&apos;m constantly critiquing my knowledge of technical skills, economics, and business then consistently 
-          learning and applying. I then find time to lift weights, run, bike and eat a lot of homemade sourdough pizza.
-        </p>
-        <div className="relative h-[400px] w-full overflow-hidden rounded-lg">
-          <Image
-            src="/images/headshot.jpg"
-            alt="Shreyash Gupta Headshot"
-            fill
-            className="object-cover"
-          />
+        <div className="flex flex-col md:flex-row gap-8 items-start">
+          <div className="flex-1 space-y-6">
+            <h2>Introduction</h2>
+            <p className="text-lg text-muted-foreground">
+              As Associate Director at the University of Arkansas, I lead analytics for student-serving organizations. 
+              I&apos;m constantly critiquing my knowledge of technical skills, economics, and business then consistently 
+              learning and applying. I then find time to lift weights, run, bike and eat a lot of homemade sourdough pizza.
+            </p>
+          </div>
+          
+          <div className="w-full md:w-[400px] h-[400px] relative overflow-hidden rounded-lg">
+            <Image
+              src="/images/headshot.jpg"
+              alt="Shreyash Gupta Headshot"
+              fill
+              className="object-cover"
+            />
+          </div>
         </div>
       </section>
 
