@@ -3,10 +3,10 @@ import Link from 'next/link'
 export function Footer() {
   return (
     <footer className="mt-16 pt-8 pb-16">
-      <div className="flex flex-col md:flex-row justify-between items-center md:items-start gap-8">
-        <div className="flex flex-col items-center md:items-start gap-4 text-muted-foreground">
+      <div className="flex flex-col md:flex-row justify-between items-start gap-8">
+        <div className="flex flex-col items-start gap-4 text-muted-foreground">
           <p>© 2024 Shreyash Gupta</p>
-          <div className="flex gap-6 md:gap-4">
+          <div className="flex gap-4">
             <Link 
               href="https://github.com/shreyashguptas" 
               className="hover:text-foreground transition-colors"
@@ -32,12 +32,12 @@ export function Footer() {
               X
             </Link>
           </div>
-          <p className="text-sm text-center md:text-left">
+          <p className="text-sm">
             Last updated on November 14, 2024
           </p>
         </div>
 
-        <div className="w-full md:w-auto flex justify-center">
+        <div className="w-full md:w-auto">
           <iframe 
             src="https://shreyashgupta.substack.com/embed" 
             width="100%" 
