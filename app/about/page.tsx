@@ -4,9 +4,8 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Leaf, Coffee, Book, MountainIcon as Mountains, Laptop, Shovel, Ribbon } from 'lucide-react'
+import { MountainIcon as Mountains, Ribbon } from 'lucide-react'
 import Image from 'next/image'
-import { Racing_Sans_One } from 'next/font/google'
 
 export default function AboutMe() {
   const [activeSection, setActiveSection] = useState(0)
@@ -16,7 +15,7 @@ export default function AboutMe() {
     {
       title: "Exploring Volcanoes",
       icon: <Mountains className="w-6 h-6" />,
-      content: "It's 3am in Guatemala watching volcano Fuego by hiking to a volcano on the opposite side.",
+      content: "It&apos;s 3am in Guatemala watching volcano Fuego by hiking to a volcano on the opposite side.",
       image: "/images/volcano.jpg"
     },
     {
