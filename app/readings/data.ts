@@ -12,14 +12,14 @@ export const readings: Reading[] = [
     title: "Basic Economics, Fifth Edition",
     author: "Thomas Sowell",
     tags: ["Economics", "Finance", "Social Science"],
-    url: "https://www.audible.com/pd/Basic-Economics-Fifth-Edition-Audiobook/B00PKSGTPW",
+    url: "https://www.audible.com/pd/Basic-Economics-Fifth-Edition-Audiobook/B0CQ4CZZ8R?source_code=ASSGB149080119000H&share_location=pdp",
     date: new Date('2024-03-11')
   },
   {
     title: "100M$ Leads",
     author: "Alex Hormozi", 
     tags: ["Business", "Lead Generation", "Sales"],
-    url: "https://www.amazon.com/100M-Leads-Alex-Hormozi/dp/B0BX7CJVCS",
+    url: "https://www.audible.com/pd/Summary-Workbook-100M-Leads-Audiobook/B0DJHBD6VZ?source_code=ASSGB149080119000H&share_location=pdp",
     date: new Date('2024-03-12')
   },
   {
