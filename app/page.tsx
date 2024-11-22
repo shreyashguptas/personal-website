@@ -20,9 +20,11 @@ export default function Home() {
           <div className="flex-1 space-y-6">
             <h1>Introduction</h1>
             <p className="text-lg text-muted-foreground">
-              As Associate Director at the University of Arkansas, I lead analytics for student-serving organizations. 
-              I&apos;m constantly critiquing my knowledge of technical skills, economics, and business then consistently 
-              learning and applying. I then find time to lift weights, run, bike and eat a lot of homemade sourdough pizza.
+              I am driven by my curiosity in technology, business, economics, history and politics to understand how they shape the world we live in.
+              Things outside of them bore me.
+              <br />
+              <br />
+              My mission centers on creating beautiful software, working with cutting-edge hardware by maintaining a strong mind and body.
             </p>
           </div>
           
