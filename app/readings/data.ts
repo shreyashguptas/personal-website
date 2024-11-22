@@ -13,7 +13,8 @@ export const readings: Reading[] = [
     author: "Thomas Sowell",
     tags: ["Economics", "Finance", "Social Science"],
     url: "https://www.audible.com/pd/Basic-Economics-Fifth-Edition-Audiobook/B0CQ4CZZ8R?source_code=ASSGB149080119000H&share_location=pdp",
-    date: new Date('2024-03-11')
+    date: new Date('2024-03-11'),
+    recommendation: 1
   },
   {
     title: "100M$ Leads",
@@ -83,14 +84,16 @@ export const readings: Reading[] = [
     author: "David Goggins",
     tags: ["Motivation", "Self-Improvement", "Resilience"],
     url: "https://www.audible.com/pd/Cant-Hurt-Me-Audiobook/B07KKMNZCH",
-    date: new Date('2024-02-01')
+    date: new Date('2024-02-01'),
+    recommendation: 3
   },
   {
     title: "Elon Musk",
     author: "Walter Isaacson",
     tags: ["Biography", "Technology", "Entrepreneurship"],
     url: "https://www.audible.com/pd/Elon-Musk-Audiobook/B0BX4SCV1V",
-    date: new Date('2024-01-25')
+    date: new Date('2024-01-25'),
+    recommendation: 2
   },
   {
     title: "Endure",
