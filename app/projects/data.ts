@@ -9,9 +9,9 @@ export const projects: Project[] = [
     date: new Date('2024-11-10')
   },
   {
-    title: "Machine Learning Explained With Analogies",
+    title: "Machine Learning for Dummies",
     year: "2024",
-    githubUrl: "https://github.com/shreyashguptas/Machine-Learning-Explained-With-Analogies",
+    githubUrl: "https://github.com/shreyashguptas/Machine-Learning-for-Dummies",
     tags: ["PyTorch", "Machine Learning", "Python"],
     date: new Date('2024-02-20')
   },
