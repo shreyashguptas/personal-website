@@ -5,36 +5,140 @@ export const readings: Reading[] = [
     title: "Truths",
     author: "Vivek Ramaswamy",
     tags: ["Politics", "Economics", "Social Issues"],
-    url: "https://www.amazon.com/dp/B0BT8ZSXZ7",
-    date: new Date('2024-03-01')
+    url: "https://www.amazon.com/Truths-Future-America-Vivek-Ramaswamy/dp/1668078430",
+    date: new Date('2024-03-15')
   },
   {
     title: "100M$ Leads",
-    author: "Alex Hormozi",
+    author: "Alex Hormozi", 
     tags: ["Business", "Lead Generation", "Sales"],
-    url: "https://www.amazon.com/dp/B0BN6H9QG9",
-    date: new Date('2024-02-15')
+    url: "https://www.amazon.com/100M-Leads-Alex-Hormozi/dp/B0BX7CJVCS",
+    date: new Date('2024-03-12')
   },
   {
     title: "Basic Economics, Fifth Edition",
     author: "Thomas Sowell",
     tags: ["Economics", "Finance", "Social Science"],
-    url: "https://www.amazon.com/dp/0465060730",
+    url: "https://www.audible.com/pd/Basic-Economics-Fifth-Edition-Audiobook/B00PKSGTPW",
+    date: new Date('2024-03-11')
+  },
+  {
+    title: "What's Our Problem?",
+    author: "Tim Urban",
+    tags: ["Society", "Culture", "Psychology"],
+    url: "https://www.audible.com/pd/Whats-Our-Problem-Audiobook/B0BVGH5VD4",
+    date: new Date('2024-03-10')
+  },
+  {
+    title: "The Daily Stoic",
+    author: "Ryan Holiday",
+    tags: ["Philosophy", "Self-Help", "Mindfulness"],
+    url: "https://www.audible.com/pd/The-Daily-Stoic-Audiobook/B01M4IDLAG",
+    date: new Date('2024-03-05')
+  },
+  {
+    title: "Career and Family",
+    author: "Claudia Goldin",
+    tags: ["Sociology", "Gender Studies", "Work-Life Balance"],
+    url: "https://www.audible.com/pd/Career-and-Family-Audiobook/0691234809",
+    date: new Date('2024-03-01')
+  },
+  {
+    title: "The Motive",
+    author: "Patrick M. Lencioni",
+    tags: ["Leadership", "Management", "Business"],
+    url: "https://www.audible.com/pd/The-Motive-Audiobook/198007108X",
+    date: new Date('2024-02-25')
+  },
+  {
+    title: "100M$ Offers",
+    author: "Alex Hormozi",
+    tags: ["Business", "Marketing", "Entrepreneurship"],
+    url: "https://www.audible.com/pd/100M-Offers-Audiobook/B09BK57L5W",
+    date: new Date('2024-02-20')
+  },
+  {
+    title: "Caffeine",
+    author: "Michael Pollan",
+    tags: ["Cultural History", "Addiction and Dependency", "Science"],
+    url: "https://www.audible.com/pd/Caffeine-Audiobook/B083MVZ91Y",
+    date: new Date('2024-02-15')
+  },
+  {
+    title: "The Lean Startup",
+    author: "Eric Ries",
+    tags: ["Entrepreneurship", "Business", "Innovation"],
+    url: "https://www.audible.com/pd/The-Lean-Startup-Audiobook/B005LXV0HI",
+    date: new Date('2024-02-10')
+  },
+  {
+    title: "Your Next Five Moves",
+    author: "Patrick Bet-David",
+    tags: ["Business Strategy", "Personal Development", "Leadership"],
+    url: "https://www.audible.com/pd/Your-Next-Five-Moves-Audiobook/179711333X",
+    date: new Date('2024-02-05')
+  },
+  {
+    title: "Can't Hurt Me",
+    author: "David Goggins",
+    tags: ["Motivation", "Self-Improvement", "Resilience"],
+    url: "https://www.audible.com/pd/Cant-Hurt-Me-Audiobook/B07KKMNZCH",
+    date: new Date('2024-02-01')
+  },
+  {
+    title: "Elon Musk",
+    author: "Walter Isaacson",
+    tags: ["Biography", "Technology", "Entrepreneurship"],
+    url: "https://www.audible.com/pd/Elon-Musk-Audiobook/B0BX4SCV1V",
+    date: new Date('2024-01-25')
+  },
+  {
+    title: "Endure",
+    author: "Cameron Hanes",
+    tags: ["Fitness", "Mental Toughness", "Outdoor Sports"],
+    url: "https://www.audible.com/pd/Endure-Audiobook/1250852013",
     date: new Date('2024-01-20')
   },
   {
-    title: "The Psychology of Money",
-    author: "Morgan Housel",
-    tags: ["Finance", "Psychology", "Personal Development"],
-    url: "https://www.amazon.com/dp/0857197681",
-    date: new Date('2023-12-10')
+    title: "Extreme Ownership",
+    author: "Jocko Willink and Leif Babin",
+    tags: ["Leadership", "Military", "Business"],
+    url: "https://www.audible.com/pd/Extreme-Ownership-Audiobook/B015TVHUA2",
+    date: new Date('2024-01-15')
   },
   {
-    title: "Deep Work",
-    author: "Cal Newport",
-    tags: ["Productivity", "Self-Help", "Career"],
-    url: "https://www.amazon.com/dp/1455586692",
-    date: new Date('2023-11-05')
+    title: "Never Finished",
+    author: "David Goggins",
+    tags: ["Self-Discipline", "Personal Growth", "Motivation"],
+    url: "https://www.audible.com/pd/Never-Finished-Audiobook/B0BJ34FWZ3",
+    date: new Date('2024-01-10')
+  },
+  {
+    title: "The Five Dysfunctions of a Team",
+    author: "Patrick Lencioni",
+    tags: ["Team Building", "Leadership", "Management"],
+    url: "https://www.audible.com/pd/The-Five-Dysfunctions-of-a-Team-Audiobook/B002V08E64",
+    date: new Date('2024-01-05')
+  },
+  {
+    title: "Atomic Habits",
+    author: "James Clear",
+    tags: ["Habit Formation", "Self-Improvement", "Productivity"],
+    url: "https://www.audible.com/pd/Atomic-Habits-Audiobook/1524779261",
+    date: new Date('2024-01-01')
+  },
+  {
+    title: "The Ideal Team Player",
+    author: "Patrick Lencioni",
+    tags: ["Teamwork", "Leadership", "Hiring"],
+    url: "https://www.audible.com/pd/The-Ideal-Team-Player-Audiobook/B01EGCAWQO",
+    date: new Date('2024-01-01')
+  },
+  {
+    title: "Powerful",
+    author: "Patty McCord",
+    tags: ["Corporate Culture", "Human Resources", "Management"],
+    url: "https://www.audible.com/pd/Powerful-Building-a-Culture-of-Freedom-and-Responsibility-Audiobook/B078F6154Q",
+    date: new Date('2024-01-01')
   }
 ]
-
