@@ -11,7 +11,7 @@ export function BlogList({ posts }: BlogListProps) {
       {posts.map((post) => (
         <div
           key={post.title}
-          className="border-b pb-8"
+          className="border-b pb-8 last:border-b-0"
         >
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">

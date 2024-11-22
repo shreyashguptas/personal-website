@@ -29,7 +29,7 @@ export function ProjectList({ projects, showTags = true }: ProjectListProps) {
       {projects.map((project) => (
         <div
           key={project.title}
-          className="border-b pb-8"
+          className="border-b pb-8 last:border-b-0"
         >
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1 min-w-0">

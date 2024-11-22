@@ -40,7 +40,7 @@ export default function Home() {
       <div className="grid md:grid-cols-3 gap-12">
         <section>
           <h2 className="mb-2">Projects</h2>
-          <div className="h-[2px] bg-border/80 mb-6"></div>
+          <div className="bg-border mb-6"></div>
           <ProjectList projects={topProjects} showTags={false} />
           <Link href="/projects" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             View all projects →
@@ -49,7 +49,7 @@ export default function Home() {
 
         <section>
           <h2 className="mb-2">Readings</h2>
-          <div className="h-[2px] bg-border/80 mb-6"></div>
+          <div className="bg-border mb-6"></div>
           <ReadingList readings={topReadings} showTags={false} />
           <Link href="/readings" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             View all readings →
@@ -58,7 +58,7 @@ export default function Home() {
 
         <section>
           <h2 className="mb-2">Blogs</h2>
-          <div className="h-[2px] bg-border/80 mb-6"></div>
+          <div className="bg-border mb-6"></div>
           <BlogList posts={topPosts} />
           <Link href="/blogs" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             View all blogs →
