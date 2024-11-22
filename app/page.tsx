@@ -40,7 +40,7 @@ export default function Home() {
       <div className="grid md:grid-cols-3 gap-12">
         <section>
           <h2 className="mb-6">Projects</h2>
-          <ProjectList projects={topProjects} />
+          <ProjectList projects={topProjects} showTags={false} />
           <Link href="/projects" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             View all projects →
           </Link>
@@ -48,7 +48,7 @@ export default function Home() {
 
         <section>
           <h2 className="mb-6">Readings</h2>
-          <ReadingList readings={topReadings} />
+          <ReadingList readings={topReadings} showTags={false} />
           <Link href="/readings" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             View all readings →
           </Link>

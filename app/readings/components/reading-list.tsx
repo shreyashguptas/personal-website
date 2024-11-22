@@ -3,9 +3,10 @@ import Link from 'next/link'
 
 interface ReadingListProps {
   readings: Reading[]
+  showTags?: boolean
 }
 
-export function ReadingList({ readings }: ReadingListProps) {
+export function ReadingList({ readings, showTags = true }: ReadingListProps) {
   return (
     <div className="space-y-8">
       {readings.map((reading) => (
@@ -34,14 +35,16 @@ export function ReadingList({ readings }: ReadingListProps) {
               <p className="text-muted-foreground">{reading.author}</p>
             </div>
             <div className="flex flex-wrap gap-2 items-start">
-              {reading.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-2 py-1 bg-muted text-muted-foreground rounded text-sm"
-                >
-                  {tag}
-                </span>
-              ))}
+              {showTags && (
+                reading.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="px-2 py-1 bg-muted text-muted-foreground rounded text-sm"
+                  >
+                    {tag}
+                  </span>
+                ))
+              )}
             </div>
           </div>
         </div>

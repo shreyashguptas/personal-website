@@ -3,9 +3,10 @@ import Link from 'next/link'
 
 interface ProjectListProps {
   projects: Project[]
+  showTags?: boolean
 }
 
-export function ProjectList({ projects }: ProjectListProps) {
+export function ProjectList({ projects, showTags = true }: ProjectListProps) {
   return (
     <div className="space-y-8">
       {projects.map((project) => (
@@ -27,16 +28,18 @@ export function ProjectList({ projects }: ProjectListProps) {
               </Link>
               <p className="text-muted-foreground">{project.year}</p>
             </div>
-            <div className="flex flex-wrap gap-2 items-start">
-              {project.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-2 py-1 bg-muted text-muted-foreground rounded text-sm"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
+            {showTags && (
+              <div className="flex flex-wrap gap-2 items-start">
+                {project.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="px-2 py-1 bg-muted text-muted-foreground rounded text-sm"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       ))}
