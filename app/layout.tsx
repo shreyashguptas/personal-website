@@ -11,7 +11,9 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Shreyash Gupta',
-  description: 'Personal website of Shreyash Gupta - Analytics Leader and Technology Enthusiast',
+  description: 'Personal website of Shreyash Gupta',
+  icons: {
+    icon: '/favicon.ico',  },
 }
 
 export default function RootLayout({
@@ -29,9 +31,9 @@ export default function RootLayout({
           </main>
           <Footer />
         </div>
+        <Analytics />
+        <SpeedInsights />
       </body>
-      <Analytics />
-      <SpeedInsights />
     </html>
   )
 }
