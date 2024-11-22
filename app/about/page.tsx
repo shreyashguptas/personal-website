@@ -44,7 +44,7 @@ export default function AboutMe() {
 
   return (
     <div className="min-h-screen text-stone-800 p-8">
-      <h1 className="text-4xl font-bold mb-8 text-center text-stone-700">You're curious so here you go</h1>
+      <h1 className="text-4xl font-bold mb-8 text-center text-stone-700">You&apos;re curious so here you go</h1>
       <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
         <Card className="md:col-span-2 bg-stone-200 p-6 shadow-md relative">
           <AnimatePresence mode="wait">
