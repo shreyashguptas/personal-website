@@ -30,11 +30,11 @@ export default function AboutMe() {
     const interval = setInterval(() => {
       setActiveSection((prevSection) => (prevSection + 1) % sections.length)
       setProgress(0)
-    }, 3000)
+    }, 7000)
 
     const progressInterval = setInterval(() => {
       setProgress((prevProgress) => Math.min(prevProgress + 1, 100))
-    }, 30)
+    }, 70)
 
     return () => {
       clearInterval(interval)
