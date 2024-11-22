@@ -57,8 +57,8 @@ export default function Home() {
         <section>
           <h2 className="mb-6">Blogs</h2>
           <BlogList posts={topPosts} />
-          <Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            View all blog posts →
+          <Link href="/blogs" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            View all blogs →
           </Link>
         </section>
       </div>
