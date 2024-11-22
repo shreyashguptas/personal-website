@@ -18,7 +18,7 @@ export default function Home() {
       <section className="space-y-6">
         <div className="flex flex-col md:flex-row gap-8 items-start">
           <div className="flex-1 space-y-6">
-            <h2>Introduction</h2>
+            <h1>Introduction</h1>
             <p className="text-lg text-muted-foreground">
               As Associate Director at the University of Arkansas, I lead analytics for student-serving organizations. 
               I&apos;m constantly critiquing my knowledge of technical skills, economics, and business then consistently 
