@@ -9,18 +9,18 @@ export const readings: Reading[] = [
     date: new Date('2024-03-15')
   },
   {
-    title: "100M$ Leads",
-    author: "Alex Hormozi", 
-    tags: ["Business", "Lead Generation", "Sales"],
-    url: "https://www.amazon.com/100M-Leads-Alex-Hormozi/dp/B0BX7CJVCS",
-    date: new Date('2024-03-12')
-  },
-  {
     title: "Basic Economics, Fifth Edition",
     author: "Thomas Sowell",
     tags: ["Economics", "Finance", "Social Science"],
     url: "https://www.audible.com/pd/Basic-Economics-Fifth-Edition-Audiobook/B00PKSGTPW",
     date: new Date('2024-03-11')
+  },
+  {
+    title: "100M$ Leads",
+    author: "Alex Hormozi", 
+    tags: ["Business", "Lead Generation", "Sales"],
+    url: "https://www.amazon.com/100M-Leads-Alex-Hormozi/dp/B0BX7CJVCS",
+    date: new Date('2024-03-12')
   },
   {
     title: "What's Our Problem?",
