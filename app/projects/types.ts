@@ -1,9 +1,10 @@
 export interface Project {
     title: string
     year: string
-    githubUrl: string
+    githubUrl?: string
     tags: string[]
-    date: Date // Add this line
+    date: Date
+    details?: string
 }
   
   

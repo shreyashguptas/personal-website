@@ -4,7 +4,7 @@ export const projects: Project[] = [
   {
     title: "Raspberry Pi Camera Web Stream",
     year: "2024",
-    githubUrl: "https://github.com/shreyashguptas/raspberry-pi-camera",
+    githubUrl: "https://github.com/shreyashguptas/Raspberry-Pi-Camera-Web-Stream",
     tags: ["Raspberry Pi", "Python", "Web Stream"],
     date: new Date('2024-11-10')
   },
@@ -62,14 +62,16 @@ export const projects: Project[] = [
     year: "2022",
     githubUrl: "https://github.com/shreyashguptas/Organisation-wide-Google-Cloud-Security-Roles-Refactoring",
     tags: ["Google Cloud", "Terraform"],
-    date: new Date('2022-01-10')
+    date: new Date('2022-01-10'),
+    details: "This project involved auditing and optimizing security roles for employees accessing Google Cloud datasets at Tyson Foods. We found many users were overprivileged, necessitating a detailed analysis of individual needs. The process included reviewing thousands of permissions, writing extensive Terraform code, and interviewing users about their job requirements. We implemented appropriate access controls for hundreds of employees and conducted a hypercare period to quickly resolve any issues, ensuring minimal work disruption. The goal was to align user permissions with actual needs, enhancing security while maintaining operational efficiency."
   },
   {
     title: "Inventory PowerBI Dashboard for Supplychain",
     year: "2022",
     githubUrl: "https://github.com/shreyashguptas/Inventory-PowerBI-Dashboard-for-Supplychain",
     tags: ["PowerBI", "AtScale"],
-    date: new Date('2022-01-10')
+    date: new Date('2022-01-10'),
+    details: "This project involved creating a comprehensive PowerBI dashboard for inventory management for pallets that come into warehouses and distribution centers at Tyson Foods. The dashboard provides real-time insights into stock levels, the pallets weights and other critical decision making enabling better decision-making and optimized inventory control."
   }
 ]
 

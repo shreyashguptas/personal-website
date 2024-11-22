@@ -1,5 +1,8 @@
+"use client"
+
 import { Project } from '../types'
 import Link from 'next/link'
+import { useState } from 'react'
 
 interface ProjectListProps {
   projects: Project[]
@@ -7,6 +10,20 @@ interface ProjectListProps {
 }
 
 export function ProjectList({ projects, showTags = true }: ProjectListProps) {
+  const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set())
+
+  const toggleProject = (title: string) => {
+    setExpandedProjects(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(title)) {
+        newSet.delete(title)
+      } else {
+        newSet.add(title)
+      }
+      return newSet
+    })
+  }
+
   return (
     <div className="space-y-8">
       {projects.map((project) => (
@@ -16,16 +33,27 @@ export function ProjectList({ projects, showTags = true }: ProjectListProps) {
         >
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
-              <Link 
-                href={project.githubUrl}
-                className="block group"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <h2 className="text-xl font-normal group-hover:bg-muted px-2 -mx-2 rounded transition-colors">
-                  {project.title}
-                </h2>
-              </Link>
+              {project.details ? (
+                <button
+                  onClick={() => toggleProject(project.title)}
+                  className="block group w-full text-left"
+                >
+                  <h2 className="text-xl font-normal group-hover:bg-muted px-2 -mx-2 rounded transition-colors">
+                    {project.title}
+                  </h2>
+                </button>
+              ) : (
+                <Link 
+                  href={project.githubUrl!}
+                  className="block group"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <h2 className="text-xl font-normal group-hover:bg-muted px-2 -mx-2 rounded transition-colors">
+                    {project.title}
+                  </h2>
+                </Link>
+              )}
               <p className="text-muted-foreground">{project.year}</p>
             </div>
             {showTags && (
@@ -41,6 +69,11 @@ export function ProjectList({ projects, showTags = true }: ProjectListProps) {
               </div>
             )}
           </div>
+          {project.details && expandedProjects.has(project.title) && (
+            <div className="mt-4 text-muted-foreground">
+              <p>{project.details}</p>
+            </div>
+          )}
         </div>
       ))}
     </div>
