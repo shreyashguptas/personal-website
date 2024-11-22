@@ -22,7 +22,7 @@ export default function AboutPage() {
         <div className="w-full md:w-1/2 lg:w-2/5">
           <div className="relative aspect-[4/3] overflow-hidden rounded-xl shadow-lg">
             <Image
-              src="/about-image.jpg"
+              src="/images/me-in-costa-rica.png"
               alt="Shreyash presenting a poster to two people in a university setting"
               fill
               className="object-cover"
