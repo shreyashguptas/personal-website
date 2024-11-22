@@ -4,7 +4,7 @@ import { projects } from './data'
 export default function ProjectsPage() {
   return (
     <div className="space-y-8">
-      <h1>Projects</h1>
+      <h1 className="text-3xl font-bold">Projects</h1>
       <ProjectList projects={projects} />
     </div>
   )

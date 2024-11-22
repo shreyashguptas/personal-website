@@ -13,16 +13,16 @@ export default function AboutMe() {
 
   const sections = [
     {
-      title: "Exploring Volcanoes",
+      title: "Exploring Volcanoes", 
       icon: <Mountains className="w-6 h-6" />,
-      content: "It&apos;s 3am in Guatemala watching volcano Fuego by hiking to a volcano on the opposite side.",
-      image: "/images/volcano.jpg"
+      content: "It is 3AM in Guatemala and we hiked to watch the Volcano Fuego erupt.",
+      image: "/images/volcano.jpg",
     },
     {
       title: "Running Ultra Races",
       icon: <Ribbon className="w-6 h-6" />,
-      content: "Running four point one miles every hour for six hours. 25 miles. Great way to test your limits.",
-      image: "/images/cotter-ultra.jpg"
+      content: "Running 4.1 miles every hour for six hours. Totalling 25 miles. Great way to test your limits.", 
+      image: "/images/cotter-ultra.jpg",
     },
   ]
 
@@ -56,13 +56,14 @@ export default function AboutMe() {
               transition={{ duration: 0.5 }}
             >
               <h2 className="text-2xl font-semibold mb-4 text-stone-700">{sections[activeSection].title}</h2>
-              <div className="mb-4">
+              <div className="relative w-full aspect-[16/12] mb-4">
                 <Image
                   src={sections[activeSection].image}
                   alt={sections[activeSection].title}
-                  width={300}
-                  height={200}
-                  className="rounded-md mb-4"
+                  fill
+                  className="rounded-md object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  priority
                 />
               </div>
               <div className="flex items-center mb-4">
@@ -82,7 +83,6 @@ export default function AboutMe() {
         </Card>
         <Card className="bg-stone-200 p-6 shadow-md flex flex-col justify-between">
           <div>
-            {/* <h2 className="text-xl font-semibold mb-4 text-stone-700">Explore More</h2> */}
             <div className="space-y-2">
               {sections.map((section, index) => (
                 <Button
@@ -100,10 +100,8 @@ export default function AboutMe() {
               ))}
             </div>
           </div>
-          {/* <Button className="mt-4 bg-stone-700 text-stone-100 hover:bg-stone-600">Let's Connect</Button> */}
         </Card>
       </div>
     </div>
   )
 }
-
