@@ -24,8 +24,8 @@ export default function Home() {
         </p>
         <div className="relative h-[400px] w-full overflow-hidden rounded-lg">
           <Image
-            src="/bridge-photo.jpg"
-            alt="Person walking on a suspension bridge in a forest"
+            src="/images/headshot.jpg"
+            alt="Shreyash Gupta Headshot"
             fill
             className="object-cover"
           />
