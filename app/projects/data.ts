@@ -2,18 +2,18 @@ import { Project } from './types'
 
 export const projects: Project[] = [
   {
+    title: "Machine Learning for Dummies",
+    year: "2024",
+    githubUrl: "https://mlfordummy.com/",
+    tags: ["PyTorch", "Machine Learning", "Python"],
+    date: new Date('2024-11-23')
+  },
+  {
     title: "Raspberry Pi Camera Web Stream",
     year: "2024",
     githubUrl: "https://github.com/shreyashguptas/Raspberry-Pi-Camera-Web-Stream",
     tags: ["Raspberry Pi", "Python", "Web Stream"],
     date: new Date('2024-11-10')
-  },
-  {
-    title: "Machine Learning for Dummies",
-    year: "2024",
-    githubUrl: "https://github.com/shreyashguptas/Machine-Learning-for-Dummies",
-    tags: ["PyTorch", "Machine Learning", "Python"],
-    date: new Date('2024-02-20')
   },
   {
     title: "Credit Card Fraud Detection using Machine Learning",
