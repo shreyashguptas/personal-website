@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { MountainIcon as Mountains, Ribbon } from 'lucide-react'
+import { BookOpen, MountainIcon as Mountains, Ribbon } from 'lucide-react'
 import Image from 'next/image'
 
 export default function AboutMe() {
@@ -24,27 +24,43 @@ export default function AboutMe() {
       content: "Running 4.1 miles every hour for six hours. Totalling 25 miles. Great way to test your limits.", 
       image: "/images/cotter-ultra.jpg",
     },
+    {
+      title: "US Declaration of Independence",
+      icon: <BookOpen className="w-6 h-6" />,
+      content: "One of the most impactful moments of my life is seeing the US Declaration of Independence in Washington D.C.", 
+      image: "/images/US-declaration-of-independence.jpg",
+    },
   ]
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveSection((prevSection) => (prevSection + 1) % sections.length)
-      setProgress(0)
-    }, 7000)
+    let sectionInterval: NodeJS.Timeout
+    let progressInterval: NodeJS.Timeout
 
-    const progressInterval = setInterval(() => {
-      setProgress((prevProgress) => Math.min(prevProgress + 1, 100))
-    }, 70)
+    const startTimers = () => {
+      clearInterval(sectionInterval)
+      clearInterval(progressInterval)
+
+      sectionInterval = setInterval(() => {
+        setActiveSection((prevSection) => (prevSection + 1) % sections.length)
+        setProgress(0)
+      }, 7000)
+
+      progressInterval = setInterval(() => {
+        setProgress((prevProgress) => Math.min(prevProgress + 100/70, 100))
+      }, 70)
+    }
+
+    startTimers()
 
     return () => {
-      clearInterval(interval)
+      clearInterval(sectionInterval)
       clearInterval(progressInterval)
     }
-  }, [sections.length])
+  }, [sections.length, activeSection])
 
   return (
     <div className="min-h-screen text-stone-800 p-8">
-      <h1 className="text-4xl font-bold mb-8 text-center text-stone-700">You&apos;re curious so here you go</h1>
+      <h1 className="text-4xl font-bold mb-8 text-center text-stone-700">About me</h1>
       <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
         <Card className="md:col-span-2 bg-stone-200 p-6 shadow-md relative">
           <AnimatePresence mode="wait">
