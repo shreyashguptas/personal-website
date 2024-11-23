@@ -5,6 +5,7 @@ export interface Project {
     tags: string[]
     date: Date
     details?: string
+    pinned?: boolean
 }
   
   

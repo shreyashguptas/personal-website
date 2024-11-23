@@ -6,7 +6,8 @@ export const projects: Project[] = [
     year: "2024",
     githubUrl: "https://mlfordummy.com/",
     tags: ["PyTorch", "Machine Learning", "Python"],
-    date: new Date('2024-11-23')
+    date: new Date('2024-11-23'),
+    pinned: true
   },
   {
     title: "Raspberry Pi Camera Web Stream",
@@ -20,7 +21,8 @@ export const projects: Project[] = [
     year: "2024",
     githubUrl: "https://github.com/shreyashguptas/Credit-Card-Fraud-Detection-using-Machine-Learning",
     tags: ["PyTorch", "Machine Learning", "Python"],
-    date: new Date('2024-01-10')
+    date: new Date('2024-01-10'),
+    pinned: true
   },
   {
     title: "Options Pricing Models",
@@ -34,7 +36,8 @@ export const projects: Project[] = [
     year: "2024",
     githubUrl: "https://github.com/shreyashguptas/CAPTCHA-Recognition-using-CRNN",
     tags: ["Pytorch", "Machine Learning", "Python"],
-    date: new Date('2024-01-10')
+    date: new Date('2024-01-10'),
+    pinned: true
   },
   {
     title: "IMDb Movie Review Sentiment Analysis",
