@@ -12,8 +12,32 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'Shreyash Gupta',
   description: 'Personal website of Shreyash Gupta',
-  icons: {
-    icon: '/favicon.ico',  },
+  icons: [
+    {
+      rel: 'icon',
+      type: 'image/png',
+      sizes: '96x96',
+      url: '/favicon-96x96.png',
+    },
+    {
+      rel: 'icon', 
+      type: 'image/svg+xml',
+      url: '/favicon.svg',
+    },
+    {
+      rel: 'shortcut icon',
+      url: '/favicon.ico',
+    },
+    {
+      rel: 'apple-touch-icon',
+      sizes: '180x180',
+      url: '/apple-touch-icon.png',
+    },
+    {
+      rel: 'manifest',
+      url: '/site.webmanifest',
+    }
+  ]
 }
 
 export default function RootLayout({
@@ -37,4 +61,3 @@ export default function RootLayout({
     </html>
   )
 }
-
