@@ -11,7 +11,7 @@ export function Navbar() {
         <Link href="/projects" className="hover:text-gray-600 transition-colors">Projects</Link>
         <Link href="/readings" className="hover:text-gray-600 transition-colors">Readings</Link>
         <Link href="/blogs" className="hover:text-gray-600 transition-colors">Blogs</Link>
-        <Link href="/about" className="hover:text-gray-600 transition-colors">About</Link>
+        <Link href="/about" className="hover:text-gray-600 transition-colors">Personal Life</Link>
       </nav>
     </header>
   )

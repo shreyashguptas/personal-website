@@ -19,7 +19,7 @@ export default function Home() {
         <div className="flex flex-col md:flex-row gap-8 items-start">
           <div className="flex-1 space-y-6">
             <h1 className="text-3xl font-bold">Introduction</h1>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-lg text-foreground">
               I am driven by my curiosity in technology, business, economics, history and politics to understand how they shape the world we live in.
               Things outside of them bore me.
               <br />
