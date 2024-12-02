@@ -13,15 +13,14 @@ export default function ReadingsPage() {
       <h1 className="text-3xl font-bold">Readings</h1>
       
       <div className="space-y-4">
-        <h2 className="text-2xl font-semibold">Top Recommendations</h2>
+        <h2 className="text-2xl font-semibold">My book recommendations</h2>
         <ReadingList readings={recommendedReadings} isRecommendations={true} />
       </div>
 
       <div className="space-y-4">
-        <h2 className="text-2xl font-semibold">All Readings</h2>
+        <h2 className="text-2xl font-semibold">All the books I've read</h2>
         <ReadingList readings={otherReadings} />
       </div>
     </div>
   )
 }
-
