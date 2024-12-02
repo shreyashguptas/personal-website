@@ -5,7 +5,7 @@ export const readings: Reading[] = [
     title: "The Hitchhiker's Guide to the Galaxy",
     author: "Douglas Adams",
     tags: ["Science Fiction", "Humor", "Adventure"],
-    url: "https://www.audible.com/pd/The-Hitchhikers-Guide-to-the-Galaxy-Audiobook/B002V08E64",
+    url: "https://www.audible.com/pd/The-Hitchhikers-Guide-to-the-Galaxy-Audiobook/B002VA9SWS?source_code=ASSGB149080119000H&share_location=pdp",
     date: new Date('2024-03-15')
   },
   {
