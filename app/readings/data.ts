@@ -2,6 +2,13 @@ import { Reading } from './types'
 
 export const readings: Reading[] = [
   {
+    title: "The Hitchhiker's Guide to the Galaxy",
+    author: "Douglas Adams",
+    tags: ["Science Fiction", "Humor", "Adventure"],
+    url: "https://www.audible.com/pd/The-Hitchhikers-Guide-to-the-Galaxy-Audiobook/B002V08E64",
+    date: new Date('2024-03-15')
+  },
+  {
     title: "Truths",
     author: "Vivek Ramaswamy",
     tags: ["Politics", "Economics", "Social Issues"],
