@@ -9,7 +9,7 @@ import { BlogList } from './blogs/components/blog-list'
 import { ReadingList } from './readings/components/reading-list'
 
 export default function Home() {
-  const topProjects = projects.filter(project => project.pinned).slice(0, 3)
+  const topProjects = projects.filter(project => project.pinned || project.image).slice(0, 4)
   const topPosts = getTopItems(posts, 3)
   const topReadings = readings
     .filter(reading => reading.recommendation)

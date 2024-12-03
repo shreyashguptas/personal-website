@@ -31,7 +31,8 @@ export const projects: Project[] = [
     year: "2024",
     githubUrl: "https://github.com/shreyashguptas/option-pricing-models",
     tags: ["Python", "Finance", "Quantitative Analysis"],
-    date: new Date('2024-01-10')
+    date: new Date('2024-01-10'),
+    image: "/images/projects/Options Pricing Models.jpg"
   },
   {
     title: "CAPTCHA Recognition using Convolutional Recurrent Neural Network(CRNN)",
