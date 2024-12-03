@@ -7,7 +7,8 @@ export const projects: Project[] = [
     githubUrl: "https://mlfordummy.com/",
     tags: ["PyTorch", "Machine Learning", "Python"],
     date: new Date('2024-11-23'),
-    pinned: true
+    pinned: true,
+    image: "/images/projects/machine-learning-for-dummies.jpg"
   },
   {
     title: "Raspberry Pi Camera Web Stream",
@@ -22,7 +23,8 @@ export const projects: Project[] = [
     githubUrl: "https://github.com/shreyashguptas/Credit-Card-Fraud-Detection-using-Machine-Learning",
     tags: ["PyTorch", "Machine Learning", "Python"],
     date: new Date('2024-01-10'),
-    pinned: true
+    pinned: true,
+    image: "/images/projects/Credit Card Fraud Detection using Machine Learning.jpg"
   },
   {
     title: "Options Pricing Models",
@@ -37,7 +39,8 @@ export const projects: Project[] = [
     githubUrl: "https://github.com/shreyashguptas/CAPTCHA-Recognition-using-CRNN",
     tags: ["Pytorch", "Machine Learning", "Python"],
     date: new Date('2024-01-10'),
-    pinned: true
+    pinned: true,
+    image: "/images/projects/CAPTCHA Recognition using Convolutional Recurrent Neural Network(CRNN).jpg"
   },
   {
     title: "IMDb Movie Review Sentiment Analysis",

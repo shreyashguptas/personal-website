@@ -6,6 +6,7 @@ export interface Project {
     date: Date
     details?: string
     pinned?: boolean
+    image?: string
 }
   
   
