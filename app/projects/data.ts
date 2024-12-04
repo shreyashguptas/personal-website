@@ -2,6 +2,15 @@ import { Project } from './types'
 
 export const projects: Project[] = [
   {
+    title: "ConvertShift",
+    year: "2024",
+    githubUrl: "https://www.convertshift.com/",
+    tags: ["Next.js", "File Converter", "Web Application"],
+    date: new Date('2024-12-04'),
+    pinned: true,
+    image: "/images/projects/Convert-shift.jpg"
+  },
+  {
     title: "Machine Learning for Dummies",
     year: "2024",
     githubUrl: "https://mlfordummy.com/",
@@ -31,8 +40,7 @@ export const projects: Project[] = [
     year: "2024",
     githubUrl: "https://github.com/shreyashguptas/option-pricing-models",
     tags: ["Python", "Finance", "Quantitative Analysis"],
-    date: new Date('2024-01-10'),
-    image: "/images/projects/Options Pricing Models.jpg"
+    date: new Date('2024-01-10')
   },
   {
     title: "CAPTCHA Recognition using Convolutional Recurrent Neural Network(CRNN)",
