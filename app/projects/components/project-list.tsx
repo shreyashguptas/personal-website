@@ -28,70 +28,73 @@ export function ProjectList({ projects, showTags = true, showImages = false }: P
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {projects.map((project) => (
-        <div
-          key={project.title}
-          className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow"
-        >
-          {showImages && (
-            <div className="relative h-48 w-full">
-              <Image
-                src={project.image || '/images/project-placeholder.jpg'}
-                alt={project.title}
-                fill
-                className="object-cover"
-              />
-            </div>
-          )}
-          <div className="p-6">
-            <div className="space-y-4">
-              <div>
-                {project.details ? (
-                  <button
-                    onClick={() => toggleProject(project.title)}
-                    className="w-full text-left"
-                  >
-                    <h3 className="text-xl font-semibold hover:text-gray-600 transition-colors">
-                      {project.title}
-                    </h3>
-                  </button>
-                ) : (
-                  <Link 
-                    href={project.githubUrl!}
-                    className="block"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <h3 className="text-xl font-semibold hover:text-gray-600 transition-colors">
-                      {project.title}
-                    </h3>
-                  </Link>
-                )}
-                <p className="text-sm text-gray-500 mt-1">{project.year}</p>
-              </div>
-              
-              {showTags && (
-                <div className="flex flex-wrap gap-2">
-                  {project.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-sm"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+      {projects.map((project) => {
+        const ProjectWrapper = project.details 
+          ? ({ children }: { children: React.ReactNode }) => (
+              <button
+                onClick={() => toggleProject(project.title)}
+                className="w-full text-left"
+              >
+                {children}
+              </button>
+            )
+          : ({ children }: { children: React.ReactNode }) => (
+              <Link 
+                href={project.githubUrl!}
+                className="block"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {children}
+              </Link>
+            );
+
+        return (
+          <ProjectWrapper key={project.title}>
+            <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+              {showImages && (
+                <div className="relative h-48 w-full">
+                  <Image
+                    src={project.image || '/images/project-placeholder.jpg'}
+                    alt={project.title}
+                    fill
+                    className="object-cover"
+                  />
                 </div>
               )}
-              
-              {project.details && expandedProjects.has(project.title) && (
-                <p className="text-gray-600 text-sm">
-                  {project.details}
-                </p>
-              )}
+              <div className="p-6">
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-xl font-semibold hover:text-gray-600 transition-colors">
+                      {project.title}
+                    </h3>
+                    <p className="text-sm text-gray-500 mt-1">{project.year}</p>
+                  </div>
+
+                  {showTags && (
+                    <div className="flex flex-wrap gap-2">
+                      {project.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-sm"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {project.details && expandedProjects.has(project.title) && (
+                    <p className="text-gray-600 text-sm">
+                      {project.details}
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      ))}
+          </ProjectWrapper>
+        );
+      })}
     </div>
   )
 }
