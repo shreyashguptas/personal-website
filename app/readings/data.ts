@@ -2,6 +2,20 @@ import { Reading } from './types'
 
 export const readings: Reading[] = [
   {
+    title: "Buy then Build",
+    author: "Walker Deibel",
+    tags: ["Acquisition", "Entrepreneurship", "Business"],
+    url: "https://www.audible.com/pd/Buy-Then-Build-Audiobook/1515946290?source_code=ASSGB149080119000H&share_location=pdp",
+    date: new Date('2024-03-15')
+  },
+  {
+    title: "100M$ Leads",
+    author: "Alex Hormozi", 
+    tags: ["Business", "Lead Generation", "Sales"],
+    url: "https://www.audible.com/pd/Summary-Workbook-100M-Leads-Audiobook/B0DJHBD6VZ?source_code=ASSGB149080119000H&share_location=pdp",
+    date: new Date('2024-03-12')
+  },
+  {
     title: "The Hitchhiker's Guide to the Galaxy",
     author: "Douglas Adams",
     tags: ["Science Fiction", "Humor", "Adventure"],
@@ -22,13 +36,6 @@ export const readings: Reading[] = [
     url: "https://www.audible.com/pd/Basic-Economics-Fifth-Edition-Audiobook/B0CQ4CZZ8R?source_code=ASSGB149080119000H&share_location=pdp",
     date: new Date('2024-03-11'),
     recommendation: 1
-  },
-  {
-    title: "100M$ Leads",
-    author: "Alex Hormozi", 
-    tags: ["Business", "Lead Generation", "Sales"],
-    url: "https://www.audible.com/pd/Summary-Workbook-100M-Leads-Audiobook/B0DJHBD6VZ?source_code=ASSGB149080119000H&share_location=pdp",
-    date: new Date('2024-03-12')
   },
   {
     title: "What's Our Problem?",
@@ -91,7 +98,7 @@ export const readings: Reading[] = [
     author: "David Goggins",
     tags: ["Motivation", "Self-Improvement", "Resilience"],
     url: "https://www.audible.com/pd/Cant-Hurt-Me-Audiobook/B07KKMNZCH",
-    date: new Date('2024-02-01'),
+    date: new Date('2023-02-01'),
     recommendation: 3
   },
   {
@@ -114,7 +121,7 @@ export const readings: Reading[] = [
     author: "Jocko Willink and Leif Babin",
     tags: ["Leadership", "Military", "Business"],
     url: "https://www.audible.com/pd/Extreme-Ownership-Audiobook/B015TVHUA2",
-    date: new Date('2024-01-15')
+    date: new Date('2023-01-15')
   },
   {
     title: "Never Finished",
@@ -135,20 +142,20 @@ export const readings: Reading[] = [
     author: "James Clear",
     tags: ["Habit Formation", "Self-Improvement", "Productivity"],
     url: "https://www.audible.com/pd/Atomic-Habits-Audiobook/1524779261",
-    date: new Date('2024-01-01')
+    date: new Date('2022-01-01')
   },
   {
     title: "The Ideal Team Player",
     author: "Patrick Lencioni",
     tags: ["Teamwork", "Leadership", "Hiring"],
     url: "https://www.audible.com/pd/The-Ideal-Team-Player-Audiobook/B01EGCAWQO",
-    date: new Date('2024-01-01')
+    date: new Date('2022-01-01')
   },
   {
     title: "Powerful",
     author: "Patty McCord",
     tags: ["Corporate Culture", "Human Resources", "Management"],
     url: "https://www.audible.com/pd/Powerful-Building-a-Culture-of-Freedom-and-Responsibility-Audiobook/B078F6154Q",
-    date: new Date('2024-01-01')
+    date: new Date('2021-01-01')
   }
 ]
