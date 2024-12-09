@@ -1,43 +1,30 @@
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
+import { Inter } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Navbar } from './components/navbar'
 import { Footer } from './components/footer'
 
-import { Analytics } from "@vercel/analytics/react"
-import { SpeedInsights } from "@vercel/speed-insights/next"
-
 const inter = Inter({ subsets: ['latin'] })
 
-export const metadata: Metadata = {
+export const metadata = {
   title: 'Shreyash Gupta',
   description: 'Personal website of Shreyash Gupta',
-  icons: [
-    {
-      rel: 'icon',
-      type: 'image/png',
-      sizes: '96x96',
-      url: '/favicon-96x96.png',
-    },
-    {
-      rel: 'icon', 
-      type: 'image/svg+xml',
-      url: '/favicon.svg',
-    },
-    {
-      rel: 'shortcut icon',
-      url: '/favicon.ico',
-    },
-    {
-      rel: 'apple-touch-icon',
-      sizes: '180x180',
-      url: '/apple-touch-icon.png',
-    },
-    {
-      rel: 'manifest',
-      url: '/site.webmanifest',
-    }
-  ]
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: '32x32' },
+      { url: '/favicon96.png', sizes: '96x96' },
+    ],
+    apple: [
+      { url: '/apple.png' }
+    ],
+    other: [
+      {
+        rel: 'manifest',
+        url: '/site.webmanifest'
+      }
+    ]
+  }
 }
 
 export default function RootLayout({
