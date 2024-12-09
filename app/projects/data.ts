@@ -2,6 +2,13 @@ import { Project } from './types'
 
 export const projects: Project[] = [
   {
+    title: "Student Graduation Outcomes Dashboard",
+    year: "2024",
+    githubUrl: "https://career.uark.edu/aboutus/studentstats/",
+    tags: ["PowerBI", "Data Visualization", "PowerQuery"],
+    date: new Date('2024-12-04')
+  },
+  {
     title: "ConvertShift",
     year: "2024",
     githubUrl: "https://www.convertshift.com/",
