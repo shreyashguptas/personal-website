@@ -9,7 +9,7 @@ interface ReadingListProps {
 
 export function ReadingList({ readings, showTags = true, isRecommendations = false }: ReadingListProps) {
   return (
-    <div className={`space-y-8 ${isRecommendations ? 'border-y-2 py-6' : ''}`}>
+    <div className="space-y-8">
       {readings.map((reading) => (
         <div
           key={reading.title}
