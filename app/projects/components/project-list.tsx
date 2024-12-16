@@ -27,7 +27,7 @@ export function ProjectList({ projects, showTags = true, showImages = false }: P
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="flex flex-col space-y-6">
       {projects.map((project) => {
         const ProjectWrapper = project.details 
           ? ({ children }: { children: React.ReactNode }) => (
@@ -41,7 +41,7 @@ export function ProjectList({ projects, showTags = true, showImages = false }: P
           : ({ children }: { children: React.ReactNode }) => (
               <Link 
                 href={project.githubUrl!}
-                className="block h-full"
+                className="block w-full"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -51,50 +51,52 @@ export function ProjectList({ projects, showTags = true, showImages = false }: P
 
         return (
           <ProjectWrapper key={project.title}>
-            <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow h-full flex flex-col">
-              {showImages && project.image && (
-                <div className="relative h-48 w-full">
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              )}
-              <div className="p-6 flex-1 flex flex-col">
-                <div className="space-y-4 flex-1">
-                  <div>
-                    <h3 className="text-xl font-semibold hover:text-gray-600 transition-colors">
-                      {project.title}
-                    </h3>
-                    <p className="text-sm text-gray-500 mt-1">{project.year}</p>
+            <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+              <div className="flex">
+                {showImages && project.image && (
+                  <div className="relative w-72 h-48 flex-shrink-0">
+                    <Image
+                      src={project.image}
+                      alt={project.title}
+                      fill
+                      className="object-cover"
+                    />
                   </div>
-
-                  {showTags && project.tags && (
-                    <div className="flex flex-wrap gap-2">
-                      {project.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-sm"
-                        >
-                          {tag}
-                        </span>
-                      ))}
+                )}
+                <div className="flex-1 p-6">
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-xl font-semibold hover:text-gray-600 transition-colors">
+                        {project.title}
+                      </h3>
+                      <p className="text-sm text-gray-500">{project.year}</p>
                     </div>
-                  )}
-                  
-                  {!showTags && project.details && (
-                    <p className="text-gray-600 text-sm">
-                      {project.details}
-                    </p>
-                  )}
-                  
-                  {showTags && project.details && expandedProjects.has(project.title) && (
-                    <p className="text-gray-600 text-sm">
-                      {project.details}
-                    </p>
-                  )}
+
+                    {showTags && project.tags && (
+                      <div className="flex flex-wrap gap-2">
+                        {project.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-sm"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {!showTags && project.details && (
+                      <p className="text-gray-600 text-sm">
+                        {project.details}
+                      </p>
+                    )}
+                    
+                    {showTags && project.details && expandedProjects.has(project.title) && (
+                      <p className="text-gray-600 text-sm">
+                        {project.details}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
