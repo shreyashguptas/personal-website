@@ -1,16 +1,30 @@
 'use client'
 
 import { Reading } from '../types'
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  Label
-} from 'recharts'
+import dynamic from 'next/dynamic'
 import { FC } from 'react'
+import type { 
+  BarProps, 
+  XAxisProps, 
+  YAxisProps, 
+  TooltipProps,
+  LabelProps
+} from 'recharts'
+
+// Dynamically import Recharts components to avoid SSR issues
+const BarChart = dynamic(
+  () => import('recharts').then(mod => mod.BarChart),
+  { loading: () => <div className="w-full h-64 animate-pulse bg-gray-200 rounded-lg" /> }
+)
+const Bar = dynamic(() => import('recharts').then(mod => mod.Bar))
+const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis))
+const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis))
+const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip))
+const Label = dynamic(() => import('recharts').then(mod => mod.Label))
+const ResponsiveContainer = dynamic(
+  () => import('recharts').then(mod => mod.ResponsiveContainer),
+  { ssr: false }
+)
 
 interface DataPoint {
   year: string
