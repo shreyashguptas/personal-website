@@ -15,21 +15,9 @@ export function Section({ section, index }: SectionProps) {
   return (
     <section 
       ref={ref}
-      className={`min-h-[50vh] relative flex items-center justify-center ${index === 0 ? 'mt-0' : 'mt-8'}`}
+      className={`min-h-[40vh] relative flex items-center justify-center ${index === 0 ? 'mt-0' : 'mt-4'}`}
     >
       <div className="max-w-6xl mx-auto px-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-        <div className="space-y-4">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-stone-100 rounded-full">
-              <section.Icon className="w-7 h-7 text-stone-600" />
-            </div>
-            <h2 className="text-4xl font-bold text-stone-800">{section.title}</h2>
-          </div>
-          <p className="text-xl text-stone-600 leading-relaxed max-w-xl">
-            {section.content}
-          </p>
-        </div>
-        
         <div className="relative w-full aspect-[16/12]">
           <Image
             src={section.image}
@@ -39,6 +27,20 @@ export function Section({ section, index }: SectionProps) {
             sizes="(max-width: 768px) 100vw, 50vw"
             priority
           />
+        </div>
+        
+        <div className="flex flex-col">
+          <div className="flex items-start gap-4">
+            <div className="p-2.5 bg-stone-100 rounded-full shrink-0 mt-1">
+              <section.Icon className="w-6 h-6 text-stone-600" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-stone-800">{section.title}</h2>
+              <p className="text-base text-stone-600 leading-relaxed max-w-xl mt-2">
+                {section.content}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </section>

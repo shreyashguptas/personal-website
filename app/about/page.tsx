@@ -12,7 +12,7 @@ export default function AboutMe() {
   return (
     <div className="space-y-8 mb-12">
       <div>
-        <h1 className="text-3xl font-bold mb-2">Personal Life</h1>
+        <h1 className="text-2xl font-bold mb-4">Personal Life</h1>
       </div>
       
       <div className="space-y-8">
