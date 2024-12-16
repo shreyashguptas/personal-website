@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { MDXRemote } from 'next-mdx-remote/rsc'
+import type { MDXComponents } from 'mdx/types'
 import { getLocalBlogPost, getBlogPosts, LocalBlogPost } from '../../utils/mdx'
 import { MDXImage } from '@/app/components/mdx-image'
 
@@ -17,7 +18,7 @@ type PageProps = {
   searchParams: Record<string, string | string[] | undefined>
 }
 
-const components = {
+const components: MDXComponents = {
   img: MDXImage,
 }
 

@@ -1,13 +1,18 @@
 import Image from 'next/image'
+import { DetailedHTMLProps, ImgHTMLAttributes } from 'react'
 
-interface MDXImageProps {
-  src: string
-  alt: string
-}
+type Props = DetailedHTMLProps<ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement>
 
-export function MDXImage({ src, alt }: MDXImageProps) {
+export function MDXImage(props: Props) {
+  const { src, alt = '', ...rest } = props
+
+  if (!src) {
+    return null
+  }
+
   return (
     <Image
+      {...rest}
       src={src}
       alt={alt}
       width={1200}
