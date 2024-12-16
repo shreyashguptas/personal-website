@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { getLocalBlogPost, getBlogPosts, LocalBlogPost } from '../../utils/mdx'
+import { MDXImage } from '@/app/components/mdx-image'
 
 export async function generateStaticParams() {
   const posts = await getBlogPosts()
@@ -14,6 +15,10 @@ export async function generateStaticParams() {
 type PageProps = {
   params: { slug: string }
   searchParams: Record<string, string | string[] | undefined>
+}
+
+const components = {
+  img: MDXImage,
 }
 
 const BlogPostPage = async ({ params }: PageProps) => {
@@ -39,6 +44,7 @@ const BlogPostPage = async ({ params }: PageProps) => {
       <article className="prose prose-lg prose-neutral dark:prose-invert max-w-none">
         <MDXRemote 
           source={post.content}
+          components={components}
           options={{
             mdxOptions: {
               development: process.env.NODE_ENV === 'development'
