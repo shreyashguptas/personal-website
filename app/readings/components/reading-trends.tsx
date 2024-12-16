@@ -34,15 +34,20 @@ export const ReadingTrends: FC<ReadingTrendsProps> = ({ readings }) => {
     .map(([year, count]) => ({ year, count }))
     .sort((a, b) => a.year.localeCompare(b.year))
 
+  const labelStyle = {
+    fontSize: 12,
+    fill: '#A1A1AA'
+  }
+
   return (
     <div className="w-full h-64 my-4 md:my-8 flex justify-center">
       <div className="w-full max-w-3xl">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart<DataPoint>
+          <BarChart
             data={data}
             margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
           >
-            <XAxis<DataPoint>
+            <XAxis
               dataKey="year"
               stroke="#A1A1AA"
               fontSize={12}
@@ -51,17 +56,11 @@ export const ReadingTrends: FC<ReadingTrendsProps> = ({ readings }) => {
               <Label 
                 value="Year" 
                 position="bottom" 
-                offset={0} 
-                fill="#A1A1AA"
-                style={{
-                  fontSize: '12px',
-                  '@media (min-width: 768px)': {
-                    fontSize: '14px'
-                  }
-                }}
+                offset={0}
+                style={labelStyle}
               />
             </XAxis>
-            <YAxis<DataPoint>
+            <YAxis
               stroke="#A1A1AA"
               fontSize={12}
               allowDecimals={false}
@@ -70,18 +69,14 @@ export const ReadingTrends: FC<ReadingTrendsProps> = ({ readings }) => {
               <Label 
                 value="# of books" 
                 angle={-90} 
-                position="center" 
-                fill="#A1A1AA"
+                position="center"
                 style={{
-                  fontSize: '12px',
-                  '@media (min-width: 768px)': {
-                    fontSize: '14px'
-                  },
+                  ...labelStyle,
                   textAnchor: 'middle'
                 }}
               />
             </YAxis>
-            <Tooltip<DataPoint>
+            <Tooltip
               contentStyle={{ 
                 backgroundColor: '#27272A',
                 border: 'none',
@@ -90,7 +85,7 @@ export const ReadingTrends: FC<ReadingTrendsProps> = ({ readings }) => {
                 fontSize: '12px'
               }}
             />
-            <Bar<DataPoint>
+            <Bar
               dataKey="count"
               fill="#3F3F46"
               radius={[4, 4, 0, 0]}
