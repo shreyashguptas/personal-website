@@ -6,7 +6,8 @@ export const projects: Project[] = [
     year: "2024",
     githubUrl: "https://career.uark.edu/aboutus/studentstats/",
     tags: ["PowerBI", "Data Visualization", "PowerQuery"],
-    date: new Date('2024-12-04')
+    date: new Date('2024-12-04'),
+    details: "This PowerBI dashboard presents the post-graduation outcomes of University of Arkansas students, detailing their employment, volunteer activities, and other paths, along with salary statistics by college."
   },
   {
     title: "ConvertShift",
@@ -16,7 +17,7 @@ export const projects: Project[] = [
     date: new Date('2024-12-04'),
     pinned: true,
     image: "/images/projects/Convert-shift.jpg",
-    details: "A powerful web application that allows users to convert files between different formats. Built with Next.js, it provides a seamless and intuitive user experience for file conversion tasks."
+    details: "A user-friendly web application built with Next.js that enables seamless file conversion between various formats."
   },
   {
     title: "Machine Learning for Dummies",
@@ -26,14 +27,15 @@ export const projects: Project[] = [
     date: new Date('2024-11-23'),
     pinned: true,
     image: "/images/projects/machine-learning-for-dummies.jpg",
-    details: "An educational platform designed to make machine learning concepts accessible to beginners. Features interactive tutorials and hands-on examples using PyTorch."
+    details: "A beginner-friendly platform that simplifies machine learning concepts through interactive tutorials and practical examples using PyTorch."
   },
   {
     title: "Raspberry Pi Camera Web Stream",
     year: "2024",
     githubUrl: "https://github.com/shreyashguptas/Raspberry-Pi-Camera-Web-Stream",
     tags: ["Raspberry Pi", "Python", "Web Stream"],
-    date: new Date('2024-11-10')
+    date: new Date('2024-11-10'),
+    details: "This project sets up a live web stream from a Raspberry Pi camera module that can be accessed from any device on your local network through a web browser."
   },
   {
     title: "Credit Card Fraud Detection using Machine Learning",
@@ -43,14 +45,15 @@ export const projects: Project[] = [
     date: new Date('2024-01-10'),
     pinned: true,
     image: "/images/projects/Credit Card Fraud Detection using Machine Learning.jpg",
-    details: "A machine learning system that detects fraudulent credit card transactions in real-time using PyTorch. Implements advanced anomaly detection algorithms for high accuracy."
+    details: "A real-time machine learning system using PyTorch to detect fraudulent credit card transactions with high accuracy."
   },
   {
     title: "Options Pricing Models",
     year: "2024",
     githubUrl: "https://github.com/shreyashguptas/option-pricing-models",
     tags: ["Python", "Finance", "Quantitative Analysis"],
-    date: new Date('2024-01-10')
+    date: new Date('2024-01-10'),
+    details: "A web app for calculating European option prices using Black-Scholes, Monte Carlo simulation, and Binomial models, implemented in Python 3.9 with Streamlit for visualization."
   },
   {
     title: "CAPTCHA Recognition using Convolutional Recurrent Neural Network(CRNN)",
@@ -60,28 +63,31 @@ export const projects: Project[] = [
     date: new Date('2024-01-10'),
     pinned: true,
     image: "/images/projects/CAPTCHA Recognition using Convolutional Recurrent Neural Network(CRNN).jpg",
-    details: "An advanced CAPTCHA recognition system using CRNN architecture. Achieves high accuracy in decoding complex CAPTCHAs through deep learning techniques."
+    details: "A high-accuracy CAPTCHA recognition system utilizing CRNN architecture for effective decoding of complex CAPTCHAs."
   },
   {
     title: "IMDb Movie Review Sentiment Analysis",
     year: "2024",
     githubUrl: "https://github.com/shreyashguptas/IMDb_movie_review_sentiment_analysis",
     tags: ["NLP", "Machine Learning", "Python"],
-    date: new Date('2024-01-10')
+    date: new Date('2024-01-10'),
+    details: "This project analyzes the discrepancies in IMDb movie ratings, particularly focusing on the impact of COVID-19 on viewer ratings and sentiment."
   },
   {
     title: "Stock Performance Correlation to News Sentiment",
     year: "2024",
     githubUrl: "https://github.com/shreyashguptas/News_sentiment_correlation_project",
     tags: ["Data Analysis", "Finance", "Python"],
-    date: new Date('2024-01-10')
+    date: new Date('2024-01-10'),
+    details: "This project automates the analysis of financial news sentiment and its impact on markets using advanced NLP techniques, providing insights that can guide investment decisions."
   },
   {
     title: "MeToo Movement Impact on IMDb Ratings",
     year: "2023",
     githubUrl: "https://github.com/shreyashguptas/MeToo-Movement-Impact-on-IMDb-ratings",
     tags: ["Data Analysis", "Social Impact", "Python"],
-    date: new Date('2023-01-10')
+    date: new Date('2023-01-10'),
+    details: "This project analyzes the impact of the MeToo movement on IMDb ratings by comparing changes in ratings for productions associated with individuals accused of sexual misconduct before and after 2017."
   },
   {
     title: "Organisation wide Google Cloud Security Roles Refactoring",
@@ -89,7 +95,7 @@ export const projects: Project[] = [
     githubUrl: "https://github.com/shreyashguptas/Organisation-wide-Google-Cloud-Security-Roles-Refactoring",
     tags: ["Google Cloud", "Terraform"],
     date: new Date('2022-01-10'),
-    details: "This project involved auditing and optimizing security roles for employees accessing Google Cloud datasets at Tyson Foods. We found many users were overprivileged, necessitating a detailed analysis of individual needs. The process included reviewing thousands of permissions, writing extensive Terraform code, and interviewing users about their job requirements. We implemented appropriate access controls for hundreds of employees and conducted a hypercare period to quickly resolve any issues, ensuring minimal work disruption. The goal was to align user permissions with actual needs, enhancing security while maintaining operational efficiency."
+    details: "Audited and optimized Google Cloud security roles at Tyson Foods to align user permissions with actual needs, enhancing security and operational efficiency."
   },
   {
     title: "Inventory PowerBI Dashboard for Supplychain",
@@ -97,7 +103,7 @@ export const projects: Project[] = [
     githubUrl: "https://github.com/shreyashguptas/Inventory-PowerBI-Dashboard-for-Supplychain",
     tags: ["PowerBI", "AtScale"],
     date: new Date('2022-01-10'),
-    details: "This project involved creating a comprehensive PowerBI dashboard for inventory management for pallets that come into warehouses and distribution centers at Tyson Foods. The dashboard provides real-time insights into stock levels, the pallets weights and other critical decision making enabling better decision-making and optimized inventory control."
+    details: "Created a PowerBI dashboard for inventory management at Tyson Foods, offering real-time insights into stock levels and pallet weights to enhance decision-making and optimize inventory control."
   }
 ]
 
