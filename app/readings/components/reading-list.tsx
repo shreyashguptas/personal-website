@@ -13,10 +13,10 @@ export function ReadingList({ readings, showTags = true, isRecommendations = fal
       {readings.map((reading) => (
         <div
           key={reading.title}
-          className="border-b pb-8 last:border-b-0"
+          className="border-b pb-6 md:pb-8 last:border-b-0"
         >
-          <div className="flex items-start justify-between gap-4">
-            <div className="space-y-1">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
+            <div className="space-y-1.5">
               {reading.url ? (
                 <Link 
                   href={reading.url}
@@ -24,7 +24,7 @@ export function ReadingList({ readings, showTags = true, isRecommendations = fal
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <h2 className="text-xl font-normal group-hover:bg-muted px-2 -mx-2 rounded transition-colors">
+                  <h2 className="text-lg md:text-xl font-normal group-hover:bg-muted px-2 -mx-2 rounded transition-colors">
                     {isRecommendations && reading.recommendation && (
                       <span className="font-semibold mr-2">#{reading.recommendation}</span>
                     )}
@@ -32,27 +32,27 @@ export function ReadingList({ readings, showTags = true, isRecommendations = fal
                   </h2>
                 </Link>
               ) : (
-                <h2 className="text-xl font-normal">
+                <h2 className="text-lg md:text-xl font-normal">
                   {isRecommendations && reading.recommendation && (
                     <span className="font-semibold mr-2">#{reading.recommendation}</span>
                   )}
                   {reading.title}
                 </h2>
               )}
-              <p className="text-muted-foreground">{reading.author}</p>
+              <p className="text-muted-foreground text-sm md:text-base">{reading.author}</p>
             </div>
-            <div className="flex flex-wrap gap-2 items-start">
-              {showTags && (
-                reading.tags.map((tag) => (
+            {showTags && (
+              <div className="flex flex-wrap gap-1.5 sm:gap-2 sm:max-w-[40%]">
+                {reading.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-2 py-1 bg-muted text-muted-foreground rounded text-sm"
+                    className="px-2 py-0.5 md:py-1 bg-muted text-muted-foreground rounded text-xs md:text-sm whitespace-nowrap"
                   >
                     {tag}
                   </span>
-                ))
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       ))}
