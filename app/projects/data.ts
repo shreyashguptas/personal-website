@@ -15,7 +15,8 @@ export const projects: Project[] = [
     tags: ["Next.js", "File Converter", "Web Application"],
     date: new Date('2024-12-04'),
     pinned: true,
-    image: "/images/projects/Convert-shift.jpg"
+    image: "/images/projects/Convert-shift.jpg",
+    details: "A powerful web application that allows users to convert files between different formats. Built with Next.js, it provides a seamless and intuitive user experience for file conversion tasks."
   },
   {
     title: "Machine Learning for Dummies",
@@ -24,7 +25,8 @@ export const projects: Project[] = [
     tags: ["PyTorch", "Machine Learning", "Python"],
     date: new Date('2024-11-23'),
     pinned: true,
-    image: "/images/projects/machine-learning-for-dummies.jpg"
+    image: "/images/projects/machine-learning-for-dummies.jpg",
+    details: "An educational platform designed to make machine learning concepts accessible to beginners. Features interactive tutorials and hands-on examples using PyTorch."
   },
   {
     title: "Raspberry Pi Camera Web Stream",
@@ -40,7 +42,8 @@ export const projects: Project[] = [
     tags: ["PyTorch", "Machine Learning", "Python"],
     date: new Date('2024-01-10'),
     pinned: true,
-    image: "/images/projects/Credit Card Fraud Detection using Machine Learning.jpg"
+    image: "/images/projects/Credit Card Fraud Detection using Machine Learning.jpg",
+    details: "A machine learning system that detects fraudulent credit card transactions in real-time using PyTorch. Implements advanced anomaly detection algorithms for high accuracy."
   },
   {
     title: "Options Pricing Models",
@@ -56,7 +59,8 @@ export const projects: Project[] = [
     tags: ["Pytorch", "Machine Learning", "Python"],
     date: new Date('2024-01-10'),
     pinned: true,
-    image: "/images/projects/CAPTCHA Recognition using Convolutional Recurrent Neural Network(CRNN).jpg"
+    image: "/images/projects/CAPTCHA Recognition using Convolutional Recurrent Neural Network(CRNN).jpg",
+    details: "An advanced CAPTCHA recognition system using CRNN architecture. Achieves high accuracy in decoding complex CAPTCHAs through deep learning techniques."
   },
   {
     title: "IMDb Movie Review Sentiment Analysis",

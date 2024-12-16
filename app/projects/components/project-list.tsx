@@ -41,7 +41,7 @@ export function ProjectList({ projects, showTags = true, showImages = false }: P
           : ({ children }: { children: React.ReactNode }) => (
               <Link 
                 href={project.githubUrl!}
-                className="block"
+                className="block h-full"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -51,19 +51,19 @@ export function ProjectList({ projects, showTags = true, showImages = false }: P
 
         return (
           <ProjectWrapper key={project.title}>
-            <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-              {showImages && (
+            <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow h-full flex flex-col">
+              {showImages && project.image && (
                 <div className="relative h-48 w-full">
                   <Image
-                    src={project.image || '/images/project-placeholder.jpg'}
+                    src={project.image}
                     alt={project.title}
                     fill
                     className="object-cover"
                   />
                 </div>
               )}
-              <div className="p-6">
-                <div className="space-y-4">
+              <div className="p-6 flex-1 flex flex-col">
+                <div className="space-y-4 flex-1">
                   <div>
                     <h3 className="text-xl font-semibold hover:text-gray-600 transition-colors">
                       {project.title}
@@ -71,7 +71,7 @@ export function ProjectList({ projects, showTags = true, showImages = false }: P
                     <p className="text-sm text-gray-500 mt-1">{project.year}</p>
                   </div>
 
-                  {showTags && (
+                  {showTags && project.tags && (
                     <div className="flex flex-wrap gap-2">
                       {project.tags.map((tag) => (
                         <span
@@ -84,7 +84,13 @@ export function ProjectList({ projects, showTags = true, showImages = false }: P
                     </div>
                   )}
                   
-                  {project.details && expandedProjects.has(project.title) && (
+                  {!showTags && project.details && (
+                    <p className="text-gray-600 text-sm">
+                      {project.details}
+                    </p>
+                  )}
+                  
+                  {showTags && project.details && expandedProjects.has(project.title) && (
                     <p className="text-gray-600 text-sm">
                       {project.details}
                     </p>

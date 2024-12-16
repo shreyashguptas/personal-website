@@ -44,10 +44,10 @@ export default function Home() {
 
       <section className="space-y-8">
         <div>
-          <h2 className="text-3xl font-bold mb-2">Featured Projects</h2>
+          <h2 className="text-3xl font-bold mb-2">Live Projects</h2>
           <p className="text-gray-600">Check out some of my recent work</p>
         </div>
-        <ProjectList projects={topProjects} showImages={true} />
+        <ProjectList projects={topProjects} showImages={true} showTags={false} />
         <div>
           <Link 
             href="/projects" 
