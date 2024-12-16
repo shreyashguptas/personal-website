@@ -7,7 +7,7 @@ export default async function BlogPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-bold">Blog</h1>
+      <h1 className="text-3xl font-bold">Blogs</h1>
       <div className="grid gap-6">
         {posts.map((post) => {
           const formattedDate = post.type === 'local' 
