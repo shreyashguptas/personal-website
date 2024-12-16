@@ -25,6 +25,12 @@ export type SubstackBlogPost = {
 
 export type BlogPost = LocalBlogPost | SubstackBlogPost
 
+interface BlogFrontMatter {
+  title: string
+  date: string
+  description: string
+}
+
 export async function getBlogPosts(): Promise<BlogPost[]> {
   // Get local MDX posts
   let localPosts: LocalBlogPost[] = []
@@ -40,15 +46,17 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
             const filePath = path.join(BLOGS_PATH, file)
             const fileContent = await fs.readFile(filePath, 'utf8')
             const { data, content } = matter(fileContent)
+            const frontMatter = data as BlogFrontMatter
             
-            const date = parse(data.date, 'yyyy/MM/dd', new Date())
+            const date = parse(frontMatter.date, 'yyyy/MM/dd', new Date())
+            const slug = file.replace('.mdx', '')
             
             return {
-              slug: file.replace('.mdx', ''),
-              title: data.title,
-              date: data.date,
+              slug,
+              title: frontMatter.title,
+              date: frontMatter.date,
               formattedDate: format(date, 'MMMM yyyy'),
-              description: data.description,
+              description: frontMatter.description,
               content,
               type: 'local' as const
             }
@@ -82,18 +90,21 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
 
 export async function getLocalBlogPost(slug: string): Promise<LocalBlogPost | null> {
   try {
-    const filePath = path.join(BLOGS_PATH, `${slug}.mdx`)
+    // Decode the URL-encoded slug
+    const decodedSlug = decodeURIComponent(slug)
+    const filePath = path.join(BLOGS_PATH, `${decodedSlug}.mdx`)
     const fileContent = await fs.readFile(filePath, 'utf8')
     const { data, content } = matter(fileContent)
+    const frontMatter = data as BlogFrontMatter
     
-    const date = parse(data.date, 'yyyy/MM/dd', new Date())
+    const date = parse(frontMatter.date, 'yyyy/MM/dd', new Date())
     
     return {
-      slug,
-      title: data.title,
-      date: data.date,
+      slug: decodedSlug,
+      title: frontMatter.title,
+      date: frontMatter.date,
       formattedDate: format(date, 'MMMM yyyy'),
-      description: data.description,
+      description: frontMatter.description,
       content,
       type: 'local'
     }
