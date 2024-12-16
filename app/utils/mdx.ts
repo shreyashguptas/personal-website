@@ -1,4 +1,4 @@
-import fs from 'fs'
+import { promises as fs } from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
 import { format, parse } from 'date-fns'
@@ -25,19 +25,20 @@ export type SubstackBlogPost = {
 
 export type BlogPost = LocalBlogPost | SubstackBlogPost
 
-export function getBlogPosts(): BlogPost[] {
+export async function getBlogPosts(): Promise<BlogPost[]> {
   // Get local MDX posts
   let localPosts: LocalBlogPost[] = []
   
   try {
-    if (fs.existsSync(BLOGS_PATH)) {
-      const files = fs.readdirSync(BLOGS_PATH)
-      localPosts = files
+    const exists = await fs.stat(BLOGS_PATH).catch(() => false)
+    if (exists) {
+      const files = await fs.readdir(BLOGS_PATH)
+      const postsPromises = files
         .filter((file) => file.endsWith('.mdx'))
-        .map((file) => {
+        .map(async (file) => {
           try {
             const filePath = path.join(BLOGS_PATH, file)
-            const fileContent = fs.readFileSync(filePath, 'utf8')
+            const fileContent = await fs.readFile(filePath, 'utf8')
             const { data, content } = matter(fileContent)
             
             const date = parse(data.date, 'yyyy/MM/dd', new Date())
@@ -56,7 +57,9 @@ export function getBlogPosts(): BlogPost[] {
             return null
           }
         })
-        .filter((post): post is LocalBlogPost => post !== null)
+      
+      const posts = await Promise.all(postsPromises)
+      localPosts = posts.filter((post): post is LocalBlogPost => post !== null)
     }
   } catch (error) {
     console.error('Error reading blog posts:', error)
@@ -77,10 +80,10 @@ export function getBlogPosts(): BlogPost[] {
     })
 }
 
-export function getLocalBlogPost(slug: string): LocalBlogPost | null {
+export async function getLocalBlogPost(slug: string): Promise<LocalBlogPost | null> {
   try {
     const filePath = path.join(BLOGS_PATH, `${slug}.mdx`)
-    const fileContent = fs.readFileSync(filePath, 'utf8')
+    const fileContent = await fs.readFile(filePath, 'utf8')
     const { data, content } = matter(fileContent)
     
     const date = parse(data.date, 'yyyy/MM/dd', new Date())
