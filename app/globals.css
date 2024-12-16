@@ -86,3 +86,96 @@
   scrollbar-width: none;  /* Firefox */
 }
 
+/* Custom prose styles for blog posts */
+.prose {
+  @apply text-foreground max-w-none;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  @apply text-foreground font-bold scroll-m-20;
+  margin-top: 2em;
+  margin-bottom: 1em;
+}
+
+.prose h1 {
+  @apply text-4xl;
+}
+
+.prose h2 {
+  @apply text-3xl;
+}
+
+.prose h3 {
+  @apply text-2xl;
+}
+
+.prose p {
+  @apply text-foreground text-lg leading-relaxed mb-6;
+}
+
+.prose ul,
+.prose ol {
+  @apply my-6 ml-6 text-foreground;
+}
+
+.prose li {
+  @apply text-foreground mb-3;
+}
+
+.prose li > p {
+  @apply mb-0;
+}
+
+.prose code {
+  @apply bg-secondary text-foreground px-1.5 py-0.5 rounded text-sm font-mono;
+}
+
+.prose pre {
+  @apply bg-secondary p-4 rounded-lg my-6 overflow-x-auto;
+}
+
+.prose pre code {
+  @apply bg-transparent p-0 text-sm border-0;
+}
+
+.prose strong {
+  @apply text-foreground font-bold;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-primary pl-6 italic my-8 text-foreground;
+}
+
+.prose blockquote p {
+  @apply mb-0;
+}
+
+.prose a {
+  @apply text-primary underline hover:text-primary/80 transition-colors font-medium;
+}
+
+.prose img {
+  @apply rounded-lg my-8 border border-border;
+}
+
+.prose hr {
+  @apply my-12 border-border;
+}
+
+.prose table {
+  @apply w-full my-8;
+}
+
+.prose table th {
+  @apply text-left p-4 bg-secondary text-foreground font-bold;
+}
+
+.prose table td {
+  @apply p-4 border-t border-border;
+}
+

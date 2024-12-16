@@ -41,17 +41,6 @@ export async function Footer() {
               : 'Last updated date unavailable'}
           </p>
         </div>
-
-        <div className="w-full md:w-auto">
-          <iframe 
-            src="https://shreyashgupta.substack.com/embed" 
-            width="100%" 
-            height="120" 
-            style={{ border: '0px solid #EEE', background: 'white', maxWidth: '400px' }}
-            frameBorder="0" 
-            scrolling="no"
-          />
-        </div>
       </div>
     </footer>
   )

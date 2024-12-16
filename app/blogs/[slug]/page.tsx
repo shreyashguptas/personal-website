@@ -24,13 +24,29 @@ const BlogPostPage = async ({ params }: PageProps) => {
   }
 
   return (
-    <article className="max-w-3xl mx-auto py-8 prose prose-neutral dark:prose-invert">
-      <h1 className="mb-2">{post.title}</h1>
-      <div className="text-sm text-muted-foreground mb-8">{post.formattedDate}</div>
-      <div className="mdx-content">
-        <MDXRemote source={post.content} />
-      </div>
-    </article>
+    <div className="max-w-3xl mx-auto py-12 px-4">
+      {/* Blog Header */}
+      <header className="mb-12">
+        <h1 className="text-4xl font-bold text-foreground mb-4">
+          {post.title}
+        </h1>
+        <div className="text-base text-muted-foreground">
+          {post.formattedDate}
+        </div>
+      </header>
+
+      {/* Blog Content */}
+      <article className="prose prose-lg prose-neutral dark:prose-invert max-w-none">
+        <MDXRemote 
+          source={post.content}
+          options={{
+            mdxOptions: {
+              development: process.env.NODE_ENV === 'development'
+            }
+          }}
+        />
+      </article>
+    </div>
   )
 }
 
