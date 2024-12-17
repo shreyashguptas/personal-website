@@ -16,7 +16,7 @@ export function ReadingList({ readings, showTags = true, isRecommendations = fal
           className="border-b pb-6 md:pb-8 last:border-b-0"
         >
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 flex-1">
               {reading.url ? (
                 <Link 
                   href={reading.url}
@@ -40,9 +40,21 @@ export function ReadingList({ readings, showTags = true, isRecommendations = fal
                 </h2>
               )}
               <p className="text-muted-foreground text-sm md:text-base">{reading.author}</p>
+              {showTags && (
+                <div className="flex flex-wrap gap-1.5 sm:hidden mt-2">
+                  {reading.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="px-2 py-0.5 md:py-1 bg-muted text-muted-foreground rounded text-xs md:text-sm whitespace-nowrap"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
             {showTags && (
-              <div className="flex flex-wrap gap-1.5 sm:gap-2 sm:max-w-[40%]">
+              <div className="hidden sm:flex sm:flex-wrap gap-1.5 sm:gap-2 sm:w-[40%] sm:justify-end">
                 {reading.tags.map((tag) => (
                   <span
                     key={tag}
