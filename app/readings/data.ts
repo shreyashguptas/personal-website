@@ -91,7 +91,14 @@ export const readings: Reading[] = [
     author: "Patrick Bet-David",
     tags: ["Business Strategy", "Personal Development", "Leadership"],
     url: "https://www.audible.com/pd/Your-Next-Five-Moves-Audiobook/179711333X",
-    date: new Date('2024-02-05')
+    date: new Date('2023-02-05')
+  },
+  {
+    title: "The Real Anthony Fauci",
+    author: "Robert F. Kennedy Jr.",
+    tags: ["Health", "Science", "Corruption"],
+    url: "https://www.audible.com/pd/The-Real-Anthony-Fauci-Audiobook/B09LVXS3L4?source_code=ASSGB149080119000H&share_location=pdp",
+    date: new Date('2023-02-05')
   },
   {
     title: "Can't Hurt Me",
@@ -106,7 +113,7 @@ export const readings: Reading[] = [
     author: "Walter Isaacson",
     tags: ["Biography", "Technology", "Entrepreneurship"],
     url: "https://www.audible.com/pd/Elon-Musk-Audiobook/B0BX4SCV1V",
-    date: new Date('2024-01-25'),
+    date: new Date('2023-01-25'),
     recommendation: 2
   },
   {
