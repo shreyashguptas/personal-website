@@ -2,6 +2,16 @@ import { Project } from './types'
 
 export const projects: Project[] = [
   {
+    title: "Congressional Bill Tracker",
+    year: "2024",
+    githubUrl: "https://congress-tracker.com/",
+    tags: ["Next.js", "Supabase", "API"],
+    date: new Date('2024-12-20'),
+    pinned: true,
+    image: "/images/projects/Congressional Bill Tracker.webp",
+    details: "A modern platform that makes congressional bills accessible to everyone by using AI to generate clear summaries, provide real-time updates, and visualize the legislative process. Features include bill tracking, plain English summaries, and comprehensive information about sponsors and voting records."
+  },
+  {
     title: "Student Graduation Outcomes Dashboard",
     year: "2024",
     githubUrl: "https://career.uark.edu/aboutus/studentstats/",
@@ -61,7 +71,6 @@ export const projects: Project[] = [
     githubUrl: "https://github.com/shreyashguptas/CAPTCHA-Recognition-using-CRNN",
     tags: ["Pytorch", "Machine Learning", "Python"],
     date: new Date('2024-01-10'),
-    pinned: true,
     image: "/images/projects/CAPTCHA Recognition using Convolutional Recurrent Neural Network(CRNN).jpg",
     details: "A high-accuracy CAPTCHA recognition system utilizing CRNN architecture for effective decoding of complex CAPTCHAs."
   },
