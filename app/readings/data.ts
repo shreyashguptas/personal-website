@@ -6,7 +6,7 @@ export const readings: Reading[] = [
     author: "Thomas Sowell",
     tags: ["Economic Inequality", "Social Policy", "Empirical Evidence"],
     url: "https://www.audible.com/pd/Discrimination-and-Disparities-Audiobook/B078N9R9X2?source_code=ASSGB149080119000H&share_location=pdp",
-    date: new Date('2024-03-15')
+    date: new Date('2024-12-15')
   },
   {
     title: "Buy then Build",

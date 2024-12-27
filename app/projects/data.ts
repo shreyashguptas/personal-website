@@ -4,7 +4,7 @@ export const projects: Project[] = [
   {
     title: "Congressional Bill Tracker",
     year: "2024",
-    githubUrl: "https://congress-tracker.com/",
+    githubUrl: "https://billsincongress.com/",
     tags: ["Next.js", "Supabase", "API"],
     date: new Date('2024-12-20'),
     pinned: true,

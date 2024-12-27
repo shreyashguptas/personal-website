@@ -4,6 +4,7 @@ import type { MDXComponents } from 'mdx/types'
 import { getLocalBlogPost, getBlogPosts } from '../../utils/mdx'
 import { LocalBlogPost } from '../types'
 import { MDXImage } from '@/app/components/mdx-image'
+import type { Metadata } from 'next'
 
 export async function generateStaticParams() {
   const posts = await getBlogPosts()
@@ -14,17 +15,28 @@ export async function generateStaticParams() {
     }))
 }
 
-type PageProps = {
-  params: { slug: string }
-  searchParams: Record<string, string | string[] | undefined>
+export async function generateMetadata(props: any): Promise<Metadata> {
+  const post = await getLocalBlogPost(props.params.slug)
+  
+  if (!post) {
+    return {
+      title: 'Blog Post Not Found',
+    }
+  }
+
+  return {
+    title: post.title,
+    description: post.description,
+  }
 }
 
 const components: MDXComponents = {
   img: MDXImage,
 }
 
-const BlogPostPage = async ({ params }: PageProps) => {
-  const post = await getLocalBlogPost(params.slug)
+// @ts-ignore -- Next.js 15.1 type issue workaround
+export default async function BlogPostPage(props: any) {
+  const post = await getLocalBlogPost(props.params.slug)
 
   if (!post) {
     notFound()
@@ -57,7 +69,5 @@ const BlogPostPage = async ({ params }: PageProps) => {
     </div>
   )
 }
-
-export default BlogPostPage
 
 export const revalidate = 3600 // Revalidate every hour 
