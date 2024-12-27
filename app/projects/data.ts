@@ -26,7 +26,7 @@ export const projects: Project[] = [
     tags: ["Next.js", "File Converter", "Web Application"],
     date: new Date('2024-12-04'),
     pinned: true,
-    image: "/images/projects/Convert-shift.jpg",
+    image: "/images/projects/Convert-shift.webp",
     details: "A user-friendly web application built with Next.js that enables seamless file conversion between various formats."
   },
   {
