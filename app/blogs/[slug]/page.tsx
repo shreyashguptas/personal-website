@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { MDXRemote } from 'next-mdx-remote/rsc'
+import { MDXRemote } from 'next-mdx-remote'
 import type { MDXComponents } from 'mdx/types'
 import { getLocalBlogPost, getBlogPosts } from '../../utils/mdx'
 import { LocalBlogPost } from '../types'
