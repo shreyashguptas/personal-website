@@ -10,13 +10,15 @@ export function BlogList({ posts }: BlogListProps) {
     <div className="space-y-8">
       {posts.map((post) => (
         <div
-          key={post.title}
+          key={post.type === 'local' ? post.slug : post.url}
           className="border-b pb-8 last:border-b-0"
         >
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
               <Link 
-                href={post.url}
+                href={post.type === 'local' ? `/blogs/${post.slug}` : post.url}
+                target={post.type === 'local' ? undefined : '_blank'}
+                rel={post.type === 'local' ? undefined : 'noopener noreferrer'}
                 className="block group"
               >
                 <h2 className="text-xl font-normal group-hover:bg-muted px-2 -mx-2 rounded transition-colors">
@@ -30,6 +32,9 @@ export function BlogList({ posts }: BlogListProps) {
                   day: 'numeric' 
                 })}
               </p>
+              {post.type === 'local' && (
+                <p className="text-muted-foreground">{post.description}</p>
+              )}
             </div>
           </div>
         </div>

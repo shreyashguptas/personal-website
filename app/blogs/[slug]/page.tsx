@@ -1,7 +1,8 @@
 import { notFound } from 'next/navigation'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import type { MDXComponents } from 'mdx/types'
-import { getLocalBlogPost, getBlogPosts, LocalBlogPost } from '../../utils/mdx'
+import { getLocalBlogPost, getBlogPosts } from '../../utils/mdx'
+import { LocalBlogPost } from '../types'
 import { MDXImage } from '@/app/components/mdx-image'
 
 export async function generateStaticParams() {

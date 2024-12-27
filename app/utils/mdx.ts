@@ -3,27 +3,9 @@ import path from 'path'
 import matter from 'gray-matter'
 import { format, parse } from 'date-fns'
 import { posts as substackPosts } from '../blogs/data'
+import { BlogPost, LocalBlogPost, SubstackBlogPost } from '../blogs/types'
 
 const BLOGS_PATH = path.join(process.cwd(), 'app/blogs/content')
-
-export type LocalBlogPost = {
-  slug: string
-  title: string
-  date: string
-  formattedDate: string
-  description: string
-  content: string
-  type: 'local'
-}
-
-export type SubstackBlogPost = {
-  title: string
-  date: Date
-  url: string
-  type: 'substack'
-}
-
-export type BlogPost = LocalBlogPost | SubstackBlogPost
 
 interface BlogFrontMatter {
   title: string
@@ -54,7 +36,7 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
             return {
               slug,
               title: frontMatter.title,
-              date: frontMatter.date,
+              date: date,
               formattedDate: format(date, 'MMMM yyyy'),
               description: frontMatter.description,
               content,
@@ -73,19 +55,17 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
     console.error('Error reading blog posts:', error)
   }
 
-  // Convert Substack posts to common format
-  const formattedSubstackPosts: SubstackBlogPost[] = substackPosts.map(post => ({
-    ...post,
+  // Convert Substack posts to common format and ensure they have the correct type
+  const formattedSubstackPosts: SubstackBlogPost[] = (substackPosts as { title: string; date: Date; url: string }[]).map(post => ({
+    title: post.title,
+    date: new Date(post.date),
+    url: post.url,
     type: 'substack' as const
   }))
 
   // Combine and sort all posts
   return [...localPosts, ...formattedSubstackPosts]
-    .sort((a, b) => {
-      const dateA = a.type === 'local' ? new Date(a.date) : a.date
-      const dateB = b.type === 'local' ? new Date(b.date) : b.date
-      return dateB.getTime() - dateA.getTime()
-    })
+    .sort((a, b) => b.date.getTime() - a.date.getTime())
 }
 
 export async function getLocalBlogPost(slug: string): Promise<LocalBlogPost | null> {
@@ -102,7 +82,7 @@ export async function getLocalBlogPost(slug: string): Promise<LocalBlogPost | nu
     return {
       slug: decodedSlug,
       title: frontMatter.title,
-      date: frontMatter.date,
+      date: date,
       formattedDate: format(date, 'MMMM yyyy'),
       description: frontMatter.description,
       content,

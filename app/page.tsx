@@ -1,16 +1,17 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { projects } from './projects/data'
-import { posts } from './blogs/data'
 import { readings } from './readings/data'
 import { getTopItems } from './utils/content-utils'
 import { ProjectList } from './projects/components/project-list'
 import { BlogList } from './blogs/components/blog-list'
 import { ReadingList } from './readings/components/reading-list'
+import { getBlogPosts } from './utils/mdx'
 
-export default function Home() {
+export default async function Home() {
   const topProjects = projects.filter(project => project.pinned || project.image).slice(0, 4)
-  const topPosts = getTopItems(posts, 3)
+  const allPosts = await getBlogPosts()
+  const topPosts = allPosts.slice(0, 3)
   const topReadings = readings
     .filter(reading => reading.recommendation)
     .sort((a, b) => (a.recommendation || 0) - (b.recommendation || 0))
