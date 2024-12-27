@@ -28,7 +28,7 @@ export default async function Home() {
               Things outside of them bore me.
               <br />
               <br />
-              My mission centers on creating beautiful software, working with cutting-edge hardware by maintaining a strong mind and body.
+              My mission centers on creating beautiful software, working with cutting-edge hardware while maintaining a strong mind and body.
             </p>
           </div>
 
