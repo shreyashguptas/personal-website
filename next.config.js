@@ -26,8 +26,7 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   experimental: {
-    mdxRs: false,
-    esmExternals: true,
+    mdxRs: true,
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {
