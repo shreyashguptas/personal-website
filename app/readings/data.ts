@@ -2,6 +2,13 @@ import { Reading } from './types'
 
 export const readings: Reading[] = [
   {
+    title: "Thomas Jefferson : the art of power",
+    author: "Jon Meacham",
+    tags: ["Politics", "History", "Leadership"],
+    url: "https://www.amazon.com/Thomas-Jefferson-Art-Power/dp/B009WWOFIU?dib=eyJ2IjoiMSJ9.urEObX2Du19wQacvPz6hzVBrt_eCtbJoyuaLV2zOJMfFT2wNofeVvAvLQmPi2iIDfD0EQfwQuTGQ6M6svzcmMNnE9kvKCiEiGdUqOUxlZPbzXDtdt7RBEsPezNhZkhrUzjg2qgYnEuKM61994BfWmcNIC9_cFHykkHh4fmNCuBsgqCGNWA078MCoe47p2l7-NRI4ifpmMYWNoUA7ONwp539bidtBjF-JUO6aTfSnx2E.uFUg7BKCyrTYfeZ-j33vNE6GhjXCR0EHTqmvCPqofv8&dib_tag=se&keywords=the+art+of+power+thomas+jefferson&qid=1736468130&sr=8-1",
+    date: new Date('2024-12-20')
+  },
+  {
     title: "Discrimination and Disparities",
     author: "Thomas Sowell",
     tags: ["Economic Inequality", "Social Policy", "Empirical Evidence"],
