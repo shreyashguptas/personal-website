@@ -1,95 +1,81 @@
-import { createServerClient } from '@supabase/ssr'
+import { createServerClient } from '@/lib/supabase/middleware'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  // Create a response object to modify
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  })
-
+  console.log('Middleware: Processing request for:', request.nextUrl.pathname)
+  
   try {
+    // Create a response that we can modify
+    const response = NextResponse.next()
+
     // Skip auth check for auth-related routes
     if (request.nextUrl.pathname.startsWith('/auth/')) {
+      console.log('Middleware: Skipping auth check for auth route')
       return response
     }
 
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          get(name: string) {
-            return request.cookies.get(name)?.value
-          },
-          set(name: string, value: string, options: any) {
-            request.cookies.set({
-              name,
-              value,
-              ...options,
-            })
-            response = NextResponse.next({
-              request: {
-                headers: request.headers,
-              },
-            })
-            response.cookies.set({
-              name,
-              value,
-              ...options,
-            })
-          },
-          remove(name: string, options: any) {
-            request.cookies.set({
-              name,
-              value: '',
-              ...options,
-            })
-            response = NextResponse.next({
-              request: {
-                headers: request.headers,
-              },
-            })
-            response.cookies.set({
-              name,
-              value: '',
-              ...options,
-            })
-          },
-        },
-      }
-    )
+    // Create supabase client with cookie handling for Next.js 15
+    const supabase = createServerClient(request, response)
 
-    const { data: { session } } = await supabase.auth.getSession()
+    // Get the session
+    console.log('Middleware: Checking session...')
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+    
+    if (sessionError) {
+      console.error('Middleware: Session error:', sessionError)
+      // Continue to handle as if no session
+    }
+
+    console.log('Middleware: Session status:', { hasSession: !!session })
 
     // Handle protected routes
     if (request.nextUrl.pathname.startsWith('/admin')) {
+      console.log('Middleware: Handling protected route')
+      
       if (!session) {
-        const redirectUrl = new URL('/login', request.url)
-        return NextResponse.redirect(redirectUrl)
+        console.log('Middleware: No session, redirecting to login')
+        return NextResponse.redirect(new URL('/login', request.url))
       }
 
-      // Verify user email matches authorized email
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user || user.email !== process.env.NEXT_PUBLIC_AUTHORIZED_EMAIL) {
-        const redirectUrl = new URL('/login', request.url)
-        return NextResponse.redirect(redirectUrl)
+      // Get user data
+      console.log('Middleware: Getting user data...')
+      const { data: { user }, error: userError } = await supabase.auth.getUser()
+      
+      if (userError) {
+        console.error('Middleware: User error:', userError)
+        return NextResponse.redirect(new URL('/login', request.url))
+      }
+
+      if (!user) {
+        console.log('Middleware: No user found, redirecting to login')
+        return NextResponse.redirect(new URL('/login', request.url))
+      }
+
+      // Check if user email matches authorized email
+      console.log('Middleware: Verifying email authorization')
+      if (user.email !== process.env.NEXT_PUBLIC_AUTHORIZED_EMAIL) {
+        console.error('Middleware: Unauthorized email:', {
+          userEmail: user.email,
+          authorizedEmail: process.env.NEXT_PUBLIC_AUTHORIZED_EMAIL
+        })
+        await supabase.auth.signOut()
+        return NextResponse.redirect(new URL('/login', request.url))
       }
     }
 
-    // Handle login page access when already authenticated
+    // Redirect authenticated users away from login page
     if (request.nextUrl.pathname === '/login' && session) {
-      const redirectUrl = new URL('/admin/portal', request.url)
-      return NextResponse.redirect(redirectUrl)
+      console.log('Middleware: Authenticated user on login page, redirecting to portal')
+      return NextResponse.redirect(new URL('/admin/portal', request.url))
     }
 
+    console.log('Middleware: Request processed successfully')
     return response
   } catch (error) {
-    console.error('Middleware error:', error)
+    console.error('Middleware: Unexpected error:', error)
     // On error, allow the request to continue but log the error
-    return response
+    return NextResponse.next()
   }
 }
 

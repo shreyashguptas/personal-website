@@ -12,73 +12,108 @@ export default function AdminPortal() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    console.log('AdminPortal: Component mounted')
+    
     const getUser = async () => {
       try {
+        console.log('AdminPortal: Checking session...')
         setLoading(true)
+        
         // First check session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+        console.log('AdminPortal: Session check result:', { 
+          hasSession: !!session,
+          error: sessionError?.message 
+        })
         
         if (sessionError) {
-          console.error('Session error:', sessionError.message)
+          console.error('AdminPortal: Session error:', sessionError.message)
           throw new Error('Failed to get session')
         }
 
         if (!session) {
-          console.error('No session found')
+          console.log('AdminPortal: No session found, redirecting to login')
           router.replace('/login')
           return
         }
 
         // Then get user data
+        console.log('AdminPortal: Getting user data...')
         const { data: { user }, error: userError } = await supabase.auth.getUser()
+        console.log('AdminPortal: User data result:', { 
+          hasUser: !!user,
+          error: userError?.message 
+        })
         
         if (userError) {
-          console.error('User error:', userError.message)
+          console.error('AdminPortal: User error:', userError.message)
           throw new Error('Failed to get user data')
         }
 
         if (!user) {
-          console.error('No user found')
+          console.log('AdminPortal: No user found, redirecting to login')
           router.replace('/login')
           return
         }
 
         // Verify the user email matches the authorized email
-        if (user.email !== process.env.NEXT_PUBLIC_AUTHORIZED_EMAIL) {
-          console.error('Unauthorized email')
+        const authorizedEmail = process.env.NEXT_PUBLIC_AUTHORIZED_EMAIL
+        console.log('AdminPortal: Verifying email...', {
+          userEmail: user.email,
+          authorizedEmail,
+          matches: user.email === authorizedEmail
+        })
+        
+        if (user.email !== authorizedEmail) {
+          console.error('AdminPortal: Unauthorized email')
           await supabase.auth.signOut()
           router.replace('/login')
           return
         }
 
+        console.log('AdminPortal: Setting user data')
         setUser(user)
       } catch (err) {
-        console.error('Error in auth flow:', err)
+        console.error('AdminPortal: Error in auth flow:', err)
         setError(err instanceof Error ? err.message : 'Failed to load user data')
         router.replace('/login')
       } finally {
+        console.log('AdminPortal: Finishing loading')
         setLoading(false)
       }
     }
 
     getUser()
+
+    // Cleanup function
+    return () => {
+      console.log('AdminPortal: Component unmounting')
+    }
   }, [router, supabase.auth])
 
-  const handleSignOut = async () => {
-    try {
-      setLoading(true)
-      const { error } = await supabase.auth.signOut()
-      if (error) throw error
-      router.replace('/login')
-    } catch (err) {
-      console.error('Error signing out:', err)
-      setError('Failed to sign out')
-    } finally {
-      setLoading(false)
+  // Add auth state change listener
+  useEffect(() => {
+    console.log('AdminPortal: Setting up auth listener')
+    
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('AdminPortal: Auth state changed:', { event, hasSession: !!session })
+      
+      if (!session) {
+        console.log('AdminPortal: No session in state change, redirecting to login')
+        router.replace('/login')
+      }
+    })
+
+    return () => {
+      console.log('AdminPortal: Cleaning up auth listener')
+      subscription.unsubscribe()
     }
-  }
+  }, [router, supabase.auth])
 
   if (loading) {
+    console.log('AdminPortal: Rendering loading state')
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -89,6 +124,7 @@ export default function AdminPortal() {
   }
 
   if (error) {
+    console.log('AdminPortal: Rendering error state:', error)
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -105,10 +141,12 @@ export default function AdminPortal() {
   }
 
   if (!user) {
+    console.log('AdminPortal: No user, redirecting to login')
     router.replace('/login')
     return null
   }
 
+  console.log('AdminPortal: Rendering main content')
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white shadow-lg">
@@ -120,7 +158,18 @@ export default function AdminPortal() {
             <div className="flex items-center">
               <span className="text-gray-500 mr-4">{user.email}</span>
               <button
-                onClick={handleSignOut}
+                onClick={async () => {
+                  try {
+                    console.log('AdminPortal: Signing out...')
+                    const { error } = await supabase.auth.signOut()
+                    if (error) throw error
+                    console.log('AdminPortal: Sign out successful')
+                    router.replace('/login')
+                  } catch (err) {
+                    console.error('AdminPortal: Sign out error:', err)
+                    setError('Failed to sign out')
+                  }
+                }}
                 className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
               >
                 Sign Out
