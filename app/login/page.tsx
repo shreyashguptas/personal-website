@@ -1,38 +1,73 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [sending, setSending] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
   const supabase = createClient()
 
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+        if (sessionError) throw sessionError
+        if (session) {
+          router.replace('/admin/portal')
+          return
+        }
+      } catch (err) {
+        console.error('Session check error:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    checkSession()
+  }, [router, supabase.auth])
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
+    setSending(true)
     setMessage(null)
-
-    const authorizedEmail = process.env.NEXT_PUBLIC_AUTHORIZED_EMAIL
+    setError(null)
 
     try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email: authorizedEmail!,
+      const authorizedEmail = process.env.NEXT_PUBLIC_AUTHORIZED_EMAIL
+      if (!authorizedEmail) {
+        throw new Error('Authorized email not configured')
+      }
+
+      const { error: authError } = await supabase.auth.signInWithOtp({
+        email: authorizedEmail,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       })
 
-      if (error) throw error
+      if (authError) throw authError
       setMessage('Magic link sent! Check your email.')
-    } catch (error) {
-      setMessage('Error sending magic link')
-      console.error('Error:', error)
+    } catch (err) {
+      console.error('Login error:', err)
+      setError(err instanceof Error ? err.message : 'Error sending magic link')
     } finally {
-      setLoading(false)
+      setSending(false)
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="text-lg text-gray-600">Loading...</div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -50,16 +85,22 @@ export default function LoginPage() {
           <div>
             <button
               type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              disabled={sending}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Sending magic link...' : 'Send Magic Link'}
+              {sending ? 'Sending magic link...' : 'Send Magic Link'}
             </button>
           </div>
 
           {message && (
-            <div className="mt-2 text-center text-sm text-gray-600">
+            <div className="mt-2 text-center text-sm text-green-600 bg-green-50 p-2 rounded">
               {message}
+            </div>
+          )}
+
+          {error && (
+            <div className="mt-2 text-center text-sm text-red-600 bg-red-50 p-2 rounded">
+              {error}
             </div>
           )}
         </form>
