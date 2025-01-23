@@ -8,11 +8,14 @@ export const createClient = () => {
     {
       cookies: {
         get(name: string) {
-          return cookies().get(name)?.value
+          // @ts-expect-error - Next.js types are incorrect
+          return cookies().get(name)?.value ?? ''
         },
         set(name: string, value: string, options: CookieOptions) {
-          // @ts-ignore - Next.js types are incorrect
-          cookies().set(name, value, {
+          // @ts-expect-error - Next.js types are incorrect
+          cookies().set({
+            name,
+            value,
             ...options,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
@@ -21,7 +24,7 @@ export const createClient = () => {
           })
         },
         remove(name: string) {
-          // @ts-ignore - Next.js types are incorrect
+          // @ts-expect-error - Next.js types are incorrect
           cookies().delete(name)
         }
       }

@@ -36,7 +36,7 @@ export default function AdminPortal() {
     }
 
     getUser()
-  }, [router])
+  }, [router, supabase.auth])
 
   const handleSignOut = async () => {
     try {
