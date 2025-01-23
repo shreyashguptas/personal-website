@@ -1,4 +1,4 @@
-import { createServerClient } from '@/lib/supabase/middleware'
+import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
@@ -9,72 +9,70 @@ export async function middleware(request: NextRequest) {
     // Create a response that we can modify
     const response = NextResponse.next()
 
-    // Skip auth check for auth-related routes
-    if (request.nextUrl.pathname.startsWith('/auth/')) {
-      console.log('Middleware: Skipping auth check for auth route')
+    // Skip auth check for auth-related routes and public assets
+    if (request.nextUrl.pathname.startsWith('/auth/') || 
+        request.nextUrl.pathname.startsWith('/_next/') ||
+        request.nextUrl.pathname.includes('.')) {
+      console.log('Middleware: Skipping auth check for public route')
       return response
     }
 
-    // Create supabase client with cookie handling for Next.js 15
-    const supabase = createServerClient(request, response)
+    // Create supabase client
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return request.cookies.get(name)?.value
+          },
+          set(name: string, value: string, options: any) {
+            response.cookies.set({
+              name,
+              value,
+              ...options,
+            })
+          },
+          remove(name: string, options: any) {
+            response.cookies.set({
+              name,
+              value: '',
+              ...options,
+            })
+          },
+        },
+      }
+    )
 
     // Get the session
-    console.log('Middleware: Checking session...')
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-    
-    if (sessionError) {
-      console.error('Middleware: Session error:', sessionError)
-      // Continue to handle as if no session
-    }
+    const { data: { session } } = await supabase.auth.getSession()
 
-    console.log('Middleware: Session status:', { hasSession: !!session })
-
-    // Handle protected routes
+    // Handle protected routes (/admin/*)
     if (request.nextUrl.pathname.startsWith('/admin')) {
-      console.log('Middleware: Handling protected route')
-      
       if (!session) {
-        console.log('Middleware: No session, redirecting to login')
+        console.log('Middleware: No session for protected route, redirecting to login')
         return NextResponse.redirect(new URL('/login', request.url))
       }
 
       // Get user data
-      console.log('Middleware: Getting user data...')
-      const { data: { user }, error: userError } = await supabase.auth.getUser()
+      const { data: { user } } = await supabase.auth.getUser()
       
-      if (userError) {
-        console.error('Middleware: User error:', userError)
-        return NextResponse.redirect(new URL('/login', request.url))
-      }
-
-      if (!user) {
-        console.log('Middleware: No user found, redirecting to login')
-        return NextResponse.redirect(new URL('/login', request.url))
-      }
-
-      // Check if user email matches authorized email
-      console.log('Middleware: Verifying email authorization')
-      if (user.email !== process.env.NEXT_PUBLIC_AUTHORIZED_EMAIL) {
-        console.error('Middleware: Unauthorized email:', {
-          userEmail: user.email,
-          authorizedEmail: process.env.NEXT_PUBLIC_AUTHORIZED_EMAIL
-        })
-        await supabase.auth.signOut()
+      if (!user || user.email !== process.env.NEXT_PUBLIC_AUTHORIZED_EMAIL) {
+        console.log('Middleware: Unauthorized user for protected route')
         return NextResponse.redirect(new URL('/login', request.url))
       }
     }
 
-    // Redirect authenticated users away from login page
+    // Only redirect from login page if user is already authenticated
     if (request.nextUrl.pathname === '/login' && session) {
       console.log('Middleware: Authenticated user on login page, redirecting to portal')
       return NextResponse.redirect(new URL('/admin/portal', request.url))
     }
 
-    console.log('Middleware: Request processed successfully')
     return response
   } catch (error) {
     console.error('Middleware: Unexpected error:', error)
-    // On error, allow the request to continue but log the error
+    // On error, allow the request to continue
     return NextResponse.next()
   }
 }
