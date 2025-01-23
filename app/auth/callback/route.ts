@@ -5,48 +5,26 @@ export async function GET(request: Request) {
   try {
     const requestUrl = new URL(request.url)
     const code = requestUrl.searchParams.get('code')
-    const token_hash = requestUrl.searchParams.get('token_hash')
-    const type = requestUrl.searchParams.get('type')
     const next = requestUrl.searchParams.get('next') ?? '/admin/portal'
 
     console.log('Auth callback started:', { 
       hasCode: !!code,
-      hasToken: !!token_hash,
-      type,
       next,
       origin: requestUrl.origin 
     })
 
+    if (!code) {
+      console.error('No code provided in callback')
+      return NextResponse.redirect(new URL('/login', requestUrl.origin))
+    }
+
     const supabase = createClient()
 
-    // Handle the magic link token
-    if (token_hash) {
-      const { error: signInError } = await supabase.auth.verifyOtp({
-        token_hash,
-        type: type === 'recovery' ? 'recovery' : 'email',
-      })
-
-      if (signInError) {
-        console.error('Error verifying OTP:', {
-          error: signInError.message,
-          code: signInError.status
-        })
-        return NextResponse.redirect(new URL('/login', requestUrl.origin))
-      }
-    }
-    // Handle the code exchange
-    else if (code) {
-      const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
-      
-      if (exchangeError) {
-        console.error('Error exchanging code for session:', {
-          error: exchangeError.message,
-          code: exchangeError.status
-        })
-        return NextResponse.redirect(new URL('/login', requestUrl.origin))
-      }
-    } else {
-      console.error('No code or token_hash provided')
+    // Exchange the code for a session
+    const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
+    
+    if (exchangeError) {
+      console.error('Error exchanging code for session:', exchangeError)
       return NextResponse.redirect(new URL('/login', requestUrl.origin))
     }
 
@@ -54,15 +32,12 @@ export async function GET(request: Request) {
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     
     if (userError) {
-      console.error('Error getting user:', {
-        error: userError.message,
-        code: userError.status
-      })
+      console.error('Error getting user:', userError)
       return NextResponse.redirect(new URL('/login', requestUrl.origin))
     }
 
     if (!user) {
-      console.error('No user found after authentication')
+      console.error('No user found after code exchange')
       return NextResponse.redirect(new URL('/login', requestUrl.origin))
     }
 

@@ -11,13 +11,13 @@ export default function AdminPortal() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // Check session and user on mount
   useEffect(() => {
     console.log('AdminPortal: Component mounted')
     
     const getUser = async () => {
       try {
         console.log('AdminPortal: Checking session...')
-        setLoading(true)
         
         // First check session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession()
@@ -26,16 +26,8 @@ export default function AdminPortal() {
           error: sessionError?.message 
         })
         
-        if (sessionError) {
-          console.error('AdminPortal: Session error:', sessionError.message)
-          throw new Error('Failed to get session')
-        }
-
-        if (!session) {
-          console.log('AdminPortal: No session found, redirecting to login')
-          router.replace('/login')
-          return
-        }
+        if (sessionError) throw sessionError
+        if (!session) throw new Error('No session found')
 
         // Then get user data
         console.log('AdminPortal: Getting user data...')
@@ -45,16 +37,8 @@ export default function AdminPortal() {
           error: userError?.message 
         })
         
-        if (userError) {
-          console.error('AdminPortal: User error:', userError.message)
-          throw new Error('Failed to get user data')
-        }
-
-        if (!user) {
-          console.log('AdminPortal: No user found, redirecting to login')
-          router.replace('/login')
-          return
-        }
+        if (userError) throw userError
+        if (!user) throw new Error('No user found')
 
         // Verify the user email matches the authorized email
         const authorizedEmail = process.env.NEXT_PUBLIC_AUTHORIZED_EMAIL
@@ -65,24 +49,38 @@ export default function AdminPortal() {
         })
         
         if (user.email !== authorizedEmail) {
-          console.error('AdminPortal: Unauthorized email')
           await supabase.auth.signOut()
-          router.replace('/login')
-          return
+          throw new Error('Unauthorized email')
         }
 
         console.log('AdminPortal: Setting user data')
         setUser(user)
       } catch (err) {
         console.error('AdminPortal: Error in auth flow:', err)
-        setError(err instanceof Error ? err.message : 'Failed to load user data')
+        setError(err instanceof Error ? err.message : 'Authentication failed')
+        router.push('/login')
       } finally {
-        console.log('AdminPortal: Finishing loading')
         setLoading(false)
       }
     }
 
     getUser()
+  }, [router, supabase.auth])
+
+  // Listen for auth state changes
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth state changed:', event, session)
+      if (!session) {
+        router.push('/login')
+      }
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
   }, [router, supabase.auth])
 
   if (loading) {
@@ -97,30 +95,12 @@ export default function AdminPortal() {
     )
   }
 
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center space-y-4 p-8 bg-white rounded-lg shadow-lg max-w-md">
-          <div className="text-red-600 text-5xl">⚠️</div>
-          <div className="text-2xl font-bold text-red-600">Error Loading Portal</div>
-          <div className="text-gray-600">{error}</div>
-          <button
-            onClick={() => router.push('/login')}
-            className="mt-4 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-          >
-            Return to Login
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  if (!user) {
+  if (error || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center space-y-4 p-8 bg-white rounded-lg shadow-lg">
-          <div className="text-2xl font-bold text-gray-800">No User Session Found</div>
-          <div className="text-gray-600">Please log in to access the admin portal</div>
+          <div className="text-2xl font-bold text-gray-800">Access Denied</div>
+          <div className="text-gray-600">{error || 'Please log in to access the admin portal'}</div>
           <button
             onClick={() => router.push('/login')}
             className="mt-4 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
@@ -167,14 +147,10 @@ export default function AdminPortal() {
               <button
                 onClick={async () => {
                   try {
-                    console.log('AdminPortal: Signing out...')
-                    const { error } = await supabase.auth.signOut()
-                    if (error) throw error
-                    console.log('AdminPortal: Sign out successful')
-                    router.replace('/login')
+                    await supabase.auth.signOut()
+                    router.push('/login')
                   } catch (err) {
-                    console.error('AdminPortal: Sign out error:', err)
-                    setError('Failed to sign out')
+                    console.error('Sign out error:', err)
                   }
                 }}
                 className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
