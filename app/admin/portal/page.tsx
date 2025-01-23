@@ -15,21 +15,47 @@ export default function AdminPortal() {
     const getUser = async () => {
       try {
         setLoading(true)
-        const { data: { user }, error } = await supabase.auth.getUser()
+        // First check session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession()
         
-        if (error) {
-          throw error
+        if (sessionError) {
+          console.error('Session error:', sessionError.message)
+          throw new Error('Failed to get session')
+        }
+
+        if (!session) {
+          console.error('No session found')
+          router.replace('/login')
+          return
+        }
+
+        // Then get user data
+        const { data: { user }, error: userError } = await supabase.auth.getUser()
+        
+        if (userError) {
+          console.error('User error:', userError.message)
+          throw new Error('Failed to get user data')
         }
 
         if (!user) {
+          console.error('No user found')
+          router.replace('/login')
+          return
+        }
+
+        // Verify the user email matches the authorized email
+        if (user.email !== process.env.NEXT_PUBLIC_AUTHORIZED_EMAIL) {
+          console.error('Unauthorized email')
+          await supabase.auth.signOut()
           router.replace('/login')
           return
         }
 
         setUser(user)
       } catch (err) {
-        console.error('Error fetching user:', err)
-        setError('Failed to load user data')
+        console.error('Error in auth flow:', err)
+        setError(err instanceof Error ? err.message : 'Failed to load user data')
+        router.replace('/login')
       } finally {
         setLoading(false)
       }
@@ -40,11 +66,15 @@ export default function AdminPortal() {
 
   const handleSignOut = async () => {
     try {
-      await supabase.auth.signOut()
+      setLoading(true)
+      const { error } = await supabase.auth.signOut()
+      if (error) throw error
       router.replace('/login')
     } catch (err) {
       console.error('Error signing out:', err)
       setError('Failed to sign out')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -74,6 +104,11 @@ export default function AdminPortal() {
     )
   }
 
+  if (!user) {
+    router.replace('/login')
+    return null
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white shadow-lg">
@@ -83,7 +118,7 @@ export default function AdminPortal() {
               <h1 className="text-xl font-bold">Admin Portal</h1>
             </div>
             <div className="flex items-center">
-              <span className="text-gray-500 mr-4">{user?.email}</span>
+              <span className="text-gray-500 mr-4">{user.email}</span>
               <button
                 onClick={handleSignOut}
                 className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
