@@ -6,8 +6,15 @@ import { unstable_cache } from 'next/cache'
 // Cache time: 24 hours in seconds
 const CACHE_DURATION = 24 * 60 * 60
 
+// Function to get cache key based on request time
+function getCacheKey() {
+  // Round to nearest minute to prevent too many cache entries
+  const timestamp = Math.floor(Date.now() / (60 * 1000))
+  return `blogs-list-${timestamp}`
+}
+
 export async function getAllBlogs(): Promise<BlogWithFormattedDate[]> {
-  // Use unstable_cache with revalidate on navigation
+  // Use dynamic cache key based on time
   return unstable_cache(
     async () => {
       const { data: blogs, error } = await supabase
@@ -26,16 +33,16 @@ export async function getAllBlogs(): Promise<BlogWithFormattedDate[]> {
         formattedDate: format(new Date(blog.date), 'MMMM d, yyyy')
       }))
     },
-    ['blogs-list'],
+    [getCacheKey()], // Use dynamic cache key
     {
-      revalidate: CACHE_DURATION, // Revalidate after 24 hours
-      tags: ['blogs'] // Tag for manual revalidation
+      revalidate: 60, // Cache for 1 minute
+      tags: ['blogs']
     }
   )()
 }
 
 export async function getBlogBySlug(slug: string): Promise<BlogWithFormattedDate | null> {
-  // Cache individual blog posts
+  // Use dynamic cache key for individual blogs too
   return unstable_cache(
     async () => {
       const { data: blog, error } = await supabase
@@ -55,9 +62,9 @@ export async function getBlogBySlug(slug: string): Promise<BlogWithFormattedDate
         formattedDate: format(new Date(blog.date), 'MMMM d, yyyy')
       }
     },
-    [`blog-${slug}`],
+    [`blog-${slug}-${getCacheKey()}`], // Use dynamic cache key
     {
-      revalidate: CACHE_DURATION,
+      revalidate: 60, // Cache for 1 minute
       tags: ['blogs', `blog-${slug}`]
     }
   )()
@@ -75,12 +82,9 @@ export async function createBlog(blog: CreateBlogInput): Promise<Blog | null> {
     return null
   }
 
-  // Revalidate cache
-  await revalidateAllBlogs()
   return data
 }
 
-// Function to update blog status
 export async function updateBlogStatus(slug: string, status: 'published' | 'draft'): Promise<Blog | null> {
   const { data, error } = await supabase
     .from('blogs')
@@ -94,8 +98,6 @@ export async function updateBlogStatus(slug: string, status: 'published' | 'draf
     return null
   }
 
-  // Revalidate cache
-  await revalidateAllBlogs()
   return data
 }
 

@@ -5,9 +5,8 @@ import type { Metadata } from 'next'
 import { ReactElement } from 'react'
 
 // Configure dynamic route behavior
-export const dynamic = 'error'
+export const dynamic = 'force-dynamic'
 export const dynamicParams = true
-export const revalidate = 3600
 
 interface PageProps {
   params: Promise<{ slug: string }>
