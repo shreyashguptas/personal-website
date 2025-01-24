@@ -1,20 +1,40 @@
-export interface LocalBlogPost {
-    slug: string
-    title: string
-    date: Date
-    formattedDate: string
-    description: string
-    content: string
-    type: 'local'
+/** Status of the blog post - either published (visible to users) or draft (only visible to admin) */
+export type BlogStatus = 'published' | 'draft'
+
+/** Represents a blog post in the Supabase database */
+export interface Blog {
+  /** Unique identifier for the blog post (UUID) */
+  id: string
+
+  /** Title of the blog post - appears as the main heading */
+  title: string
+
+  /** Brief summary of the blog post - appears in blog list and metadata */
+  description: string
+
+  /** Full content of the blog post in MDX format */
+  content: string
+
+  /** Publication date in ISO format (e.g., "2024-01-24") */
+  date: string
+
+  /** URL-friendly version of the title used in the blog post URL */
+  slug: string
+
+  /** Current status of the blog post */
+  status: BlogStatus
+
+  /** Timestamp when the blog post was first created */
+  created_at: string
+
+  /** Timestamp when the blog post was last modified */
+  updated_at: string
 }
 
-export interface SubstackBlogPost {
-    title: string
-    date: Date
-    url: string
-    type: 'substack'
+/** Extends the Blog type with a formatted date string for display */
+export type BlogWithFormattedDate = Blog & {
+  /** Date formatted for display (e.g., "January 24, 2024") */
+  formattedDate: string
 }
-
-export type BlogPost = LocalBlogPost | SubstackBlogPost
   
   

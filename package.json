@@ -11,7 +11,7 @@
   "dependencies": {
     "@contentsquare/tag-sdk": "^1.1.0",
     "@mdx-js/loader": "2.3.0",
-    "@mdx-js/react": "2.3.0",
+    "@mdx-js/react": "^2.3.0",
     "@next/mdx": "15.1.0",
     "@radix-ui/react-slot": "^1.0.2",
     "@supabase/ssr": "^0.5.2",
@@ -30,15 +30,16 @@
     "react-dom": "18.2.0",
     "recharts": "^2.10.3",
     "rehype-prism-plus": "^1.6.3",
-    "rehype-stringify": "^10.0.0",
+    "rehype-stringify": "^10.0.1",
     "remark": "^15.0.1",
+    "remark-gfm": "^4.0.0",
     "remark-html": "^16.0.1",
     "remark-parse": "^11.0.0",
-    "remark-rehype": "^11.0.0",
+    "remark-rehype": "^11.1.1",
     "sharp": "^0.33.1",
     "tailwind-merge": "^2.2.0",
     "tailwindcss-animate": "^1.0.7",
-    "unified": "^11.0.4"
+    "unified": "^11.0.5"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.10",

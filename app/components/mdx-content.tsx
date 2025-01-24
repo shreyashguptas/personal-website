@@ -1,14 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { unified } from 'unified'
-import remarkParse from 'remark-parse'
-import remarkRehype from 'remark-rehype'
-import rehypePrism from 'rehype-prism-plus'
-import rehypeStringify from 'rehype-stringify'
 import { MDXProvider } from '@mdx-js/react'
 import { MDXComponents } from 'mdx/types'
 import { MDXImage } from './mdx-image'
+import { processMdx } from '@/app/utils/mdx'
 
 const components: MDXComponents = {
   img: MDXImage,
@@ -23,13 +19,8 @@ export function MDXContent({ content }: Props) {
 
   useEffect(() => {
     async function parseMarkdown() {
-      const result = await unified()
-        .use(remarkParse)
-        .use(remarkRehype)
-        .use(rehypePrism)
-        .use(rehypeStringify)
-        .process(content)
-      setHtml(result.toString())
+      const result = await processMdx(content)
+      setHtml(result)
     }
 
     parseMarkdown()

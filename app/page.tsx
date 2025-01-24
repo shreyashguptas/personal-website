@@ -6,11 +6,11 @@ import { getTopItems } from './utils/content-utils'
 import { ProjectList } from './projects/components/project-list'
 import { BlogList } from './blogs/components/blog-list'
 import { ReadingList } from './readings/components/reading-list'
-import { getBlogPosts } from './utils/mdx'
+import { getAllBlogs } from './blogs/service'
 
 export default async function Home() {
   const topProjects = projects.filter(project => project.pinned || project.image).slice(0, 4)
-  const allPosts = await getBlogPosts()
+  const allPosts = await getAllBlogs()
   const topPosts = allPosts.slice(0, 3)
   const topReadings = readings
     .filter(reading => reading.recommendation)
