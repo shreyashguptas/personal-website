@@ -1,11 +1,8 @@
 /** Status of the blog post - either published (visible to users) or draft (only visible to admin) */
 export type BlogStatus = 'published' | 'draft'
 
-/** Represents a blog post in the Supabase database */
-export interface Blog {
-  /** Unique identifier for the blog post (UUID) */
-  id: string
-
+/** Base interface for creating a new blog post */
+export interface CreateBlogInput {
   /** Title of the blog post - appears as the main heading */
   title: string
 
@@ -18,11 +15,17 @@ export interface Blog {
   /** Publication date in ISO format (e.g., "2024-01-24") */
   date: string
 
-  /** URL-friendly version of the title used in the blog post URL */
-  slug: string
-
   /** Current status of the blog post */
   status: BlogStatus
+}
+
+/** Represents a blog post in the Supabase database */
+export interface Blog extends CreateBlogInput {
+  /** Unique identifier for the blog post (UUID) */
+  id: string
+
+  /** URL-friendly version of the title used in the blog post URL (auto-generated) */
+  slug: string
 
   /** Timestamp when the blog post was first created */
   created_at: string

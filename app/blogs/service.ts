@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import { Blog, BlogWithFormattedDate } from './types'
+import { Blog, BlogWithFormattedDate, CreateBlogInput } from './types'
 import { format } from 'date-fns'
 
 export async function getAllBlogs(): Promise<BlogWithFormattedDate[]> {
@@ -37,4 +37,19 @@ export async function getBlogBySlug(slug: string): Promise<BlogWithFormattedDate
     ...blog,
     formattedDate: format(new Date(blog.date), 'MMMM d, yyyy')
   }
+}
+
+export async function createBlog(blog: CreateBlogInput): Promise<Blog | null> {
+  const { data, error } = await supabase
+    .from('blogs')
+    .insert([blog])
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Error creating blog:', error)
+    return null
+  }
+
+  return data
 } 
