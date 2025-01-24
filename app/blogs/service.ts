@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import { Blog, BlogWithFormattedDate, CreateBlogInput } from './types'
+import { Blog, BlogWithFormattedDate, CreateBlogInput, BlogTag, BlogStatus } from './types'
 import { format } from 'date-fns'
 import { unstable_cache } from 'next/cache'
 import { compileMDX } from '@/lib/mdx'
@@ -18,7 +18,7 @@ function getCacheKey() {
 export async function getAllBlogs(): Promise<BlogWithFormattedDate[]> {
   const { data: blogs, error } = await supabase
     .from('blogs')
-    .select('id, title, description, date, slug, status, tag')
+    .select('*')
     .eq('status', 'published')
     .order('date', { ascending: false })
 
@@ -27,16 +27,16 @@ export async function getAllBlogs(): Promise<BlogWithFormattedDate[]> {
     return []
   }
 
-  return blogs.map((blog: Blog) => ({
+  return blogs.map((blog) => ({
     ...blog,
     formattedDate: format(new Date(blog.date), 'MMMM d, yyyy')
-  }))
+  })) as BlogWithFormattedDate[]
 }
 
 export async function getBlogBySlug(slug: string): Promise<(BlogWithFormattedDate & { source: MDXRemoteSerializeResult }) | null> {
   const { data: blog, error } = await supabase
     .from('blogs')
-    .select('id, title, description, content, date, slug, status, tag')
+    .select('*')
     .eq('slug', slug)
     .eq('status', 'published')
     .single()
@@ -58,7 +58,7 @@ export async function getBlogBySlug(slug: string): Promise<(BlogWithFormattedDat
     ...blog,
     source,
     formattedDate: format(new Date(blog.date), 'MMMM d, yyyy')
-  }
+  } as BlogWithFormattedDate & { source: MDXRemoteSerializeResult }
 }
 
 export async function createBlog(blog: CreateBlogInput): Promise<Blog | null> {
