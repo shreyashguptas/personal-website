@@ -25,7 +25,6 @@ export const projects: Project[] = [
     githubUrl: "https://www.convertshift.com/",
     tags: ["Next.js", "File Converter", "Web Application"],
     date: new Date('2024-12-04'),
-    pinned: true,
     image: "/images/projects/Convert-shift.webp",
     details: "A user-friendly web application built with Next.js that enables seamless file conversion between various formats."
   },
@@ -53,7 +52,6 @@ export const projects: Project[] = [
     githubUrl: "https://github.com/shreyashguptas/Credit-Card-Fraud-Detection-using-Machine-Learning",
     tags: ["PyTorch", "Machine Learning", "Python"],
     date: new Date('2024-01-10'),
-    pinned: true,
     image: "/images/projects/Credit Card Fraud Detection using Machine Learning.jpg",
     details: "A real-time machine learning system using PyTorch to detect fraudulent credit card transactions with high accuracy."
   },
