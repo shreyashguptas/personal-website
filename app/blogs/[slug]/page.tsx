@@ -65,7 +65,7 @@ export default async function BlogPostPage({ params }: PageProps): Promise<React
 
         {/* Blog Content */}
         <article className="prose prose-lg prose-neutral dark:prose-invert max-w-none">
-          <MDXContent content={post.content} />
+          <MDXContent source={post.source} />
         </article>
       </div>
     )

@@ -1,13 +1,3 @@
-const createMDX = require('@next/mdx')
-
-const withMDX = createMDX({
-  options: {
-    remarkPlugins: [],
-    rehypePlugins: [],
-    providerImportSource: "@mdx-js/react",
-  },
-})
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
@@ -30,7 +20,7 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   experimental: {
-    mdxRs: true,
+    mdxRs: false,
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {
@@ -43,4 +33,4 @@ const nextConfig = {
   },
 }
 
-module.exports = withMDX(nextConfig)
+module.exports = nextConfig

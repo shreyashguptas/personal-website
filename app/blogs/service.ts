@@ -2,6 +2,8 @@ import { supabase } from '@/lib/supabase'
 import { Blog, BlogWithFormattedDate, CreateBlogInput } from './types'
 import { format } from 'date-fns'
 import { unstable_cache } from 'next/cache'
+import { compileMDX } from '@/lib/mdx'
+import { MDXRemoteSerializeResult } from 'next-mdx-remote'
 
 // Cache time: 24 hours in seconds
 const CACHE_DURATION = 24 * 60 * 60
@@ -41,7 +43,7 @@ export async function getAllBlogs(): Promise<BlogWithFormattedDate[]> {
   )()
 }
 
-export async function getBlogBySlug(slug: string): Promise<BlogWithFormattedDate | null> {
+export async function getBlogBySlug(slug: string): Promise<(BlogWithFormattedDate & { source: MDXRemoteSerializeResult }) | null> {
   // Use dynamic cache key for individual blogs too
   return unstable_cache(
     async () => {
@@ -57,8 +59,17 @@ export async function getBlogBySlug(slug: string): Promise<BlogWithFormattedDate
         return null
       }
 
+      // Compile MDX content
+      const { source } = await compileMDX(blog.content)
+      
+      if (typeof source === 'string') {
+        console.error('Error compiling MDX for blog:', slug)
+        return null
+      }
+
       return {
         ...blog,
+        source,
         formattedDate: format(new Date(blog.date), 'MMMM d, yyyy')
       }
     },

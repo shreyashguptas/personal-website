@@ -1,34 +1,29 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { MDXProvider } from '@mdx-js/react'
+import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote'
 import { MDXComponents } from 'mdx/types'
 import { MDXImage } from './mdx-image'
-import { processMdx } from '@/app/utils/mdx'
 
 const components: MDXComponents = {
   img: MDXImage,
 }
 
 interface Props {
-  content: string
+  source: MDXRemoteSerializeResult
 }
 
-export function MDXContent({ content }: Props) {
-  const [html, setHtml] = useState('')
-
-  useEffect(() => {
-    async function parseMarkdown() {
-      const result = await processMdx(content)
-      setHtml(result)
-    }
-
-    parseMarkdown()
-  }, [content])
+export function MDXContent({ source }: Props) {
+  if (!source) {
+    return (
+      <div className="text-red-500">
+        Error loading content. Please try again later.
+      </div>
+    )
+  }
 
   return (
-    <MDXProvider components={components}>
-      <div dangerouslySetInnerHTML={{ __html: html }} />
-    </MDXProvider>
+    <div className="mdx-content">
+      <MDXRemote {...source} components={components} />
+    </div>
   )
 } 
