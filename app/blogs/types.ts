@@ -2,7 +2,14 @@
 export type BlogStatus = 'published' | 'draft'
 
 /** Tag for the blog post */
-export type BlogTag = 'Technology' | 'Politics' | 'Business'
+export type BlogTag = 
+  | 'Technology' 
+  | 'Politics' 
+  | 'Business'
+  | 'Personal'
+  | 'Finance'
+  | 'AI'
+  | 'Career'
 
 /** Base interface for creating a new blog post */
 export interface CreateBlogInput {

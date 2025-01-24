@@ -126,4 +126,22 @@ export async function revalidateAllBlogs(): Promise<void> {
   } catch (error) {
     console.error('Error revalidating blogs:', error)
   }
+}
+
+// Add this new function to get unique tags
+export async function getUniqueTags(): Promise<BlogTag[]> {
+  const { data: blogs, error } = await supabase
+    .from('blogs')
+    .select('tag')
+    .eq('status', 'published')
+    .order('tag')
+
+  if (error) {
+    console.error('Error fetching tags:', error)
+    return []
+  }
+
+  // Get unique tags
+  const uniqueTags = Array.from(new Set(blogs.map(blog => blog.tag)))
+  return uniqueTags as BlogTag[]
 } 

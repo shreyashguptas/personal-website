@@ -5,14 +5,12 @@ import { useState, useEffect } from 'react'
 import { BlogWithFormattedDate, BlogTag } from '../types'
 import { ChevronDown } from 'lucide-react'
 
-// All available tags
-const ALL_TAGS: BlogTag[] = ['Technology', 'Politics', 'Business']
-
 interface BlogListProps {
   initialPosts: BlogWithFormattedDate[]
+  availableTags: BlogTag[]
 }
 
-export default function BlogList({ initialPosts }: BlogListProps) {
+export default function BlogList({ initialPosts, availableTags }: BlogListProps) {
   const [selectedTag, setSelectedTag] = useState<BlogTag | 'All'>('All')
   const [isMobile, setIsMobile] = useState(false)
   const [isTagMenuOpen, setIsTagMenuOpen] = useState(false)
@@ -51,7 +49,7 @@ export default function BlogList({ initialPosts }: BlogListProps) {
               >
                 All
               </button>
-              {ALL_TAGS.map(tag => (
+              {availableTags.map(tag => (
                 <button
                   key={tag}
                   onClick={() => {
@@ -81,7 +79,7 @@ export default function BlogList({ initialPosts }: BlogListProps) {
         >
           All
         </button>
-        {ALL_TAGS.map(tag => (
+        {availableTags.map(tag => (
           <button
             key={tag}
             onClick={() => setSelectedTag(tag)}
@@ -111,14 +109,15 @@ export default function BlogList({ initialPosts }: BlogListProps) {
             href={`/blogs/${post.slug}`}
             className="block p-6 bg-card rounded-lg border border-border hover:border-primary transition-colors"
           >
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-2">
-              <h2 className="text-xl font-semibold">{post.title}</h2>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+              <div className="space-y-2">
+                <h2 className="text-xl font-semibold">{post.title}</h2>
+                <div className="text-sm text-muted-foreground">{post.formattedDate}</div>
+              </div>
               <span className="text-sm text-muted-foreground px-3 py-1 bg-primary/10 rounded-full">
                 {post.tag}
               </span>
             </div>
-            <div className="text-sm text-muted-foreground mb-4">{post.formattedDate}</div>
-            <p className="text-muted-foreground">{post.description}</p>
           </Link>
         ))}
       </div>

@@ -4,7 +4,7 @@ import { projects } from './projects/data'
 import { readings } from './readings/data'
 import { getTopItems } from './utils/content-utils'
 import { ProjectList } from './projects/components/project-list'
-import { BlogList } from './blogs/components/blog-list'
+import { BlogPreviewList } from './blogs/components/blog-preview-list'
 import { ReadingList } from './readings/components/reading-list'
 import { getAllBlogs } from './blogs/service'
 
@@ -64,7 +64,7 @@ export default async function Home() {
           <h2 className="text-3xl font-bold mb-2">Latest Blog Posts</h2>
           <p className="text-gray-600">Thoughts on technology, software, and life</p>
         </div>
-        <BlogList posts={topPosts} />
+        <BlogPreviewList posts={topPosts} />
         <div>
           <Link 
             href="/blogs" 
