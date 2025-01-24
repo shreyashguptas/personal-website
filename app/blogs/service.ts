@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import { Blog, BlogWithFormattedDate, CreateBlogInput } from './types'
 import { format } from 'date-fns'
+import { revalidatePath } from 'next/cache'
 
 export async function getAllBlogs(): Promise<BlogWithFormattedDate[]> {
   const { data: blogs, error } = await supabase
@@ -51,5 +52,27 @@ export async function createBlog(blog: CreateBlogInput): Promise<Blog | null> {
     return null
   }
 
+  // Force revalidate the blogs page and the new blog's page
+  revalidatePath('/blogs')
+  if (data?.slug) {
+    revalidatePath(`/blogs/${data.slug}`)
+  }
+
   return data
+}
+
+// Function to force revalidate all blog pages
+export async function revalidateAllBlogs(): Promise<void> {
+  try {
+    // Revalidate the main blogs page
+    revalidatePath('/blogs')
+    
+    // Get all blogs and revalidate individual pages
+    const blogs = await getAllBlogs()
+    for (const blog of blogs) {
+      revalidatePath(`/blogs/${blog.slug}`)
+    }
+  } catch (error) {
+    console.error('Error revalidating blogs:', error)
+  }
 } 
