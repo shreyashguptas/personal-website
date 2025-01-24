@@ -9,7 +9,7 @@ import { ReadingList } from './readings/components/reading-list'
 import { getAllBlogs } from './blogs/service'
 
 export default async function Home() {
-  const topProjects = projects.filter(project => project.pinned || project.image).slice(0, 4)
+  const topProjects = projects.filter(project => project.pinned)
   const allPosts = await getAllBlogs()
   const topPosts = allPosts.slice(0, 3)
   const topReadings = readings
