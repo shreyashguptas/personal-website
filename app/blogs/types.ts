@@ -1,6 +1,9 @@
 /** Status of the blog post - either published (visible to users) or draft (only visible to admin) */
 export type BlogStatus = 'published' | 'draft'
 
+/** Tag for the blog post */
+export type BlogTag = 'Technology' | 'Politics' | 'Business'
+
 /** Base interface for creating a new blog post */
 export interface CreateBlogInput {
   /** Title of the blog post - appears as the main heading */
@@ -17,6 +20,9 @@ export interface CreateBlogInput {
 
   /** Current status of the blog post */
   status: BlogStatus
+
+  /** Tag for the blog post */
+  tag: BlogTag
 }
 
 /** Represents a blog post in the Supabase database */

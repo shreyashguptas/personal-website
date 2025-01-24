@@ -16,69 +16,49 @@ function getCacheKey() {
 }
 
 export async function getAllBlogs(): Promise<BlogWithFormattedDate[]> {
-  // Use dynamic cache key based on time
-  return unstable_cache(
-    async () => {
-      const { data: blogs, error } = await supabase
-        .from('blogs')
-        .select('*')
-        .eq('status', 'published')
-        .order('date', { ascending: false })
+  const { data: blogs, error } = await supabase
+    .from('blogs')
+    .select('id, title, description, date, slug, status, tag')
+    .eq('status', 'published')
+    .order('date', { ascending: false })
 
-      if (error) {
-        console.error('Error fetching blogs:', error)
-        return []
-      }
+  if (error) {
+    console.error('Error fetching blogs:', error)
+    return []
+  }
 
-      return blogs.map((blog: Blog) => ({
-        ...blog,
-        formattedDate: format(new Date(blog.date), 'MMMM d, yyyy')
-      }))
-    },
-    [getCacheKey()], // Use dynamic cache key
-    {
-      revalidate: 60, // Cache for 1 minute
-      tags: ['blogs']
-    }
-  )()
+  return blogs.map((blog: Blog) => ({
+    ...blog,
+    formattedDate: format(new Date(blog.date), 'MMMM d, yyyy')
+  }))
 }
 
 export async function getBlogBySlug(slug: string): Promise<(BlogWithFormattedDate & { source: MDXRemoteSerializeResult }) | null> {
-  // Use dynamic cache key for individual blogs too
-  return unstable_cache(
-    async () => {
-      const { data: blog, error } = await supabase
-        .from('blogs')
-        .select('*')
-        .eq('slug', slug)
-        .eq('status', 'published')
-        .single()
+  const { data: blog, error } = await supabase
+    .from('blogs')
+    .select('id, title, description, content, date, slug, status, tag')
+    .eq('slug', slug)
+    .eq('status', 'published')
+    .single()
 
-      if (error || !blog) {
-        console.error('Error fetching blog:', error)
-        return null
-      }
+  if (error || !blog) {
+    console.error('Error fetching blog:', error)
+    return null
+  }
 
-      // Compile MDX content
-      const { source } = await compileMDX(blog.content)
-      
-      if (typeof source === 'string') {
-        console.error('Error compiling MDX for blog:', slug)
-        return null
-      }
+  // Compile MDX content
+  const { source } = await compileMDX(blog.content)
+  
+  if (typeof source === 'string') {
+    console.error('Error compiling MDX for blog:', slug)
+    return null
+  }
 
-      return {
-        ...blog,
-        source,
-        formattedDate: format(new Date(blog.date), 'MMMM d, yyyy')
-      }
-    },
-    [`blog-${slug}-${getCacheKey()}`], // Use dynamic cache key
-    {
-      revalidate: 60, // Cache for 1 minute
-      tags: ['blogs', `blog-${slug}`]
-    }
-  )()
+  return {
+    ...blog,
+    source,
+    formattedDate: format(new Date(blog.date), 'MMMM d, yyyy')
+  }
 }
 
 export async function createBlog(blog: CreateBlogInput): Promise<Blog | null> {
