@@ -8,6 +8,32 @@
 - Content: MDX for blog posts
 - Styling: Tailwind CSS
 
+## Code Organization
+
+### Directory Structure
+```
+/app
+  /about      - About page and components
+  /blogs      - Blog system with Supabase integration
+  /components - Shared components
+  /projects   - Projects showcase
+  /readings   - Reading list and trends
+  /utils      - Shared utilities
+/documentation - Project documentation
+/lib          - External service clients (Supabase)
+/public       - Static assets
+/scripts      - Build and utility scripts
+```
+
+### Key Dependencies
+Essential dependencies that should not be removed:
+- `@mdx-js/*` - MDX processing
+- `@supabase/*` - Database integration
+- `@vercel/*` - Analytics and performance insights
+- `date-fns` - Date formatting
+- `unified` + plugins - MDX content processing
+- `tailwindcss` + plugins - Styling
+
 ## Key Technical Decisions
 
 ### Dynamic Route Handling
@@ -94,10 +120,15 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_key
 3. Implement proper error boundaries and fallbacks
 4. Follow Next.js 15.1 conventions for dynamic routes
 5. Use proper caching strategies (ISR) for dynamic content
+6. Keep dependencies minimal and up-to-date
+7. Remove unused code and dependencies promptly
+8. Centralize shared types and utilities
 
 ### Performance Considerations
 - Images are optimized using Next.js Image component
 - MDX content is processed on the server side
 - Static generation is used where possible
 - Dynamic routes use ISR for optimal performance
-- Client-side JavaScript is minimized 
+- Client-side JavaScript is minimized
+- Dependencies are kept minimal
+- Unused code is regularly cleaned up 
