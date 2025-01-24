@@ -33,8 +33,68 @@ Essential dependencies that should not be removed:
 - `date-fns` - Date formatting
 - `unified` + plugins - MDX content processing
 - `tailwindcss` + plugins - Styling
+- `sharp` - Image processing and optimization
 
 ## Key Technical Decisions
+
+### Image Optimization
+All images in the project are automatically optimized using Next.js Image component and a custom optimization process:
+
+#### Blog Images
+Blog images are stored in two locations:
+- Original images: `/public/images/blogs-images`
+- Optimized WebP versions: `/public/images/blogs-images-optimized`
+
+The optimization process:
+1. Place new images in `/public/images/blogs-images`
+2. Run the conversion script:
+   ```bash
+   npm run convert-images
+   ```
+   This will:
+   - Create optimized WebP versions in `/blogs-images-optimized`
+   - Resize large images to max width of 1440px
+   - Target file size of 400KB or less
+   - Maintain quality between 40-80%
+   - Use smart subsampling for better text readability
+   - Preserve original files
+   - Show detailed conversion stats (size reduction, dimensions, quality)
+
+Optimization Settings:
+- Format: WebP
+- Max Width: 1440px (responsive)
+- Target Size: ≤400KB
+- Quality Range: 40-80%
+- Smart Features:
+  - Adaptive quality reduction
+  - Text-optimized compression
+  - Orientation preservation
+  - Aspect ratio maintenance
+
+Always reference the optimized versions from `/blogs-images-optimized` in blog posts.
+
+Next.js Image Component Settings:
+```javascript
+<Image
+  src={src}
+  alt={alt}
+  width={800}
+  height={400}
+  quality={75}
+  sizes="(max-width: 800px) 100vw, 800px"
+  priority={false} // Set true only for above-the-fold images
+/>
+```
+
+Configuration in `next.config.js`:
+```javascript
+images: {
+  formats: ['image/webp'],
+  deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+  imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+  minimumCacheTTL: 60,
+}
+```
 
 ### Dynamic Route Handling
 In Next.js 15.1, dynamic routes (like `/blogs/[slug]`) require specific handling of params:
@@ -123,12 +183,16 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_key
 6. Keep dependencies minimal and up-to-date
 7. Remove unused code and dependencies promptly
 8. Centralize shared types and utilities
+9. Use WebP format for all images
+10. Optimize image quality and loading strategies
 
 ### Performance Considerations
-- Images are optimized using Next.js Image component
+- Images are optimized using Next.js Image component and WebP format
 - MDX content is processed on the server side
 - Static generation is used where possible
 - Dynamic routes use ISR for optimal performance
 - Client-side JavaScript is minimized
 - Dependencies are kept minimal
-- Unused code is regularly cleaned up 
+- Unused code is regularly cleaned up
+- Images are lazy-loaded by default
+- Image quality is balanced for size/quality ratio 
