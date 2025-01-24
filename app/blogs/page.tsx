@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { getAllBlogs } from './service'
 
-// Make the page dynamic to ensure fresh data on navigation
+// Force dynamic rendering for fresh data
 export const dynamic = 'force-dynamic'
 
 export default async function BlogPage() {

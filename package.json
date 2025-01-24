@@ -7,13 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "convert-images": "node scripts/convert-blog-images.mjs"
+    "convert-images": "node scripts/convert-blog-images.mjs",
+    "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
     "@contentsquare/tag-sdk": "^1.1.0",
     "@mdx-js/react": "^2.3.0",
     "@radix-ui/react-slot": "^1.0.2",
-    "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.48.0",
     "@vercel/analytics": "^1.1.2",
     "@vercel/speed-insights": "^1.0.9",
@@ -22,7 +22,7 @@
     "date-fns": "^3.2.0",
     "framer-motion": "^10.18.0",
     "lucide-react": "^0.309.0",
-    "next": "15.1.0",
+    "next": "^15.1.6",
     "next-mdx-remote": "^4.4.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -34,6 +34,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^15.1.0",
     "@tailwindcss/typography": "^0.5.10",
     "@types/node": "^20.17.10",
     "@types/react": "18.2.48",
