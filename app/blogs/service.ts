@@ -1,43 +1,66 @@
 import { supabase } from '@/lib/supabase'
 import { Blog, BlogWithFormattedDate, CreateBlogInput } from './types'
 import { format } from 'date-fns'
-import { revalidatePath } from 'next/cache'
+import { unstable_cache } from 'next/cache'
+
+// Cache time: 24 hours in seconds
+const CACHE_DURATION = 24 * 60 * 60
 
 export async function getAllBlogs(): Promise<BlogWithFormattedDate[]> {
-  const { data: blogs, error } = await supabase
-    .from('blogs')
-    .select('*')
-    .eq('status', 'published')
-    .order('date', { ascending: false })
+  // Use unstable_cache with revalidate on navigation
+  return unstable_cache(
+    async () => {
+      const { data: blogs, error } = await supabase
+        .from('blogs')
+        .select('*')
+        .eq('status', 'published')
+        .order('date', { ascending: false })
 
-  if (error) {
-    console.error('Error fetching blogs:', error)
-    return []
-  }
+      if (error) {
+        console.error('Error fetching blogs:', error)
+        return []
+      }
 
-  return blogs.map((blog: Blog) => ({
-    ...blog,
-    formattedDate: format(new Date(blog.date), 'MMMM d, yyyy')
-  }))
+      return blogs.map((blog: Blog) => ({
+        ...blog,
+        formattedDate: format(new Date(blog.date), 'MMMM d, yyyy')
+      }))
+    },
+    ['blogs-list'],
+    {
+      revalidate: CACHE_DURATION, // Revalidate after 24 hours
+      tags: ['blogs'] // Tag for manual revalidation
+    }
+  )()
 }
 
 export async function getBlogBySlug(slug: string): Promise<BlogWithFormattedDate | null> {
-  const { data: blog, error } = await supabase
-    .from('blogs')
-    .select('*')
-    .eq('slug', slug)
-    .eq('status', 'published')
-    .single()
+  // Cache individual blog posts
+  return unstable_cache(
+    async () => {
+      const { data: blog, error } = await supabase
+        .from('blogs')
+        .select('*')
+        .eq('slug', slug)
+        .eq('status', 'published')
+        .single()
 
-  if (error || !blog) {
-    console.error('Error fetching blog:', error)
-    return null
-  }
+      if (error || !blog) {
+        console.error('Error fetching blog:', error)
+        return null
+      }
 
-  return {
-    ...blog,
-    formattedDate: format(new Date(blog.date), 'MMMM d, yyyy')
-  }
+      return {
+        ...blog,
+        formattedDate: format(new Date(blog.date), 'MMMM d, yyyy')
+      }
+    },
+    [`blog-${slug}`],
+    {
+      revalidate: CACHE_DURATION,
+      tags: ['blogs', `blog-${slug}`]
+    }
+  )()
 }
 
 export async function createBlog(blog: CreateBlogInput): Promise<Blog | null> {
@@ -52,26 +75,61 @@ export async function createBlog(blog: CreateBlogInput): Promise<Blog | null> {
     return null
   }
 
-  // Force revalidate the blogs page and the new blog's page
-  revalidatePath('/blogs')
-  if (data?.slug) {
-    revalidatePath(`/blogs/${data.slug}`)
+  // Revalidate cache
+  await revalidateAllBlogs()
+  return data
+}
+
+// Function to update blog status
+export async function updateBlogStatus(slug: string, status: 'published' | 'draft'): Promise<Blog | null> {
+  const { data, error } = await supabase
+    .from('blogs')
+    .update({ status })
+    .eq('slug', slug)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Error updating blog status:', error)
+    return null
   }
 
+  // Revalidate cache
+  await revalidateAllBlogs()
   return data
 }
 
 // Function to force revalidate all blog pages
 export async function revalidateAllBlogs(): Promise<void> {
   try {
-    // Revalidate the main blogs page
-    revalidatePath('/blogs')
+    // Get all blogs to revalidate their individual caches
+    const { data: blogs } = await supabase
+      .from('blogs')
+      .select('slug')
     
-    // Get all blogs and revalidate individual pages
-    const blogs = await getAllBlogs()
-    for (const blog of blogs) {
-      revalidatePath(`/blogs/${blog.slug}`)
+    if (blogs) {
+      // Revalidate each blog's cache
+      for (const blog of blogs) {
+        await unstable_cache(
+          async () => Promise.resolve(undefined),
+          [`blog-${blog.slug}`],
+          {
+            revalidate: 0, // Immediate revalidation
+            tags: ['blogs', `blog-${blog.slug}`]
+          }
+        )()
+      }
     }
+
+    // Revalidate the main blogs list cache
+    await unstable_cache(
+      async () => Promise.resolve(undefined),
+      ['blogs-list'],
+      {
+        revalidate: 0,
+        tags: ['blogs']
+      }
+    )()
   } catch (error) {
     console.error('Error revalidating blogs:', error)
   }
