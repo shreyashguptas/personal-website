@@ -1,9 +1,6 @@
 import Link from 'next/link'
-import { getLastCommitDate } from '../utils/github'
 
-export async function Footer() {
-  const lastUpdated = await getLastCommitDate();
-
+export function Footer() {
   return (
     <footer className="mt-16 pt-8 pb-16">
       <div className="flex flex-col md:flex-row justify-between items-start gap-8">
@@ -35,11 +32,6 @@ export async function Footer() {
               X
             </Link>
           </div>
-          <p className="text-sm">
-            {lastUpdated 
-              ? `Last updated on ${lastUpdated}`
-              : 'Last updated date unavailable'}
-          </p>
         </div>
       </div>
     </footer>

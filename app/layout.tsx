@@ -12,7 +12,7 @@ export const metadata = {
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: '32x32' },
-      { url: '/favicon96.png', sizes: '96x96' },
+      { url: '/favicon96.png', sizes: '96px' },
     ],
     apple: [
       { url: '/apple.png' }
