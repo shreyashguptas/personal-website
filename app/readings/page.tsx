@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { getReadings, getUniqueReadingTags } from '@/lib/supabase/readings'
-import type { Reading } from '@/lib/supabase/readings'
+import { getAllReadings, getUniqueReadingTags, ReadingWithFormattedDate } from '@/lib/supabase'
 import {
   Select,
   SelectContent,
@@ -13,14 +12,14 @@ import {
 
 export default function ReadingsPage() {
   const [selectedTag, setSelectedTag] = useState<string>('all')
-  const [readings, setReadings] = useState<Reading[]>([])
+  const [readings, setReadings] = useState<ReadingWithFormattedDate[]>([])
   const [tags, setTags] = useState<string[]>([])
 
   // Load initial data
   useEffect(() => {
     const loadData = async () => {
       const [readingsData, tagsData] = await Promise.all([
-        getReadings(),
+        getAllReadings(),
         getUniqueReadingTags()
       ])
       setReadings(readingsData)
@@ -32,7 +31,7 @@ export default function ReadingsPage() {
   // Handle tag selection
   const handleTagChange = async (value: string) => {
     setSelectedTag(value)
-    const filteredReadings = await getReadings(value === 'all' ? undefined : value)
+    const filteredReadings = await getAllReadings(value === 'all' ? undefined : value)
     setReadings(filteredReadings)
   }
 
@@ -91,7 +90,7 @@ export default function ReadingsPage() {
                     </span>
                   ))}
                 </div>
-                <div className="text-sm text-muted-foreground">{reading.date}</div>
+                <div className="text-sm text-muted-foreground">{reading.formattedDate}</div>
               </div>
             </a>
           ))}

@@ -1,5 +1,5 @@
 import BlogList from './components/blog-list'
-import { getAllBlogs, getUniqueTags } from './service'
+import { getAllBlogs, getUniqueTags } from '@/lib/supabase'
 
 // Force dynamic rendering for fresh data
 export const dynamic = 'force-dynamic'

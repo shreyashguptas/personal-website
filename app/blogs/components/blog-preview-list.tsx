@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { BlogWithFormattedDate } from '../types'
+import { BlogWithFormattedDate } from '@/lib/supabase'
 
 interface BlogPreviewListProps {
   posts: BlogWithFormattedDate[]

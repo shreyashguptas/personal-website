@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { getBlogBySlug, getAllBlogs } from '../service'
+import { getBlogBySlug, getAllBlogs } from '@/lib/supabase'
 import { MDXContent } from '@/app/components/mdx-content'
 import type { Metadata } from 'next'
 import { ReactElement } from 'react'

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { BlogWithFormattedDate, BlogTag } from '../types'
+import { BlogWithFormattedDate, BlogTag } from '@/lib/supabase'
 import { ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
