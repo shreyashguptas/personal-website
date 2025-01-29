@@ -1,4 +1,4 @@
-import { ProjectList } from './components/project-list'
+import { ProjectList } from '@/components/features/projects/project-list'
 import { projects } from './data'
 
 export default function ProjectsPage() {

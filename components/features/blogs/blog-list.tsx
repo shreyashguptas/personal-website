@@ -11,7 +11,7 @@ interface BlogListProps {
   availableTags: BlogTag[]
 }
 
-export default function BlogList({ initialPosts, availableTags }: BlogListProps) {
+export function BlogList({ initialPosts, availableTags }: BlogListProps) {
   const [selectedTag, setSelectedTag] = useState<BlogTag | 'All'>('All')
   const [isMobile, setIsMobile] = useState(false)
   const [isTagMenuOpen, setIsTagMenuOpen] = useState(false)
@@ -128,5 +128,4 @@ export default function BlogList({ initialPosts, availableTags }: BlogListProps)
       </div>
     </div>
   )
-}
-
+} 

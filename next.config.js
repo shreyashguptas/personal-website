@@ -33,6 +33,10 @@ const nextConfig = {
         fs: false,
       }
     }
+    // Suppress punycode warning
+    config.ignoreWarnings = [
+      { module: /node_modules\/punycode/ }
+    ];
     return config
   },
 }
