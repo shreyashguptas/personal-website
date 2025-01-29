@@ -25,6 +25,7 @@ const nextConfig = {
   poweredByHeader: false,
   experimental: {
     mdxRs: false,
+    esmExternals: 'loose',
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {
@@ -36,7 +37,7 @@ const nextConfig = {
     // Suppress punycode warning
     config.ignoreWarnings = [
       { module: /node_modules\/punycode/ }
-    ];
+    ]
     return config
   },
 }

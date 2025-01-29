@@ -2,9 +2,10 @@ import { notFound } from 'next/navigation'
 import { getBlogBySlug, getAllBlogs, DatabaseError } from '@/lib/supabase'
 import { MDXContent } from '@/components/mdx/mdx-content'
 import type { Metadata } from 'next'
+import type { ReactElement } from 'react'
 
 interface PageProps {
-  params: Promise<{ slug: string }> | { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 export async function generateStaticParams() {
@@ -19,10 +20,12 @@ export async function generateStaticParams() {
   }
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const resolvedParams = await Promise.resolve(params)
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   try {
-    const post = await getBlogBySlug(resolvedParams.slug)
+    const { slug } = await params
+    const post = await getBlogBySlug(slug)
     
     if (!post) {
       return {
@@ -49,10 +52,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default async function BlogPostPage({ params }: PageProps) {
-  const resolvedParams = await Promise.resolve(params)
+export default async function BlogPostPage({
+  params,
+}: PageProps): Promise<ReactElement> {
   try {
-    const post = await getBlogBySlug(resolvedParams.slug)
+    const { slug } = await params
+    const post = await getBlogBySlug(slug)
 
     if (!post) {
       notFound()
