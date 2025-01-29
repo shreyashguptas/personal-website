@@ -3,7 +3,6 @@ import { Inter } from 'next/font/google'
 import { Navbar } from './components/navbar'
 import { Footer } from './components/footer'
 import { ClientAnalytics } from './components/ClientAnalytics'
-import { PageTransition } from './components/page-transition'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -38,9 +37,7 @@ export default function RootLayout({
         <div className="max-w-[1400px] w-[92%] mx-auto py-8">
           <Navbar />
           <main>
-            <PageTransition>
-              {children}
-            </PageTransition>
+            {children}
           </main>
           <Footer />
         </div>
