@@ -11,12 +11,10 @@ export default async function ReadingsPage() {
     ])
     
     return (
-      <main className="container max-w-4xl py-6 lg:py-10">
-        <ReadingList 
-          initialReadings={initialReadings} 
-          availableTags={availableTags} 
-        />
-      </main>
+      <ReadingList 
+        initialReadings={initialReadings} 
+        availableTags={availableTags} 
+      />
     )
   } catch (error) {
     console.error('Error loading readings:', error)

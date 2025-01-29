@@ -25,13 +25,9 @@ export function ReadingList({ initialReadings, availableTags }: ReadingListProps
 
   return (
     <div className="space-y-8">
+      {/* Header Section */}
       <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-bold">Readings</h1>
-          <p className="text-muted-foreground">
-            A collection of books and articles I've been reading.
-          </p>
-        </div>
+        <h1 className="text-3xl font-bold">Readings</h1>
         <Select value={selectedTag} onValueChange={setSelectedTag}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Select a tag" />
@@ -45,7 +41,8 @@ export function ReadingList({ initialReadings, availableTags }: ReadingListProps
           </SelectContent>
         </Select>
       </div>
-      
+
+      {/* Readings Grid */}
       <div className="grid gap-6">
         {filteredReadings.map((reading) => (
           <a
@@ -55,29 +52,32 @@ export function ReadingList({ initialReadings, availableTags }: ReadingListProps
             rel="noopener noreferrer"
             className="block p-6 rounded-lg border hover:bg-accent hover:text-accent-foreground transition-colors"
           >
-            <div className="flex flex-col gap-2">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <h2 className="font-semibold">{reading.title}</h2>
-                  <p className="text-sm text-muted-foreground">by {reading.author}</p>
+            <div className="flex flex-col md:flex-row justify-between gap-4">
+              <div>
+                <div className="flex flex-wrap items-center gap-2 mb-2">
+                  <h2 className="text-xl font-semibold">{reading.title}</h2>
+                  {reading.recommendation && (
+                    <span className="px-3 py-1 text-sm rounded-full bg-primary/10 text-primary whitespace-nowrap">
+                      Top {reading.recommendation} Pick
+                    </span>
+                  )}
                 </div>
-                {reading.recommendation && (
-                  <span className="px-2 py-1 text-xs rounded-full bg-primary/10 text-primary">
-                    Top {reading.recommendation} Pick
-                  </span>
-                )}
+                <div className="flex items-center gap-2">
+                  <p className="text-sm text-muted-foreground">by {reading.author}</p>
+                  <span className="text-sm text-muted-foreground">•</span>
+                  <div className="text-sm text-muted-foreground">{reading.formattedDate}</div>
+                </div>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 items-start">
                 {reading.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-2 py-1 text-xs rounded-full bg-accent/50 text-accent-foreground"
+                    className="px-3 py-1 text-sm rounded-full bg-accent/50 text-accent-foreground whitespace-nowrap"
                   >
                     {tag}
                   </span>
                 ))}
               </div>
-              <div className="text-sm text-muted-foreground">{reading.formattedDate}</div>
             </div>
           </a>
         ))}
