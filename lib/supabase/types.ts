@@ -34,6 +34,19 @@ interface ReadingsTable {
   updated_at: string
 }
 
+interface ProjectsTable {
+  id: string
+  title: string
+  url?: string
+  tags: string[]
+  date: string
+  details: string
+  pinned?: boolean
+  image?: string
+  created_at: string
+  updated_at: string
+}
+
 export interface Database {
   public: {
     Tables: {
@@ -46,6 +59,11 @@ export interface Database {
         Row: ReadingsTable
         Insert: Omit<ReadingsTable, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<ReadingsTable, 'id' | 'created_at' | 'updated_at'>>
+      }
+      projects: {
+        Row: ProjectsTable
+        Insert: Omit<ProjectsTable, 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Omit<ProjectsTable, 'id' | 'created_at' | 'updated_at'>>
       }
     }
   }
