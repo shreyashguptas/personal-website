@@ -3,6 +3,7 @@
 import { Project } from '@/app/projects/types'
 import Link from 'next/link'
 import Image from 'next/image'
+import { cn } from '@/lib/utils'
 
 interface ProjectListProps {
   projects: Project[]
@@ -16,7 +17,10 @@ export function ProjectList({ projects }: ProjectListProps) {
       {projects.map((project, index) => (
         <div key={project.id}>
           <div className="flex flex-col md:flex-row gap-8 items-start">
-            <div className="flex-1 max-w-[calc(100%-732px)] space-y-4">
+            <div className={cn(
+              "flex-1 space-y-4",
+              project.image ? "max-w-[calc(100%-732px)]" : "w-full"
+            )}>
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">
                   {new Date(project.date).getFullYear() === currentYear ? 'Present' : new Date(project.date).getFullYear()}
@@ -38,8 +42,8 @@ export function ProjectList({ projects }: ProjectListProps) {
               )}
             </div>
 
-            <div className="w-full md:w-[700px] relative rounded-lg overflow-hidden">
-              {project.image && (
+            {project.image && (
+              <div className="w-full md:w-[700px] relative rounded-lg overflow-hidden">
                 <Image
                   src={project.image}
                   alt={project.title}
@@ -49,8 +53,8 @@ export function ProjectList({ projects }: ProjectListProps) {
                   sizes="(max-width: 768px) 100vw, 700px"
                   priority
                 />
-              )}
-            </div>
+              </div>
+            )}
           </div>
           
           {/* Add divider if not the last project */}
