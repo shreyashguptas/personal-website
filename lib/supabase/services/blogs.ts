@@ -1,5 +1,5 @@
 import { supabase, handleDatabaseError } from '../config'
-import type { Database } from '../types'
+import type { Database, BlogStatus, BlogTag } from '../types'
 import { format } from 'date-fns'
 import { compileMDX } from '@/lib/mdx'
 import { MDXRemoteSerializeResult } from 'next-mdx-remote'
@@ -8,30 +8,71 @@ type Blog = Database['public']['Tables']['blogs']['Row']
 type BlogInsert = Database['public']['Tables']['blogs']['Insert']
 type BlogUpdate = Database['public']['Tables']['blogs']['Update']
 
-export interface BlogWithFormattedDate extends Blog {
+export interface BlogWithFormattedDate {
+  id: string
+  title: string
+  description: string
+  content: string
+  date: string
   formattedDate: string
+  slug: string
+  status: BlogStatus
+  tag: BlogTag
 }
 
 export interface BlogWithMDX extends BlogWithFormattedDate {
-  source: MDXRemoteSerializeResult
+  contentMDX: any
 }
 
-export async function getAllBlogs(): Promise<BlogWithFormattedDate[]> {
+export interface PaginatedBlogs {
+  blogs: BlogWithFormattedDate[]
+  hasMore: boolean
+}
+
+export async function getAllBlogs(page: number = 1, pageSize: number = 10): Promise<PaginatedBlogs> {
   try {
+    // Calculate range for pagination
+    const from = (page - 1) * pageSize
+    const to = from + pageSize - 1
+
+    // Get total count for pagination
+    const { count } = await supabase
+      .from('blogs')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'published')
+
+    // Get paginated blogs
     const { data: blogs, error } = await supabase
       .from('blogs')
-      .select('*')
+      .select('id, title, description, content, date, slug, status, tag')
       .eq('status', 'published')
       .order('date', { ascending: false })
+      .range(from, to)
 
-    if (error) throw error
+    if (error) {
+      handleDatabaseError(error, 'getAllBlogs')
+    }
 
-    return blogs.map(blog => ({
-      ...blog,
-      formattedDate: format(new Date(blog.date), 'MMMM d, yyyy')
-    }))
+    const formattedBlogs = blogs.map((blog): BlogWithFormattedDate => {
+      const date = new Date(blog.date)
+      return {
+        ...blog,
+        formattedDate: date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        }),
+        content: blog.content.slice(0, 500)
+      }
+    })
+
+    return {
+      blogs: formattedBlogs,
+      hasMore: count ? from + blogs.length < count : false
+    }
   } catch (error) {
-    return handleDatabaseError(error, 'getAllBlogs')
+    handleDatabaseError(error, 'getAllBlogs')
+    return { blogs: [], hasMore: false }
   }
 }
 

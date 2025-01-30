@@ -1,20 +1,28 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
-import { BlogWithFormattedDate, BlogTag } from '@/lib/supabase'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { BlogWithFormattedDate, BlogTag, PaginatedBlogs } from '@/lib/supabase'
 import { ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Card } from '@/components/ui/card'
 
 interface BlogListProps {
   initialPosts: BlogWithFormattedDate[]
   availableTags: BlogTag[]
+  hasMore: boolean
+  onLoadMore: (page: number) => Promise<PaginatedBlogs>
 }
 
-export function BlogList({ initialPosts, availableTags }: BlogListProps) {
+export function BlogList({ initialPosts, availableTags, hasMore: initialHasMore, onLoadMore }: BlogListProps) {
+  const [posts, setPosts] = useState<BlogWithFormattedDate[]>(initialPosts)
+  const [hasMore, setHasMore] = useState(initialHasMore)
   const [selectedTag, setSelectedTag] = useState<BlogTag | 'All'>('All')
   const [isMobile, setIsMobile] = useState(false)
   const [isTagMenuOpen, setIsTagMenuOpen] = useState(false)
+  const [page, setPage] = useState(1)
+  const [loading, setLoading] = useState(false)
+  const observerTarget = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const checkIfMobile = () => {
@@ -25,9 +33,44 @@ export function BlogList({ initialPosts, availableTags }: BlogListProps) {
     return () => window.removeEventListener('resize', checkIfMobile)
   }, [])
 
+  const loadMore = useCallback(async () => {
+    if (loading || !hasMore) return
+    
+    try {
+      setLoading(true)
+      const nextPage = page + 1
+      const data = await onLoadMore(nextPage)
+      
+      setPosts(prev => [...prev, ...data.blogs])
+      setHasMore(data.hasMore)
+      setPage(nextPage)
+    } catch (error) {
+      console.error('Error loading more posts:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [loading, hasMore, page, onLoadMore])
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting) {
+          loadMore()
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current)
+    }
+
+    return () => observer.disconnect()
+  }, [loadMore])
+
   const filteredPosts = selectedTag === 'All' 
-    ? initialPosts 
-    : initialPosts.filter(post => post.tag === selectedTag)
+    ? posts 
+    : posts.filter(post => post.tag === selectedTag)
 
   const TagSelector = () => {
     if (isMobile) {
@@ -102,29 +145,55 @@ export function BlogList({ initialPosts, availableTags }: BlogListProps) {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-16">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <h1 className="text-3xl font-bold">Blogs</h1>
         <TagSelector />
       </div>
-      <div className="grid gap-6">
+      <div className="space-y-16">
         {filteredPosts.map((post) => (
-          <Link
-            key={post.id}
-            href={`/blogs/${post.slug}`}
-            className="block p-6 rounded-lg border hover:bg-accent hover:text-accent-foreground transition-colors"
-          >
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-              <div className="space-y-2">
-                <h2 className="text-xl font-semibold">{post.title}</h2>
-                <div className="text-sm text-muted-foreground">{post.formattedDate}</div>
+          <div key={post.id}>
+            <div className="flex flex-col md:flex-row gap-8 items-start">
+              <div className="flex-1 max-w-[calc(100%-432px)] space-y-4">
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">{post.formattedDate}</p>
+                  <h2 className="text-2xl font-semibold">{post.title}</h2>
+                </div>
+                
+                <p className="text-muted-foreground">{post.description}</p>
+                
+                <Link
+                  href={`/blogs/${post.slug}`}
+                  className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                >
+                  Read
+                </Link>
               </div>
-              <span className="text-sm text-muted-foreground px-3 py-1 bg-accent/50 rounded-full">
-                {post.tag}
-              </span>
+
+              <Card className="w-full md:w-[400px] h-[200px] p-6 bg-muted/50">
+                <p className="line-clamp-6 text-sm text-muted-foreground">
+                  {post.content}
+                </p>
+              </Card>
             </div>
-          </Link>
+            
+            {post.id !== filteredPosts[filteredPosts.length - 1].id && (
+              <div className="mt-16 border-t border-border" />
+            )}
+          </div>
         ))}
+        
+        {/* Intersection Observer target */}
+        {hasMore && (
+          <div 
+            ref={observerTarget} 
+            className="h-10 flex items-center justify-center"
+          >
+            {loading && (
+              <div className="text-sm text-muted-foreground">Loading more blogs...</div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
