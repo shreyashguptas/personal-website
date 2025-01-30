@@ -18,4 +18,9 @@ export class DatabaseError extends Error {
 export function handleDatabaseError(error: any, context: string): never {
   console.error(`Database error in ${context}:`, error)
   throw new DatabaseError(`Error in ${context}`, error)
+}
+
+export const supabaseConfig = {
+  url: process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
 } 

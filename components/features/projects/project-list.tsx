@@ -16,7 +16,7 @@ export function ProjectList({ projects }: ProjectListProps) {
       {projects.map((project, index) => (
         <div key={project.id}>
           <div className="flex flex-col md:flex-row gap-8 items-start">
-            <div className="flex-1 max-w-[calc(100%-432px)] space-y-4">
+            <div className="flex-1 max-w-[calc(100%-732px)] space-y-4">
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">
                   {new Date(project.date).getFullYear() === currentYear ? 'Present' : new Date(project.date).getFullYear()}
@@ -38,14 +38,16 @@ export function ProjectList({ projects }: ProjectListProps) {
               )}
             </div>
 
-            <div className="w-full md:w-[400px] aspect-[4/3] relative rounded-lg overflow-hidden">
+            <div className="w-full md:w-[700px] relative rounded-lg overflow-hidden">
               {project.image && (
                 <Image
                   src={project.image}
                   alt={project.title}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 400px"
+                  width={700}
+                  height={394}
+                  className="object-contain w-full"
+                  sizes="(max-width: 768px) 100vw, 700px"
+                  priority
                 />
               )}
             </div>

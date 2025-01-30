@@ -1,13 +1,6 @@
 export type BlogStatus = 'published' | 'draft'
 
-export type BlogTag = 
-  | 'Technology' 
-  | 'Politics' 
-  | 'Business'
-  | 'Personal'
-  | 'Finance'
-  | 'AI'
-  | 'Career'
+export type BlogTag = string
 
 interface BlogsTable {
   id: string
