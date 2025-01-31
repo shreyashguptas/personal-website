@@ -48,13 +48,14 @@ export function ProjectList({ initialProjects, hasMore: initialHasMore, onLoadMo
       { threshold: 1.0 }
     )
 
-    if (observerTarget.current) {
-      observer.observe(observerTarget.current)
+    const currentObserverTarget = observerTarget.current
+    if (currentObserverTarget) {
+      observer.observe(currentObserverTarget)
     }
 
     return () => {
-      if (observerTarget.current) {
-        observer.unobserve(observerTarget.current)
+      if (currentObserverTarget) {
+        observer.unobserve(currentObserverTarget)
       }
     }
   }, [hasMore, loading, onLoadMore, page])

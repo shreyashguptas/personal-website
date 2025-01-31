@@ -15,7 +15,7 @@ export async function compileMDX(source: string): Promise<CompileMDXResult> {
       parseFrontmatter: true,
       mdxOptions: {
         remarkPlugins: [remarkGfm],
-        rehypePlugins: [[rehypePrism, { ignoreMissing: true }]],
+        rehypePlugins: [[rehypePrism as any, { ignoreMissing: true }]],
       },
     })
 
