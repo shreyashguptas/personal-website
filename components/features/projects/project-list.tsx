@@ -29,7 +29,13 @@ export function ProjectList({ initialProjects, hasMore: initialHasMore, onLoadMo
           try {
             const nextPage = page + 1
             const { projects: newProjects, hasMore: newHasMore } = await onLoadMore(nextPage)
-            setProjects(prev => [...prev, ...newProjects])
+            setProjects(prev => {
+              // Create a Set of existing project IDs for efficient lookup
+              const existingIds = new Set(prev.map(p => p.id))
+              // Only add projects that don't already exist
+              const uniqueNewProjects = newProjects.filter(p => !existingIds.has(p.id))
+              return [...prev, ...uniqueNewProjects]
+            })
             setHasMore(newHasMore)
             setPage(nextPage)
           } catch (error) {
