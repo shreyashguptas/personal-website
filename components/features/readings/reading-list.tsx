@@ -62,11 +62,7 @@ export function ReadingList({ initialReadings, availableTags }: ReadingListProps
                     </span>
                   )}
                 </div>
-                <div className="flex items-center gap-2">
-                  <p className="text-sm text-muted-foreground">by {reading.author}</p>
-                  <span className="text-sm text-muted-foreground">•</span>
-                  <div className="text-sm text-muted-foreground">{reading.formattedDate}</div>
-                </div>
+                <p className="text-sm text-muted-foreground">by {reading.author}</p>
               </div>
               <div className="flex flex-wrap gap-2 items-start">
                 {reading.tags.map((tag) => (
