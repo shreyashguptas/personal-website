@@ -1,23 +1,21 @@
 import { ProjectList } from '@/components/features/projects/project-list'
-import { createClient } from '@/lib/supabase/server'
-import { Database } from '@/lib/supabase/types'
+import { getAllProjects } from '@/lib/supabase'
+import { loadMoreProjects } from './actions'
 
-export const revalidate = 3600 // Revalidate every hour
+// Force dynamic rendering for fresh data
+export const dynamic = 'force-dynamic'
 
 export default async function ProjectsPage() {
-  const supabase = createClient()
-  
-  const { data: projects } = await supabase
-    .from('projects')
-    .select('*')
-    .order('date', { ascending: false })
-
-  if (!projects) return null
+  const initialData = await getAllProjects(1)
 
   return (
     <div className="space-y-8">
       <h1 className="text-3xl font-bold">Projects</h1>
-      <ProjectList projects={projects} />
+      <ProjectList 
+        initialProjects={initialData.projects}
+        hasMore={initialData.hasMore}
+        onLoadMore={loadMoreProjects}
+      />
     </div>
   )
 }

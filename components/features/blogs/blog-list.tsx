@@ -154,7 +154,7 @@ export function BlogList({ initialPosts, availableTags, hasMore: initialHasMore,
         {filteredPosts.map((post) => (
           <div key={post.id}>
             <div className="flex flex-col md:flex-row gap-8 items-start">
-              <div className="flex-1 max-w-[calc(100%-432px)] space-y-4">
+              <div className="flex-1 max-w-[calc(100%-632px)] space-y-4">
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">{post.formattedDate}</p>
                   <h2 className="text-2xl font-semibold">{post.title}</h2>
@@ -170,11 +170,16 @@ export function BlogList({ initialPosts, availableTags, hasMore: initialHasMore,
                 </Link>
               </div>
 
-              <Card className="w-full md:w-[400px] h-[200px] p-6 bg-muted/50">
-                <p className="line-clamp-6 text-sm text-muted-foreground">
-                  {post.content}
-                </p>
-              </Card>
+              <Link 
+                href={`/blogs/${post.slug}`}
+                className="block w-full md:w-[600px] group"
+              >
+                <Card className="h-[300px] p-8 bg-muted/50 transition-colors hover:bg-muted group-hover:border-primary">
+                  <p className="text-base text-muted-foreground leading-relaxed line-clamp-[10]">
+                    {post.content}
+                  </p>
+                </Card>
+              </Link>
             </div>
             
             {post.id !== filteredPosts[filteredPosts.length - 1].id && (

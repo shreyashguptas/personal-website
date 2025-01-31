@@ -4,13 +4,57 @@ import { Project } from '@/app/projects/types'
 import Link from 'next/link'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { PaginatedProjects } from '@/lib/supabase/services/projects'
 
 interface ProjectListProps {
-  projects: Project[]
+  initialProjects: Project[]
+  hasMore: boolean
+  onLoadMore: (page: number) => Promise<PaginatedProjects>
 }
 
-export function ProjectList({ projects }: ProjectListProps) {
+export function ProjectList({ initialProjects, hasMore: initialHasMore, onLoadMore }: ProjectListProps) {
+  const [projects, setProjects] = useState<Project[]>(initialProjects)
+  const [hasMore, setHasMore] = useState(initialHasMore)
+  const [page, setPage] = useState(1)
+  const [loading, setLoading] = useState(false)
+  const observerTarget = useRef<HTMLDivElement>(null)
   const currentYear = new Date().getFullYear()
+
+  const loadMore = useCallback(async () => {
+    if (loading || !hasMore) return
+    
+    try {
+      setLoading(true)
+      const nextPage = page + 1
+      const data = await onLoadMore(nextPage)
+      
+      setProjects(prev => [...prev, ...data.projects])
+      setHasMore(data.hasMore)
+      setPage(nextPage)
+    } catch (error) {
+      console.error('Error loading more projects:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [loading, hasMore, page, onLoadMore])
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting) {
+          loadMore()
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current)
+    }
+
+    return () => observer.disconnect()
+  }, [loadMore])
 
   return (
     <div className="space-y-16">
@@ -63,6 +107,18 @@ export function ProjectList({ projects }: ProjectListProps) {
           )}
         </div>
       ))}
+
+      {/* Intersection Observer target */}
+      {hasMore && (
+        <div 
+          ref={observerTarget} 
+          className="h-10 flex items-center justify-center"
+        >
+          {loading && (
+            <div className="text-sm text-muted-foreground">Loading more projects...</div>
+          )}
+        </div>
+      )}
     </div>
   )
 } 

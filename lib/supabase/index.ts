@@ -29,6 +29,12 @@ export {
   deleteReading,
 } from './services/readings'
 
+// Export project-related functionality
+export {
+  type PaginatedProjects,
+  getAllProjects,
+} from './services/projects'
+
 export function getStorageFileUrl(bucket: string, path: string) {
   const supabase = createClient(supabaseConfig.url, supabaseConfig.anonKey)
   const { data } = supabase.storage.from(bucket).getPublicUrl(path)
