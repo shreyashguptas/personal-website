@@ -29,18 +29,18 @@ export function MDXImage({ src, alt, width, height }: MDXImageProps) {
 
   return (
     <figure className="my-8">
-      <div className="relative w-full aspect-[16/9]">
+      <div className="relative max-w-full w-full">
         <Image
           src={getOptimizedSrc()}
           alt={alt || 'Blog post image'}
-          fill
-          className="object-cover rounded-lg"
+          width={width || 1200}
+          height={height || 800}
+          className="rounded-lg w-full h-auto max-h-[80vh] object-contain"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 85vw, 80vw"
           priority={false}
           quality={75}
         />
       </div>
-      {alt && <figcaption className="text-sm text-center mt-2 text-muted-foreground">{alt}</figcaption>}
     </figure>
   )
 } 
