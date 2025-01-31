@@ -5,4 +5,5 @@ export interface Section {
   Icon: LucideIcon
   content: string
   image: string
+  birthDate?: Date
 } 

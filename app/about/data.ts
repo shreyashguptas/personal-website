@@ -1,11 +1,24 @@
 import { Section } from './types'
 import { BookOpen, Dog, MountainIcon as Mountains, Ribbon, Candy } from 'lucide-react'
 
+function calculateAge(birthDate: Date): number {
+  const today = new Date()
+  let age = today.getFullYear() - birthDate.getFullYear()
+  const monthDiff = today.getMonth() - birthDate.getMonth()
+  
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--
+  }
+  
+  return age
+}
+
 export const sections: Section[] = [
   {
     title: "My dog Kunu",
     Icon: Dog,
-    content: `Kunu is my ${new Date().getFullYear() - 2012} year old Husky. She loves treats, treats and more treats.`,
+    birthDate: new Date('2012-11-29'),
+    content: `Kunu is my ${calculateAge(new Date('2012-11-29'))} year old Husky. She loves treats, treats and more treats.`,
     image: "/images/kunu.jpg",
   },
   {

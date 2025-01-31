@@ -12,7 +12,7 @@ export const metadata = {
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: '32x32' },
-      { url: '/favicon96.png', sizes: '96x96' },
+      { url: '/favicon96.png', sizes: '96px' },
     ],
     apple: [
       { url: '/apple.png' }
@@ -34,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="max-w-[1400px] w-[92%] mx-auto py-8">
           <Navbar />
           <main>
             {children}

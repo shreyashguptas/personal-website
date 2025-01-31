@@ -1,15 +1,23 @@
-import BlogList from './components/blog-list'
-import { getAllBlogs, getUniqueTags } from './service'
+import { BlogList } from '@/components/features/blogs/blog-list'
+import { getAllBlogs, getUniqueTags } from '@/lib/supabase'
+import { loadMoreBlogs } from './actions'
 
 // Force dynamic rendering for fresh data
 export const dynamic = 'force-dynamic'
 
-export default async function BlogPage() {
-  const [initialPosts, availableTags] = await Promise.all([
-    getAllBlogs(),
+export default async function BlogsPage() {
+  const [initialData, tags] = await Promise.all([
+    getAllBlogs(1),
     getUniqueTags()
   ])
-  
-  return <BlogList initialPosts={initialPosts} availableTags={availableTags} />
+
+  return (
+    <BlogList
+      initialPosts={initialData.blogs}
+      availableTags={tags}
+      hasMore={initialData.hasMore}
+      onLoadMore={loadMoreBlogs}
+    />
+  )
 }
 

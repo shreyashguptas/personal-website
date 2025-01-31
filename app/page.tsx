@@ -1,38 +1,11 @@
 import Image from 'next/image'
-import Link from 'next/link'
-import { projects } from './projects/data'
-import { readings } from './readings/data'
-import { getTopItems } from './utils/content-utils'
-import { ProjectList } from './projects/components/project-list'
-import { BlogPreviewList } from './blogs/components/blog-preview-list'
-import { ReadingList } from './readings/components/reading-list'
-import { getAllBlogs } from './blogs/service'
 
-export default async function Home() {
-  const topProjects = projects.filter(project => project.pinned)
-  const allPosts = await getAllBlogs()
-  const topPosts = allPosts.slice(0, 3)
-  const topReadings = readings
-    .filter(reading => reading.recommendation)
-    .sort((a, b) => (a.recommendation || 0) - (b.recommendation || 0))
-    .slice(0, 3)
-
+export default function Home() {
   return (
-    <div className="space-y-16">
-      <section className="space-y-6">
-        <div className="flex flex-col md:flex-row gap-8 items-start">
-          <div className="flex-1 space-y-6">
-            <h1 className="text-3xl font-bold">Introduction</h1>
-            <p className="text-lg text-foreground">
-              I am driven by my curiosity in technology, business, economics, history and politics to understand how they shape the world we live in.
-              Things outside of them bore me.
-              <br />
-              <br />
-              My mission centers on creating beautiful software, working with cutting-edge hardware while maintaining a strong mind and body.
-            </p>
-          </div>
-
-          <div className="w-full md:w-[400px] h-[400px] relative overflow-hidden rounded-lg">
+    <div>
+      <section className="min-h-[calc(100vh-12rem)] flex flex-col justify-center">
+        <div className="space-y-10">
+          <div className="w-[140px] h-[140px] md:w-[160px] md:h-[160px] relative overflow-hidden rounded-lg">
             <Image
               src="/images/headshot.jpg"
               alt="Shreyash Gupta Headshot"
@@ -40,54 +13,10 @@ export default async function Home() {
               className="object-cover"
             />
           </div>
-        </div>
-      </section>
-
-      <section className="space-y-8">
-        <div>
-          <h2 className="text-3xl font-bold mb-2">Live Projects</h2>
-          <p className="text-gray-600">Check out some of my recent work</p>
-        </div>
-        <ProjectList projects={topProjects} showImages={true} showTags={false} />
-        <div>
-          <Link 
-            href="/projects" 
-            className="inline-block px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
-          >
-            View all projects →
-          </Link>
-        </div>
-      </section>
-
-      <section className="space-y-8">
-        <div>
-          <h2 className="text-3xl font-bold mb-2">Latest Blog Posts</h2>
-          <p className="text-gray-600">Thoughts on technology, software, and life</p>
-        </div>
-        <BlogPreviewList posts={topPosts} />
-        <div>
-          <Link 
-            href="/blogs" 
-            className="inline-block px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
-          >
-            View all posts →
-          </Link>
-        </div>
-      </section>
-
-      <section className="space-y-8">
-        <div>
-          <h2 className="text-3xl font-bold mb-2">Recommended Readings</h2>
-          <p className="text-gray-600">Books that have shaped my thinking</p>
-        </div>
-        <ReadingList readings={topReadings} isRecommendations={true} />
-        <div>
-          <Link 
-            href="/readings" 
-            className="inline-block px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
-          >
-            View all readings →
-          </Link>
+          
+          <h1 className="text-[1.75rem] md:text-[2.25rem] lg:text-[2.75rem] font-normal tracking-[-0.02em] leading-[1.2]">
+          Hi, I'm Shreyash—a 24-year-old Associate Director of Data Analytics and technologist passionate about how technology shapes our world, building software that empowers informed decision-making.
+          </h1>
         </div>
       </section>
     </div>

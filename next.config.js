@@ -23,9 +23,6 @@ const nextConfig = {
   output: 'standalone',
   reactStrictMode: true,
   poweredByHeader: false,
-  experimental: {
-    mdxRs: false,
-  },
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
@@ -33,8 +30,13 @@ const nextConfig = {
         fs: false,
       }
     }
+    // Suppress punycode warning
+    config.ignoreWarnings = [
+      { module: /node_modules\/punycode/ }
+    ]
     return config
   },
+  transpilePackages: ['next-mdx-remote']
 }
 
 module.exports = withBundleAnalyzer(nextConfig)

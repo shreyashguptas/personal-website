@@ -1,25 +1,30 @@
 import { notFound } from 'next/navigation'
-import { getBlogBySlug, getAllBlogs } from '../service'
-import { MDXContent } from '@/app/components/mdx-content'
+import { getBlogBySlug, getAllBlogSlugs, DatabaseError } from '@/lib/supabase'
+import { MDXContent } from '@/components/mdx/mdx-content'
 import type { Metadata } from 'next'
-import { ReactElement } from 'react'
-
-// Configure dynamic route behavior
-export const dynamic = 'force-dynamic'
-export const dynamicParams = true
+import type { ReactElement } from 'react'
 
 interface PageProps {
   params: Promise<{ slug: string }>
 }
 
+export const dynamic = 'error'
+export const dynamicParams = true
+export const revalidate = 3600
+
 export async function generateStaticParams() {
-  const posts = await getAllBlogs()
-  return posts.map((post) => ({
-    slug: post.slug,
-  }))
+  try {
+    const slugs = await getAllBlogSlugs()
+    return slugs.map((slug) => ({ slug }))
+  } catch (error) {
+    console.error('Error generating static params:', error)
+    return []
+  }
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   try {
     const { slug } = await params
     const post = await getBlogBySlug(slug)
@@ -35,6 +40,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: post.description,
     }
   } catch (error) {
+    if (error instanceof DatabaseError) {
+      console.error('Database error generating metadata:', error)
+      return {
+        title: 'Unable to Load Blog Post',
+        description: 'We are experiencing technical difficulties.',
+      }
+    }
     console.error('Error generating metadata:', error)
     return {
       title: 'Error Loading Blog Post',
@@ -42,7 +54,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default async function BlogPostPage({ params }: PageProps): Promise<ReactElement> {
+export default async function BlogPostPage({
+  params,
+}: PageProps): Promise<ReactElement> {
   try {
     const { slug } = await params
     const post = await getBlogBySlug(slug)
@@ -70,6 +84,16 @@ export default async function BlogPostPage({ params }: PageProps): Promise<React
       </div>
     )
   } catch (error) {
+    if (error instanceof DatabaseError) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
+          <h1 className="text-2xl font-bold">Unable to Load Blog Post</h1>
+          <p className="text-muted-foreground">
+            We're having trouble connecting to our database. Please try again later.
+          </p>
+        </div>
+      )
+    }
     console.error('Error loading blog post:', error)
     notFound()
   }
