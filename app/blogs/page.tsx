@@ -12,14 +12,12 @@ export default async function BlogsPage() {
   ])
 
   return (
-    <main className="container py-6 md:py-8">
-      <BlogList
-        initialPosts={initialData.blogs}
-        availableTags={tags}
-        hasMore={initialData.hasMore}
-        onLoadMore={loadMoreBlogs}
-      />
-    </main>
+    <BlogList
+      initialPosts={initialData.blogs}
+      availableTags={tags}
+      hasMore={initialData.hasMore}
+      onLoadMore={loadMoreBlogs}
+    />
   )
 }
 
