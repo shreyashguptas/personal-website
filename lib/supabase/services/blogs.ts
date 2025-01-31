@@ -21,7 +21,8 @@ export interface BlogWithFormattedDate {
 }
 
 export interface BlogWithMDX extends BlogWithFormattedDate {
-  contentMDX: any
+  source: MDXRemoteSerializeResult
+  formattedDate: string
 }
 
 export interface PaginatedBlogs {
@@ -29,6 +30,36 @@ export interface PaginatedBlogs {
   hasMore: boolean
 }
 
+/**
+ * Get all published blog slugs for static path generation
+ * @returns Array of blog slugs
+ */
+export async function getAllBlogSlugs(): Promise<string[]> {
+  try {
+    const { data: blogs, error } = await supabase
+      .from('blogs')
+      .select('slug')
+      .eq('status', 'published')
+      .order('date', { ascending: false })
+
+    if (error) {
+      handleDatabaseError(error, 'getAllBlogSlugs')
+      return []
+    }
+
+    return blogs.map(blog => blog.slug)
+  } catch (error) {
+    console.error('Error getting blog slugs:', error)
+    return []
+  }
+}
+
+/**
+ * Get paginated blog posts
+ * @param page Page number (1-based)
+ * @param pageSize Number of posts per page
+ * @returns Paginated blog posts with hasMore flag
+ */
 export async function getAllBlogs(page: number = 1, pageSize: number = 10): Promise<PaginatedBlogs> {
   try {
     // Calculate range for pagination
@@ -51,20 +82,14 @@ export async function getAllBlogs(page: number = 1, pageSize: number = 10): Prom
 
     if (error) {
       handleDatabaseError(error, 'getAllBlogs')
+      return { blogs: [], hasMore: false }
     }
 
-    const formattedBlogs = blogs.map((blog): BlogWithFormattedDate => {
-      const date = new Date(blog.date)
-      return {
-        ...blog,
-        formattedDate: date.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        }),
-        content: blog.content.slice(0, 500)
-      }
-    })
+    const formattedBlogs = blogs.map((blog): BlogWithFormattedDate => ({
+      ...blog,
+      formattedDate: format(new Date(blog.date), 'MMMM d, yyyy'),
+      content: blog.content.slice(0, 500)
+    }))
 
     return {
       blogs: formattedBlogs,
@@ -76,6 +101,11 @@ export async function getAllBlogs(page: number = 1, pageSize: number = 10): Prom
   }
 }
 
+/**
+ * Get a single blog post by slug
+ * @param slug Blog post slug
+ * @returns Blog post with MDX content or null if not found
+ */
 export async function getBlogBySlug(slug: string): Promise<BlogWithMDX | null> {
   try {
     const { data: blog, error } = await supabase

@@ -12,7 +12,9 @@ export type { BlogStatus, BlogTag } from './types'
 export {
   type BlogWithFormattedDate,
   type BlogWithMDX,
+  type PaginatedBlogs,
   getAllBlogs,
+  getAllBlogSlugs,
   getBlogBySlug,
   createBlog,
   updateBlogStatus,

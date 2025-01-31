@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { getBlogBySlug, getAllBlogs, DatabaseError } from '@/lib/supabase'
+import { getBlogBySlug, getAllBlogSlugs, DatabaseError } from '@/lib/supabase'
 import { MDXContent } from '@/components/mdx/mdx-content'
 import type { Metadata } from 'next'
 import type { ReactElement } from 'react'
@@ -8,12 +8,14 @@ interface PageProps {
   params: Promise<{ slug: string }>
 }
 
+export const dynamic = 'error'
+export const dynamicParams = true
+export const revalidate = 3600
+
 export async function generateStaticParams() {
   try {
-    const posts = await getAllBlogs()
-    return posts.map((post) => ({
-      slug: post.slug,
-    }))
+    const slugs = await getAllBlogSlugs()
+    return slugs.map((slug) => ({ slug }))
   } catch (error) {
     console.error('Error generating static params:', error)
     return []
