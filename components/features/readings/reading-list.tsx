@@ -52,23 +52,36 @@ export function ReadingList({ initialReadings, availableTags }: ReadingListProps
             rel="noopener noreferrer"
             className="block p-6 rounded-lg border hover:bg-accent hover:text-accent-foreground transition-colors"
           >
-            <div className="flex flex-col md:flex-row justify-between gap-4">
-              <div>
-                <div className="flex flex-wrap items-center gap-2 mb-2">
+            <div className="space-y-4">
+              {/* Title and Recommendation */}
+              <div className="space-y-2">
+                {/* Recommendation Badge - Show above title on mobile */}
+                {reading.recommendation && (
+                  <div className="flex md:hidden mb-2">
+                    <span className="inline-flex px-3 py-1 text-sm rounded-full bg-primary/10 text-primary whitespace-nowrap">
+                      Top {reading.recommendation} Pick
+                    </span>
+                  </div>
+                )}
+                
+                <div className="flex flex-wrap gap-2 items-start">
                   <h2 className="text-xl font-semibold">{reading.title}</h2>
+                  {/* Recommendation Badge - Show inline with title on desktop */}
                   {reading.recommendation && (
-                    <span className="px-3 py-1 text-sm rounded-full bg-primary/10 text-primary whitespace-nowrap">
+                    <span className="hidden md:inline-flex px-3 py-1 text-sm rounded-full bg-primary/10 text-primary whitespace-nowrap">
                       Top {reading.recommendation} Pick
                     </span>
                   )}
                 </div>
                 <p className="text-sm text-muted-foreground">by {reading.author}</p>
               </div>
-              <div className="flex flex-wrap gap-2 items-start">
+
+              {/* Tags */}
+              <div className="flex flex-wrap gap-2">
                 {reading.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-3 py-1 text-sm rounded-full bg-accent/50 text-accent-foreground whitespace-nowrap"
+                    className="inline-flex px-3 py-1 text-sm rounded-full bg-accent/50 text-accent-foreground whitespace-nowrap"
                   >
                     {tag}
                   </span>
