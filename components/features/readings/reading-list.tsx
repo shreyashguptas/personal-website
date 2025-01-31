@@ -43,32 +43,21 @@ export function ReadingList({ initialReadings, availableTags }: ReadingListProps
       </div>
 
       {/* Readings Grid */}
-      <div className="grid gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredReadings.map((reading) => (
           <a
             key={reading.id}
             href={reading.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="block p-6 rounded-lg border hover:bg-accent hover:text-accent-foreground transition-colors"
+            className="block p-6 rounded-lg border hover:bg-accent hover:text-accent-foreground transition-colors h-full"
           >
-            <div className="space-y-4">
-              {/* Title and Recommendation */}
-              <div className="space-y-2">
-                {/* Recommendation Badge - Show above title on mobile */}
-                {reading.recommendation && (
-                  <div className="flex md:hidden mb-2">
-                    <span className="inline-flex px-3 py-1 text-sm rounded-full bg-primary/10 text-primary whitespace-nowrap">
-                      Top {reading.recommendation} Pick
-                    </span>
-                  </div>
-                )}
-                
-                <div className="flex flex-wrap gap-2 items-start">
-                  <h2 className="text-xl font-semibold">{reading.title}</h2>
-                  {/* Recommendation Badge - Show inline with title on desktop */}
+            <div className="flex flex-col h-full">
+              <div className="flex-1 space-y-3">
+                <div className="space-y-2">
+                  <h2 className="text-xl font-semibold line-clamp-2">{reading.title}</h2>
                   {reading.recommendation && (
-                    <span className="hidden md:inline-flex px-3 py-1 text-sm rounded-full bg-primary/10 text-primary whitespace-nowrap">
+                    <span className="inline-flex px-3 py-1 text-sm rounded-full bg-primary/10 text-primary whitespace-nowrap">
                       Top {reading.recommendation} Pick
                     </span>
                   )}
@@ -76,8 +65,7 @@ export function ReadingList({ initialReadings, availableTags }: ReadingListProps
                 <p className="text-sm text-muted-foreground">by {reading.author}</p>
               </div>
 
-              {/* Tags */}
-              <div className="flex flex-wrap gap-2">
+              <div className="mt-4 flex flex-wrap gap-2">
                 {reading.tags.map((tag) => (
                   <span
                     key={tag}

@@ -89,39 +89,72 @@ export function BlogList({ initialPosts, availableTags, hasMore: initialHasMore,
       {/* Blog Posts */}
       <div className="space-y-24">
         {filteredPosts.map((post, index) => (
-          <div key={post.id} className="space-y-8">
-            {/* Date */}
-            <div className="space-y-2">
+          <div key={post.id}>
+            {/* Mobile Layout */}
+            <div className="md:hidden space-y-8">
+              {/* Date */}
               <p className="text-sm text-muted-foreground">
                 {post.formattedDate}
               </p>
+
+              {/* Title */}
               <h2 className="text-2xl font-semibold">{post.title}</h2>
+
+              {/* Description */}
+              <p className="text-muted-foreground">{post.description}</p>
+
+              {/* Content Preview Card */}
+              <div className="w-full relative rounded-lg overflow-hidden">
+                <Link 
+                  href={`/blogs/${post.slug}`}
+                  className="block group"
+                >
+                  <Card className="p-8 bg-muted/50 transition-colors hover:bg-muted group-hover:border-primary">
+                    <p className="text-base text-muted-foreground leading-relaxed line-clamp-[6]">
+                      {post.content}
+                    </p>
+                  </Card>
+                </Link>
+              </div>
+
+              {/* Read Button */}
+              <div>
+                <Link
+                  href={`/blogs/${post.slug}`}
+                  className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                >
+                  Read Post
+                </Link>
+              </div>
             </div>
 
-            {/* Description */}
-            <p className="text-muted-foreground">{post.description}</p>
+            {/* Desktop Layout */}
+            <div className="hidden md:flex gap-8 items-start">
+              <div className="flex-1 max-w-[calc(100%-632px)] space-y-4">
+                <div className="space-y-2">
+                  <p className="text-sm text-muted-foreground">{post.formattedDate}</p>
+                  <h2 className="text-2xl font-semibold">{post.title}</h2>
+                </div>
+                
+                <p className="text-muted-foreground">{post.description}</p>
+                
+                <Link
+                  href={`/blogs/${post.slug}`}
+                  className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                >
+                  Read Post
+                </Link>
+              </div>
 
-            {/* Content Preview Card */}
-            <div className="w-full relative rounded-lg overflow-hidden">
               <Link 
                 href={`/blogs/${post.slug}`}
-                className="block group"
+                className="block w-[600px] group"
               >
-                <Card className="p-8 bg-muted/50 transition-colors hover:bg-muted group-hover:border-primary">
-                  <p className="text-base text-muted-foreground leading-relaxed line-clamp-[6]">
+                <Card className="h-[300px] p-8 bg-muted/50 transition-colors hover:bg-muted group-hover:border-primary">
+                  <p className="text-base text-muted-foreground leading-relaxed line-clamp-[10]">
                     {post.content}
                   </p>
                 </Card>
-              </Link>
-            </div>
-
-            {/* Read Button */}
-            <div>
-              <Link
-                href={`/blogs/${post.slug}`}
-                className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-              >
-                Read Post
               </Link>
             </div>
 
