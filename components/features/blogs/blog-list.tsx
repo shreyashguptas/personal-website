@@ -36,7 +36,13 @@ export function BlogList({ initialPosts, availableTags, hasMore: initialHasMore,
       const nextPage = page + 1
       const data = await onLoadMore(nextPage)
       
-      setPosts(prev => [...prev, ...data.blogs])
+      setPosts(prev => {
+        // Create a Set of existing post IDs for efficient lookup
+        const existingIds = new Set(prev.map(p => p.id))
+        // Only add posts that don't already exist
+        const uniqueNewPosts = data.blogs.filter(p => !existingIds.has(p.id))
+        return [...prev, ...uniqueNewPosts]
+      })
       setHasMore(data.hasMore)
       setPage(nextPage)
     } catch (error) {
