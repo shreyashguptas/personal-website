@@ -15,7 +15,7 @@ export default function Home() {
           </div>
           
           <h1 className="text-[1.75rem] md:text-[2.25rem] lg:text-[2.75rem] font-normal tracking-[-0.02em] leading-[1.2]">
-            Hi, I'm Shreyash - a technologist driven by curiosity to explore how technology, business, economics, history and politics shape our world. I'm passionate about creating beautiful software and working with cutting-edge hardware, while maintaining a strong mind and body to pursue these interests.
+          Hi, I'm Shreyash—a 24-year-old Associate Director of Data Analytics and technologist passionate about how technology shapes our world, building software that empowers informed decision-making.
           </h1>
         </div>
       </section>

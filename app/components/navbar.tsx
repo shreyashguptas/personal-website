@@ -11,7 +11,6 @@ const navigationItems = [
   { name: 'Projects', href: '/projects' },
   { name: 'Blogs', href: '/blogs' },
   { name: 'Readings', href: '/readings' },
-  { name: 'Personal Life', href: '/about' },
 ]
 
 export function Navbar() {

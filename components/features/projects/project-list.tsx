@@ -14,94 +14,90 @@ interface ProjectListProps {
 }
 
 export function ProjectList({ initialProjects, hasMore: initialHasMore, onLoadMore }: ProjectListProps) {
-  const [projects, setProjects] = useState<Project[]>(initialProjects)
+  const [projects, setProjects] = useState(initialProjects)
   const [hasMore, setHasMore] = useState(initialHasMore)
-  const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(false)
-  const observerTarget = useRef<HTMLDivElement>(null)
+  const [page, setPage] = useState(1)
+  const observerTarget = useRef(null)
   const currentYear = new Date().getFullYear()
-
-  const loadMore = useCallback(async () => {
-    if (loading || !hasMore) return
-    
-    try {
-      setLoading(true)
-      const nextPage = page + 1
-      const data = await onLoadMore(nextPage)
-      
-      setProjects(prev => [...prev, ...data.projects])
-      setHasMore(data.hasMore)
-      setPage(nextPage)
-    } catch (error) {
-      console.error('Error loading more projects:', error)
-    } finally {
-      setLoading(false)
-    }
-  }, [loading, hasMore, page, onLoadMore])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      entries => {
-        if (entries[0].isIntersecting) {
-          loadMore()
+      async (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading) {
+          setLoading(true)
+          try {
+            const nextPage = page + 1
+            const { projects: newProjects, hasMore: newHasMore } = await onLoadMore(nextPage)
+            setProjects(prev => [...prev, ...newProjects])
+            setHasMore(newHasMore)
+            setPage(nextPage)
+          } catch (error) {
+            console.error('Error loading more projects:', error)
+          } finally {
+            setLoading(false)
+          }
         }
       },
-      { threshold: 0.1 }
+      { threshold: 1.0 }
     )
 
     if (observerTarget.current) {
       observer.observe(observerTarget.current)
     }
 
-    return () => observer.disconnect()
-  }, [loadMore])
+    return () => {
+      if (observerTarget.current) {
+        observer.unobserve(observerTarget.current)
+      }
+    }
+  }, [hasMore, loading, onLoadMore, page])
 
   return (
-    <div className="space-y-16">
+    <div className="space-y-24">
       {projects.map((project, index) => (
-        <div key={project.id}>
-          <div className="flex flex-col md:flex-row gap-8 items-start">
-            <div className={cn(
-              "flex-1 space-y-4",
-              project.image ? "max-w-[calc(100%-732px)]" : "w-full"
-            )}>
-              <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">
-                  {new Date(project.date).getFullYear() === currentYear ? 'Present' : new Date(project.date).getFullYear()}
-                </p>
-                <h2 className="text-2xl font-semibold">{project.title}</h2>
-              </div>
-              
-              <p className="text-muted-foreground">{project.details}</p>
-              
-              {project.url && (
-                <Link
-                  href={project.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-                >
-                  View
-                </Link>
-              )}
-            </div>
-
-            {project.image && (
-              <div className="w-full md:w-[700px] relative rounded-lg overflow-hidden">
-                <Image
-                  src={project.image}
-                  alt={project.title}
-                  width={700}
-                  height={394}
-                  className="object-contain w-full"
-                  sizes="(max-width: 768px) 100vw, 700px"
-                  priority
-                />
-              </div>
-            )}
+        <div key={project.id} className="space-y-8">
+          {/* Header: Year and Title */}
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">
+              {new Date(project.date).getFullYear() === currentYear ? 'Present' : new Date(project.date).getFullYear()}
+            </p>
+            <h2 className="text-2xl font-semibold">{project.title}</h2>
           </div>
-          
-          {/* Add divider if not the last project */}
+
+          {/* Description */}
+          <p className="text-muted-foreground">{project.details}</p>
+
+          {/* Image/Media */}
+          {project.image && (
+            <div className="w-full relative rounded-lg overflow-hidden">
+              <Image
+                src={project.image}
+                alt={project.title}
+                width={1200}
+                height={675}
+                className="object-cover w-full"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 85vw, 80vw"
+                priority
+              />
+            </div>
+          )}
+
+          {/* View Button */}
+          {project.url && (
+            <div>
+              <Link
+                href={project.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+              >
+                View Project
+              </Link>
+            </div>
+          )}
+
+          {/* Divider */}
           {index < projects.length - 1 && (
             <div className="mt-16 border-t border-border" />
           )}
