@@ -4,32 +4,17 @@ import { supabaseConfig } from './config'
 // Export the Supabase client and error handling utilities
 export { supabase, DatabaseError, handleDatabaseError } from './config'
 
-// Export database types
-export type { Database } from './types'
-export type { BlogStatus, BlogTag } from './types'
-
 // Export blog-related functionality
 export {
   type BlogWithFormattedDate,
   type BlogWithMDX,
   type PaginatedBlogs,
   getAllBlogs,
-  getAllBlogSlugs,
   getBlogBySlug,
   createBlog,
   updateBlogStatus,
   getUniqueTags,
 } from './services/blogs'
-
-// Export reading-related functionality
-export {
-  type ReadingWithFormattedDate,
-  getAllReadings,
-  getUniqueReadingTags,
-  createReading,
-  updateReading,
-  deleteReading,
-} from './services/readings'
 
 // Export project-related functionality
 export {
@@ -37,6 +22,20 @@ export {
   getAllProjects,
 } from './services/projects'
 
+// Export reading-related functionality
+export {
+  type ReadingWithFormattedDate,
+  getAllReadings,
+  createReading,
+  updateReading,
+  deleteReading,
+  getUniqueReadingTags,
+} from './services/readings'
+
+// Export database types
+export type { Database, BlogStatus, BlogTag } from './types'
+
+// Utility functions
 export function getStorageFileUrl(bucket: string, path: string) {
   const supabase = createClient(supabaseConfig.url, supabaseConfig.anonKey)
   const { data } = supabase.storage.from(bucket).getPublicUrl(path)

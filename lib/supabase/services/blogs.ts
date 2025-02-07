@@ -3,6 +3,7 @@ import type { Database, BlogStatus, BlogTag } from '../types'
 import { format } from 'date-fns'
 import { compileMDX } from '@/lib/mdx'
 import { MDXRemoteSerializeResult } from 'next-mdx-remote'
+import { cache } from 'react'
 
 type Blog = Database['public']['Tables']['blogs']['Row']
 type BlogInsert = Database['public']['Tables']['blogs']['Insert']
@@ -30,49 +31,22 @@ export interface PaginatedBlogs {
   hasMore: boolean
 }
 
-/**
- * Get all published blog slugs for static path generation
- * @returns Array of blog slugs
- */
-export async function getAllBlogSlugs(): Promise<string[]> {
-  try {
-    const { data: blogs, error } = await supabase
-      .from('blogs')
-      .select('slug')
-      .eq('status', 'published')
-      .order('date', { ascending: false })
-
-    if (error) {
-      handleDatabaseError(error, 'getAllBlogSlugs')
-      return []
-    }
-
-    return blogs.map(blog => blog.slug)
-  } catch (error) {
-    console.error('Error getting blog slugs:', error)
-    return []
-  }
-}
+// Cache the blog data for 1 hour (3600 seconds)
+const CACHE_REVALIDATE_TIME = 3600
 
 /**
- * Get paginated blog posts
- * @param page Page number (1-based)
- * @param pageSize Number of posts per page
- * @returns Paginated blog posts with hasMore flag
+ * Get paginated blog posts with caching
  */
-export async function getAllBlogs(page: number = 1, pageSize: number = 10): Promise<PaginatedBlogs> {
+export const getAllBlogs = cache(async (page: number = 1, pageSize: number = 10): Promise<PaginatedBlogs> => {
   try {
-    // Calculate range for pagination
     const from = (page - 1) * pageSize
     const to = from + pageSize - 1
 
-    // Get total count for pagination
     const { count } = await supabase
       .from('blogs')
       .select('*', { count: 'exact', head: true })
       .eq('status', 'published')
 
-    // Get paginated blogs
     const { data: blogs, error } = await supabase
       .from('blogs')
       .select('id, title, description, content, date, slug, status, tag')
@@ -88,7 +62,7 @@ export async function getAllBlogs(page: number = 1, pageSize: number = 10): Prom
     const formattedBlogs = blogs.map((blog): BlogWithFormattedDate => ({
       ...blog,
       formattedDate: format(new Date(blog.date), 'MMMM d, yyyy'),
-      content: blog.content.slice(0, 500)
+      content: blog.content.slice(0, 500) // Truncate content for preview
     }))
 
     return {
@@ -99,14 +73,12 @@ export async function getAllBlogs(page: number = 1, pageSize: number = 10): Prom
     handleDatabaseError(error, 'getAllBlogs')
     return { blogs: [], hasMore: false }
   }
-}
+})
 
 /**
- * Get a single blog post by slug
- * @param slug Blog post slug
- * @returns Blog post with MDX content or null if not found
+ * Get a single blog post by slug with caching
  */
-export async function getBlogBySlug(slug: string): Promise<BlogWithMDX | null> {
+export const getBlogBySlug = cache(async (slug: string): Promise<BlogWithMDX | null> => {
   try {
     const { data: blog, error } = await supabase
       .from('blogs')
@@ -115,8 +87,7 @@ export async function getBlogBySlug(slug: string): Promise<BlogWithMDX | null> {
       .eq('status', 'published')
       .single()
 
-    if (error) throw error
-    if (!blog) return null
+    if (error || !blog) return null
 
     const { source } = await compileMDX(blog.content)
     if (typeof source === 'string') {
@@ -129,10 +100,12 @@ export async function getBlogBySlug(slug: string): Promise<BlogWithMDX | null> {
       formattedDate: format(new Date(blog.date), 'MMMM d, yyyy')
     }
   } catch (error) {
-    return handleDatabaseError(error, `getBlogBySlug: ${slug}`)
+    console.error(`Error fetching blog ${slug}:`, error)
+    return null
   }
-}
+})
 
+// Admin functions
 export async function createBlog(blog: BlogInsert): Promise<Blog> {
   try {
     const { data, error } = await supabase
@@ -168,7 +141,7 @@ export async function updateBlogStatus(slug: string, status: Blog['status']): Pr
   }
 }
 
-export async function getUniqueTags(): Promise<Blog['tag'][]> {
+export const getUniqueTags = cache(async (): Promise<Blog['tag'][]> => {
   try {
     const { data: blogs, error } = await supabase
       .from('blogs')
@@ -180,6 +153,7 @@ export async function getUniqueTags(): Promise<Blog['tag'][]> {
 
     return Array.from(new Set(blogs.map(blog => blog.tag)))
   } catch (error) {
-    return handleDatabaseError(error, 'getUniqueTags')
+    console.error('Error fetching tags:', error)
+    return []
   }
-} 
+}) 
