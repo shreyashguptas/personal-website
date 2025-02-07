@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { supabaseConfig } from './config'
+import type { Database } from './types'
 
 // Export the Supabase client and error handling utilities
 export { supabase, DatabaseError, handleDatabaseError } from './config'
@@ -37,7 +38,11 @@ export type { Database, BlogStatus, BlogTag } from './types'
 
 // Utility functions
 export function getStorageFileUrl(bucket: string, path: string) {
-  const supabase = createClient(supabaseConfig.url, supabaseConfig.anonKey)
+  if (!supabaseConfig.url || !supabaseConfig.anonKey) {
+    throw new Error('Missing Supabase configuration')
+  }
+  
+  const supabase = createClient<Database>(supabaseConfig.url, supabaseConfig.anonKey)
   const { data } = supabase.storage.from(bucket).getPublicUrl(path)
   return data.publicUrl
 }

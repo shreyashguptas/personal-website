@@ -6,23 +6,17 @@ const isBrowser = typeof window !== 'undefined'
 
 // Function to create Supabase client
 function createSupabaseClient() {
-  // During SSR/build, return a client with minimal config if env vars aren't available
-  if (!isBrowser && (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)) {
-    return createClient<Database>(
-      'https://placeholder.supabase.co',
-      'placeholder',
-      { auth: { persistSession: false } }
-    )
-  }
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-  // In browser or when env vars are available, create real client
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error('Missing Supabase environment variables')
+  }
 
   return createClient<Database>(supabaseUrl, supabaseKey, {
     auth: {
-      persistSession: true,
-      autoRefreshToken: true,
+      persistSession: isBrowser,
+      autoRefreshToken: isBrowser,
     }
   })
 }
@@ -41,12 +35,15 @@ export class DatabaseError extends Error {
 // Utility function for consistent error handling
 export function handleDatabaseError(error: any, context: string): never {
   console.error(`Database error in ${context}:`, error)
-  throw new DatabaseError(`Error in ${context}`, error)
+  if (error instanceof Error) {
+    throw new DatabaseError(`Error in ${context}: ${error.message}`, error)
+  }
+  throw new DatabaseError(`Error in ${context}: Unknown error`, error)
 }
 
 // Configuration object
 export const supabaseConfig = {
-  url: process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  url: process.env.NEXT_PUBLIC_SUPABASE_URL,
+  anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   isProduction: process.env.NODE_ENV === 'production'
 } 

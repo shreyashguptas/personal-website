@@ -3,7 +3,7 @@
 import { ErrorMessage } from '@/components/ui/error-message'
 import { useEffect } from 'react'
 
-export default function BlogsError({
+export default function ReadingsError({
   error,
   reset,
 }: {
@@ -12,13 +12,13 @@ export default function BlogsError({
 }) {
   useEffect(() => {
     // Log the error to an error reporting service
-    console.error('Blogs page error:', error)
+    console.error('Readings page error:', error)
   }, [error])
 
   return (
     <ErrorMessage
-      title="Failed to Load Blog Posts"
-      message="We encountered an error while loading the blog posts. This could be due to a network issue or a temporary server problem."
+      title="Failed to Load Reading List"
+      message="We encountered an error while loading the reading list. This could be due to a network issue or a temporary server problem."
       onRetry={reset}
     />
   )
