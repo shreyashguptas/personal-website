@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { ReadingWithFormattedDate, PaginatedReadings } from '@/lib/supabase'
-import Link from 'next/link'
 import {
   Select,
   SelectContent,
@@ -10,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Card } from "@/components/ui/card"
 
 interface ReadingListProps {
   initialReadings: ReadingWithFormattedDate[]
@@ -80,7 +80,7 @@ export function ReadingList({ initialReadings, hasMore: initialHasMore, onLoadMo
     : readings.filter(reading => reading.tags.includes(selectedTag))
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header Section */}
       <div className="flex items-center justify-between">
         <Select value={selectedTag} onValueChange={setSelectedTag}>
@@ -98,40 +98,57 @@ export function ReadingList({ initialReadings, hasMore: initialHasMore, onLoadMo
       </div>
 
       {/* Readings Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredReadings.map((reading) => (
-          <a
+          <Card
             key={reading.id}
-            href={reading.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block p-6 rounded-lg border hover:bg-accent hover:text-accent-foreground transition-colors h-full"
+            className="group relative overflow-hidden border transition-colors hover:bg-accent hover:text-accent-foreground"
           >
-            <div className="flex flex-col h-full">
-              <div className="flex-1 space-y-3">
-                <div className="space-y-2">
-                  <h2 className="text-xl font-semibold line-clamp-2">{reading.title}</h2>
-                  {reading.recommendation && (
-                    <span className="inline-flex px-3 py-1 text-sm rounded-full bg-primary/10 text-primary whitespace-nowrap">
-                      Top {reading.recommendation} Pick
-                    </span>
-                  )}
-                </div>
-                <p className="text-sm text-muted-foreground">by {reading.author}</p>
-              </div>
-
-              <div className="mt-4 flex flex-wrap gap-2">
-                {reading.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="inline-flex px-3 py-1 text-sm rounded-full bg-accent/50 text-accent-foreground whitespace-nowrap"
-                  >
-                    {tag}
+            <a
+              href={reading.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block p-4 sm:p-5"
+            >
+              <div className="flex flex-col min-h-[140px] sm:min-h-[160px]">
+                {/* Header: Title and Year */}
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <h2 className="text-base sm:text-lg font-semibold leading-tight line-clamp-2">
+                    {reading.title}
+                  </h2>
+                  <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+                    {new Date(reading.date).getFullYear()}
                   </span>
-                ))}
+                </div>
+
+                {/* Author */}
+                <p className="text-sm text-muted-foreground mb-3">
+                  by {reading.author}
+                </p>
+
+                {/* Recommendation Badge */}
+                {reading.recommendation && (
+                  <span className="inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-primary/10 text-primary mb-3 w-fit">
+                    Top {reading.recommendation} Pick
+                  </span>
+                )}
+
+                {/* Tags Section */}
+                <div className="mt-auto pt-2">
+                  <div className="flex flex-wrap gap-1.5">
+                    {reading.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="inline-flex px-2.5 py-1 text-sm font-medium rounded-full bg-accent/50 text-accent-foreground"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
-            </div>
-          </a>
+            </a>
+          </Card>
         ))}
       </div>
 
@@ -139,7 +156,7 @@ export function ReadingList({ initialReadings, hasMore: initialHasMore, onLoadMo
       {hasMore && (
         <div 
           ref={observerTarget} 
-          className="h-10 flex items-center justify-center"
+          className="h-8 flex items-center justify-center"
         >
           {loading && (
             <div className="text-sm text-muted-foreground">Loading more readings...</div>
