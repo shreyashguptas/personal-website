@@ -10,25 +10,37 @@ export interface ReadingWithFormattedDate extends Reading {
   formattedDate: string
 }
 
-export async function getAllReadings(selectedTag?: string): Promise<ReadingWithFormattedDate[]> {
+export interface PaginatedReadings {
+  readings: ReadingWithFormattedDate[]
+  hasMore: boolean
+}
+
+export async function getAllReadings(page: number = 1, pageSize: number = 10): Promise<PaginatedReadings> {
   try {
+    const from = (page - 1) * pageSize
+    const to = from + pageSize - 1
+
+    const { count } = await supabase
+      .from('readings')
+      .select('*', { count: 'exact', head: true })
+
     const { data: readings, error } = await supabase
       .from('readings')
       .select('*')
       .order('date', { ascending: false })
+      .range(from, to)
 
     if (error) throw error
 
-    const formattedReadings = readings.map(reading => ({
+    const formattedReadings = (readings || []).map(reading => ({
       ...reading,
       formattedDate: format(new Date(reading.date), 'MMMM d, yyyy')
     }))
 
-    if (selectedTag) {
-      return formattedReadings.filter(reading => reading.tags.includes(selectedTag))
+    return {
+      readings: formattedReadings,
+      hasMore: count ? from + readings.length < count : false
     }
-
-    return formattedReadings
   } catch (error) {
     return handleDatabaseError(error, 'getAllReadings')
   }

@@ -14,51 +14,45 @@ const ENV_KEYS = {
   SUPABASE_ANON_KEY: 'NEXT_PUBLIC_SUPABASE_ANON_KEY'
 } as const;
 
-// Build-time configuration
-const BUILD_CONFIG = {
-  url: 'http://placeholder-for-build.com',
-  key: 'placeholder-key-for-build'
-} as const;
-
 // Simple check for build time vs runtime
 const isBuildTime = process.env['NODE_ENV'] === 'production' && typeof window === 'undefined';
 
 // Type-safe environment variable getter
-function getEnvVar(key: keyof typeof ENV_KEYS): string | undefined {
-  return process.env[ENV_KEYS[key]];
+function getEnvVar(key: keyof typeof ENV_KEYS): string {
+  const value = process.env[ENV_KEYS[key]];
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${ENV_KEYS[key]}`);
+  }
+  return value;
 }
 
 // Simplified client creation with build-time handling
 function createSupabaseClient() {
-  // During build time, return a minimal client to allow static generation
-  if (isBuildTime) {
-    return createClient<Database>(
-      BUILD_CONFIG.url,
-      BUILD_CONFIG.key,
-      { 
-        auth: { persistSession: false }
+  try {
+    const supabaseUrl = getEnvVar('SUPABASE_URL');
+    const supabaseKey = getEnvVar('SUPABASE_ANON_KEY');
+    const isClient = typeof window !== 'undefined';
+
+    return createClient<Database>(supabaseUrl, supabaseKey, {
+      auth: {
+        persistSession: isClient,
+        autoRefreshToken: isClient,
       }
-    );
-  }
-
-  // Runtime check for environment variables
-  const supabaseUrl = getEnvVar('SUPABASE_URL');
-  const supabaseKey = getEnvVar('SUPABASE_ANON_KEY');
-
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error(
-      `Missing required environment variables. Required: ${Object.values(ENV_KEYS).join(', ')}`
-    );
-  }
-
-  const isClient = typeof window !== 'undefined';
-
-  return createClient<Database>(supabaseUrl, supabaseKey, {
-    auth: {
-      persistSession: isClient,
-      autoRefreshToken: isClient,
+    });
+  } catch (error) {
+    // During build time, return a minimal client
+    if (isBuildTime) {
+      console.warn('Using placeholder Supabase client for build time');
+      return createClient<Database>(
+        'http://placeholder-for-build.com',
+        'placeholder-key-for-build',
+        { 
+          auth: { persistSession: false }
+        }
+      );
     }
-  });
+    throw error;
+  }
 }
 
 // Export the Supabase client
@@ -122,16 +116,9 @@ export function handleDatabaseError(error: unknown, context: string): never {
   });
 }
 
-// Configuration object with proper types
-export interface SupabaseConfig {
-  url: string | undefined;
-  anonKey: string | undefined;
-  isProduction: boolean;
-}
-
 // Export the configuration
-export const supabaseConfig: SupabaseConfig = {
+export const supabaseConfig = {
   url: getEnvVar('SUPABASE_URL'),
   anonKey: getEnvVar('SUPABASE_ANON_KEY'),
   isProduction: process.env['NODE_ENV'] === 'production'
-}; 
+} as const; 

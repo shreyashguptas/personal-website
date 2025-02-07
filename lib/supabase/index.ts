@@ -26,6 +26,7 @@ export {
 // Export reading-related functionality
 export {
   type ReadingWithFormattedDate,
+  type PaginatedReadings,
   getAllReadings,
   createReading,
   updateReading,
