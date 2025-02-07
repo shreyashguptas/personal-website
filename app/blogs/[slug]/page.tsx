@@ -8,11 +8,16 @@ interface PageProps {
   params: Promise<{ slug: string }>
 }
 
-export const dynamic = 'error'
+// Force dynamic rendering for blog posts
+export const dynamic = 'force-dynamic'
 export const dynamicParams = true
 export const revalidate = 3600
 
 export async function generateStaticParams() {
+  if (process.env.NEXT_PUBLIC_SKIP_BUILD_STATIC_GENERATION) {
+    return []
+  }
+
   try {
     const slugs = await getAllBlogSlugs()
     return slugs.map((slug) => ({ slug }))

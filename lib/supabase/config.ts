@@ -1,19 +1,34 @@
 import { createClient } from '@supabase/supabase-js'
 import { Database } from './types'
 
-if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-  throw new Error('NEXT_PUBLIC_SUPABASE_URL is required')
+// Helper function to check if we're in browser
+const isBrowser = typeof window !== 'undefined'
+
+// Function to create Supabase client
+function createSupabaseClient() {
+  // During SSR/build, return a client with minimal config if env vars aren't available
+  if (!isBrowser && (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)) {
+    return createClient<Database>(
+      'https://placeholder.supabase.co',
+      'placeholder',
+      { auth: { persistSession: false } }
+    )
+  }
+
+  // In browser or when env vars are available, create real client
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+
+  return createClient<Database>(supabaseUrl, supabaseKey, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+    }
+  })
 }
 
-if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-  throw new Error('NEXT_PUBLIC_SUPABASE_ANON_KEY is required')
-}
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-// Create client with error handling
-export const supabase = createClient<Database>(supabaseUrl, supabaseKey)
+// Export the Supabase client
+export const supabase = createSupabaseClient()
 
 // Error handling utility
 export class DatabaseError extends Error {
@@ -31,7 +46,7 @@ export function handleDatabaseError(error: any, context: string): never {
 
 // Configuration object
 export const supabaseConfig = {
-  url: supabaseUrl,
-  anonKey: supabaseKey,
+  url: process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   isProduction: process.env.NODE_ENV === 'production'
 } 
