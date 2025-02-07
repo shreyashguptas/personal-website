@@ -1,11 +1,12 @@
 import { getBlogBySlug } from '@/lib/supabase'
 import { notFound } from 'next/navigation'
-import { Metadata } from 'next'
 import { MDXContent } from '@/components/mdx/mdx-content'
+import type { Metadata } from 'next'
 
 // Force dynamic rendering for blog posts
 export const dynamic = 'force-dynamic'
 export const dynamicParams = true
+export const revalidate = 60
 
 type PageProps = {
   params: Promise<{ slug: string }>
@@ -15,7 +16,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
   try {
     const { slug } = await props.params
     const blog = await getBlogBySlug(slug)
-    
+
     if (!blog) {
       return {
         title: 'Blog Not Found',
@@ -31,49 +32,51 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
         description: blog.description,
         type: 'article',
         publishedTime: new Date(blog.date).toISOString(),
-        authors: ['Shreyash Gupta'],
+        authors: ['Shreyash Gupta']
       },
       twitter: {
         card: 'summary_large_image',
         title: blog.title,
-        description: blog.description,
+        description: blog.description
       }
     }
   } catch (error) {
     console.error(`Error generating metadata for blog:`, error)
     return {
-      title: 'Blog',
-      description: 'Read our latest blog posts'
+      title: 'Error',
+      description: 'An error occurred while loading the blog post.'
     }
   }
 }
 
-export default async function BlogPost(props: PageProps) {
+export default async function BlogPage(props: PageProps) {
   try {
     const { slug } = await props.params
     const blog = await getBlogBySlug(slug)
-    
+
     if (!blog) {
       notFound()
     }
 
     return (
-      <article className="max-w-4xl mx-auto space-y-8">
-        <header className="space-y-4">
-          <h1 className="text-4xl font-bold">{blog.title}</h1>
-          <p className="text-muted-foreground">{blog.formattedDate}</p>
-          {blog.description && (
-            <p className="text-xl text-muted-foreground">{blog.description}</p>
-          )}
+      <article className="prose prose-neutral dark:prose-invert max-w-none">
+        {/* Blog Header */}
+        <header className="mb-8">
+          <p className="text-sm text-muted-foreground mb-2">
+            {blog.formattedDate}
+          </p>
+          <h1 className="text-4xl font-bold mb-4">{blog.title}</h1>
+          <p className="text-xl text-muted-foreground">{blog.description}</p>
         </header>
-        
-        <div className="prose dark:prose-invert">
+
+        {/* Blog Content */}
+        <div className="mt-8">
           <MDXContent source={blog.source} />
         </div>
       </article>
     )
   } catch (error) {
-    console.error(`Error rendering blog:`, error)
-    throw error // Let the error boundary handle it
+    console.error('Error loading blog:', error)
+    notFound()
   }
 } 

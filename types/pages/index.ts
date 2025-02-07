@@ -30,8 +30,14 @@ export interface ProcessEnv {
   SUPABASE_SERVICE_ROLE_KEY: string;
 }
 
-// Page Props Types
-export interface PageProps {
+// Base Page Props Types
+export interface BasePageProps {
   params: { [key: string]: string | string[] };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}
+
+// Dynamic Page Props for pages with async params
+export interface DynamicPageProps {
+  params: Promise<{ [key: string]: string }>;
   searchParams?: { [key: string]: string | string[] | undefined };
 } 
