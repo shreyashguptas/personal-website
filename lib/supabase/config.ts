@@ -1,9 +1,18 @@
 import { createClient } from '@supabase/supabase-js'
 import { Database } from './types'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+  throw new Error('NEXT_PUBLIC_SUPABASE_URL is required')
+}
 
+if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  throw new Error('NEXT_PUBLIC_SUPABASE_ANON_KEY is required')
+}
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+// Create client with error handling
 export const supabase = createClient<Database>(supabaseUrl, supabaseKey)
 
 // Error handling utility
@@ -20,7 +29,9 @@ export function handleDatabaseError(error: any, context: string): never {
   throw new DatabaseError(`Error in ${context}`, error)
 }
 
+// Configuration object
 export const supabaseConfig = {
-  url: process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  url: supabaseUrl,
+  anonKey: supabaseKey,
+  isProduction: process.env.NODE_ENV === 'production'
 } 

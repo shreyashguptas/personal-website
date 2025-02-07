@@ -60,41 +60,20 @@ export default async function BlogPostPage({
   try {
     const { slug } = await params
     const post = await getBlogBySlug(slug)
-
+    
     if (!post) {
       notFound()
     }
 
     return (
-      <div className="max-w-3xl mx-auto py-12 px-4">
-        {/* Blog Header */}
-        <header className="mb-12">
-          <h1 className="text-4xl font-bold text-foreground mb-4">
-            {post.title}
-          </h1>
-          <div className="text-base text-muted-foreground">
-            {post.formattedDate}
-          </div>
-        </header>
-
-        {/* Blog Content */}
-        <article className="prose prose-lg prose-neutral dark:prose-invert max-w-none">
-          <MDXContent source={post.source} />
-        </article>
-      </div>
+      <article className="prose dark:prose-invert mx-auto">
+        <h1>{post.title}</h1>
+        <p className="text-muted-foreground">{post.formattedDate}</p>
+        <MDXContent source={post.source} />
+      </article>
     )
   } catch (error) {
-    if (error instanceof DatabaseError) {
-      return (
-        <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
-          <h1 className="text-2xl font-bold">Unable to Load Blog Post</h1>
-          <p className="text-muted-foreground">
-            We're having trouble connecting to our database. Please try again later.
-          </p>
-        </div>
-      )
-    }
     console.error('Error loading blog post:', error)
-    notFound()
+    throw error
   }
 } 
