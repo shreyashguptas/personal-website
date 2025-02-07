@@ -21,6 +21,10 @@ export function ProjectList({ initialProjects, hasMore: initialHasMore, onLoadMo
   const observerTarget = useRef(null)
   const currentYear = new Date().getFullYear()
 
+  const isGif = useCallback((url: string) => {
+    return url.toLowerCase().endsWith('.gif')
+  }, [])
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       async (entries) => {
@@ -88,6 +92,7 @@ export function ProjectList({ initialProjects, hasMore: initialHasMore, onLoadMo
                   className="object-cover w-full"
                   sizes="100vw"
                   priority
+                  unoptimized={isGif(project.image)}
                 />
               </div>
             )}
@@ -144,6 +149,7 @@ export function ProjectList({ initialProjects, hasMore: initialHasMore, onLoadMo
                   className="object-cover w-full"
                   sizes="(min-width: 768px) 700px"
                   priority
+                  unoptimized={isGif(project.image)}
                 />
               </div>
             )}
