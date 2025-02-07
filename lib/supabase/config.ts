@@ -4,16 +4,25 @@ import { Database } from './types'
 // Helper function to check if we're in browser
 const isBrowser = typeof window !== 'undefined'
 
-// Function to create Supabase client
-function createSupabaseClient() {
+// Function to validate environment variables
+function validateEnvVariables() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   if (!supabaseUrl || !supabaseKey) {
-    throw new Error('Missing Supabase environment variables')
+    throw new Error(
+      'Missing Supabase environment variables. Please ensure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are set.'
+    )
   }
 
-  return createClient<Database>(supabaseUrl, supabaseKey, {
+  return { url: supabaseUrl, key: supabaseKey }
+}
+
+// Function to create Supabase client
+function createSupabaseClient() {
+  const { url, key } = validateEnvVariables()
+  
+  return createClient<Database>(url, key, {
     auth: {
       persistSession: isBrowser,
       autoRefreshToken: isBrowser,
