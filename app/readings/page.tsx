@@ -14,7 +14,7 @@ export default async function ReadingsPage() {
 
     return (
       <div className="space-y-8">
-        <h1 className="text-3xl font-bold">Reading List</h1>
+        <h1 className="text-3xl font-bold">Reading</h1>
         <ReadingList 
           initialReadings={initialData.readings}
           hasMore={initialData.hasMore}
@@ -27,8 +27,8 @@ export default async function ReadingsPage() {
     console.error('Error loading readings:', error)
     return (
       <div className="space-y-8">
-        <h1 className="text-3xl font-bold">Reading List</h1>
-        <p className="text-muted-foreground">Failed to load reading list. Please try again later.</p>
+        <h1 className="text-3xl font-bold">Reading</h1>
+        <p className="text-muted-foreground">Failed to load reading. Please try again later.</p>
       </div>
     )
   }

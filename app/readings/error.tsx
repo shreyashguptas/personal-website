@@ -17,8 +17,8 @@ export default function ReadingsError({
 
   return (
     <ErrorMessage
-      title="Failed to Load Reading List"
-      message="We encountered an error while loading the reading list. This could be due to a network issue or a temporary server problem."
+      title="Failed to Load Reading"
+      message="We encountered an error while loading the reading. This could be due to a network issue or a temporary server problem."
       onRetry={reset}
     />
   )
