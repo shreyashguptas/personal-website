@@ -13,8 +13,8 @@ type PageProps = {
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
   try {
-    const params = await props.params
-    const blog = await getBlogBySlug(params.slug)
+    const { slug } = await props.params
+    const blog = await getBlogBySlug(slug)
     
     if (!blog) {
       return {
@@ -50,8 +50,8 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 
 export default async function BlogPost(props: PageProps) {
   try {
-    const params = await props.params
-    const blog = await getBlogBySlug(params.slug)
+    const { slug } = await props.params
+    const blog = await getBlogBySlug(slug)
     
     if (!blog) {
       notFound()
