@@ -15,19 +15,25 @@ const navigationItems = [
 
 export function Navbar() {
   const pathname = usePathname()
-  const [isNavigating, setIsNavigating] = useState(false)
-  const [prevPath, setPrevPath] = useState(pathname)
+  const [isNavigating, setIsNavigating] = useState<boolean>(false)
+  const [prevPath, setPrevPath] = useState<string>(pathname)
 
   useEffect(() => {
+    let timer: NodeJS.Timeout | undefined
+
     if (pathname !== prevPath) {
       setIsNavigating(true)
       setPrevPath(pathname)
       
-      const timer = setTimeout(() => {
+      timer = setTimeout(() => {
         setIsNavigating(false)
-      }, 400) // Increased duration for smoother transition
-      
-      return () => clearTimeout(timer)
+      }, 400) // Original duration for smoother transition
+    }
+
+    return () => {
+      if (timer) {
+        clearTimeout(timer)
+      }
     }
   }, [pathname, prevPath])
 

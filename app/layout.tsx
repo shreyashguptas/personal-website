@@ -3,16 +3,17 @@ import { Inter } from 'next/font/google'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
 import { ClientAnalytics } from '@/components/shared/ClientAnalytics'
+import type { Metadata } from 'next'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Shreyash Gupta',
   description: 'Personal website of Shreyash Gupta',
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: '32x32' },
-      { url: '/favicon96.png', sizes: '96px' },
+      { url: '/favicon96.png', sizes: '96x96' },
     ],
     apple: [
       { url: '/apple.png' }
@@ -26,17 +27,17 @@ export const metadata = {
   }
 }
 
-export default function RootLayout({
-  children,
-}: {
+interface RootLayoutProps {
   children: React.ReactNode
-}) {
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <div className="max-w-[1400px] w-[92%] mx-auto py-8">
+        <div className="max-w-[1400px] w-[92%] mx-auto py-4">
           <Navbar />
-          <main>
+          <main className="min-h-screen">
             {children}
           </main>
           <Footer />

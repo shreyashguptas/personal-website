@@ -12,66 +12,79 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { BlogCard } from './blog-card'
 
 interface BlogListProps {
-  initialPosts: BlogWithFormattedDate[]
+  initialBlogs: BlogWithFormattedDate[]
   availableTags: BlogTag[]
   hasMore: boolean
   onLoadMore: (page: number) => Promise<PaginatedBlogs>
 }
 
-export function BlogList({ initialPosts, availableTags, hasMore: initialHasMore, onLoadMore }: BlogListProps) {
-  const [posts, setPosts] = useState<BlogWithFormattedDate[]>(initialPosts)
-  const [hasMore, setHasMore] = useState(initialHasMore)
+export function BlogList({ initialBlogs, availableTags, hasMore: initialHasMore, onLoadMore }: BlogListProps) {
+  const [blogs, setBlogs] = useState<BlogWithFormattedDate[]>(initialBlogs)
+  const [hasMore, setHasMore] = useState<boolean>(initialHasMore)
   const [selectedTag, setSelectedTag] = useState<BlogTag | 'all'>('all')
-  const [page, setPage] = useState(1)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState<boolean>(false)
+  const [page, setPage] = useState<number>(1)
   const observerTarget = useRef<HTMLDivElement>(null)
 
-  const loadMore = useCallback(async () => {
-    if (loading || !hasMore) return
-    
-    try {
-      setLoading(true)
-      const nextPage = page + 1
-      const data = await onLoadMore(nextPage)
-      
-      setPosts(prev => {
-        // Create a Set of existing post IDs for efficient lookup
-        const existingIds = new Set(prev.map(p => p.id))
-        // Only add posts that don't already exist
-        const uniqueNewPosts = data.blogs.filter(p => !existingIds.has(p.id))
-        return [...prev, ...uniqueNewPosts]
-      })
-      setHasMore(data.hasMore)
-      setPage(nextPage)
-    } catch (error) {
-      console.error('Error loading more posts:', error)
-    } finally {
-      setLoading(false)
-    }
-  }, [loading, hasMore, page, onLoadMore])
-
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      entries => {
-        if (entries[0].isIntersecting) {
-          loadMore()
-        }
-      },
-      { threshold: 0.1 }
-    )
+    const handleIntersection = async (entries: IntersectionObserverEntry[]): Promise<void> => {
+      const firstEntry = entries[0];
+      if (!firstEntry?.isIntersecting || !hasMore || loading) {
+        return;
+      }
 
-    if (observerTarget.current) {
-      observer.observe(observerTarget.current)
+      setLoading(true);
+      try {
+        const nextPage = page + 1;
+        const { blogs: newBlogs, hasMore: newHasMore } = await onLoadMore(nextPage);
+        
+        setBlogs(prev => {
+          const existingIds = new Set(prev.map(p => p.id));
+          const uniqueNewBlogs = newBlogs.filter(p => !existingIds.has(p.id));
+          return [...prev, ...uniqueNewBlogs];
+        });
+        
+        setHasMore(newHasMore);
+        setPage(nextPage);
+      } catch (error) {
+        console.error(
+          'Error loading more blogs:',
+          error instanceof Error ? error.message : 'Unknown error'
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const observer = new IntersectionObserver(handleIntersection, {
+      threshold: 1.0,
+      rootMargin: '100px'
+    });
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
     }
 
-    return () => observer.disconnect()
-  }, [loadMore])
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+      observer.disconnect();
+    };
+  }, [hasMore, loading, onLoadMore, page]);
+
+  // Update blogs when initialBlogs changes
+  useEffect(() => {
+    setBlogs(initialBlogs);
+  }, [initialBlogs]);
 
   const filteredPosts = selectedTag === 'all' 
-    ? posts 
-    : posts.filter(post => post.tag === selectedTag)
+    ? blogs 
+    : blogs.filter(post => post.tag === selectedTag)
 
   return (
     <div className="space-y-8">
@@ -94,87 +107,15 @@ export function BlogList({ initialPosts, availableTags, hasMore: initialHasMore,
 
       {/* Blog Posts */}
       <div className="space-y-24">
-        {filteredPosts.map((post, index) => (
-          <div key={post.id}>
-            {/* Mobile Layout */}
-            <div className="md:hidden space-y-8">
-              {/* Date */}
-              <p className="text-sm text-muted-foreground">
-                {post.formattedDate}
-              </p>
+        <div className="grid gap-8 md:grid-cols-2">
+          {filteredPosts.map((blog) => (
+            <BlogCard key={blog.id} blog={blog} />
+          ))}
+        </div>
 
-              {/* Title */}
-              <h2 className="text-2xl font-semibold">{post.title}</h2>
-
-              {/* Description */}
-              <p className="text-muted-foreground">{post.description}</p>
-
-              {/* Content Preview Card */}
-              <div className="w-full relative rounded-lg overflow-hidden">
-                <Link 
-                  href={`/blogs/${post.slug}`}
-                  className="block group"
-                >
-                  <Card className="p-8 bg-muted/50 transition-colors hover:bg-muted group-hover:border-primary">
-                    <p className="text-base text-muted-foreground leading-relaxed line-clamp-[6]">
-                      {post.content}
-                    </p>
-                  </Card>
-                </Link>
-              </div>
-
-              {/* Read Button */}
-              <div>
-                <Link
-                  href={`/blogs/${post.slug}`}
-                  className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-                >
-                  Read Post
-                </Link>
-              </div>
-            </div>
-
-            {/* Desktop Layout */}
-            <div className="hidden md:flex gap-8 items-start">
-              <div className="flex-1 max-w-[calc(100%-632px)] space-y-4">
-                <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">{post.formattedDate}</p>
-                  <h2 className="text-2xl font-semibold">{post.title}</h2>
-                </div>
-                
-                <p className="text-muted-foreground">{post.description}</p>
-                
-                <Link
-                  href={`/blogs/${post.slug}`}
-                  className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-                >
-                  Read Post
-                </Link>
-              </div>
-
-              <Link 
-                href={`/blogs/${post.slug}`}
-                className="block w-[600px] group"
-              >
-                <Card className="h-[300px] p-8 bg-muted/50 transition-colors hover:bg-muted group-hover:border-primary">
-                  <p className="text-base text-muted-foreground leading-relaxed line-clamp-[10]">
-                    {post.content}
-                  </p>
-                </Card>
-              </Link>
-            </div>
-
-            {/* Divider */}
-            {index < filteredPosts.length - 1 && (
-              <div className="mt-16 border-t border-border" />
-            )}
-          </div>
-        ))}
-
-        {/* Intersection Observer target */}
         {hasMore && (
           <div 
-            ref={observerTarget} 
+            ref={observerTarget}
             className="h-10 flex items-center justify-center"
           >
             {loading && (

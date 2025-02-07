@@ -13,56 +13,68 @@ interface ProjectListProps {
   onLoadMore: (page: number) => Promise<PaginatedProjects>
 }
 
+// Use the built-in IntersectionObserverEntry type instead of creating our own
+type IntersectionObserverCallback = (entries: IntersectionObserverEntry[]) => Promise<void>;
+
 export function ProjectList({ initialProjects, hasMore: initialHasMore, onLoadMore }: ProjectListProps) {
-  const [projects, setProjects] = useState(initialProjects)
-  const [hasMore, setHasMore] = useState(initialHasMore)
-  const [loading, setLoading] = useState(false)
-  const [page, setPage] = useState(1)
-  const observerTarget = useRef(null)
+  const [projects, setProjects] = useState<Project[]>(initialProjects)
+  const [hasMore, setHasMore] = useState<boolean>(initialHasMore)
+  const [loading, setLoading] = useState<boolean>(false)
+  const [page, setPage] = useState<number>(1)
+  const observerTarget = useRef<HTMLDivElement>(null)
   const currentYear = new Date().getFullYear()
 
-  const isGif = useCallback((url: string) => {
+  const isGif = useCallback((url: string): boolean => {
     return url.toLowerCase().endsWith('.gif')
   }, [])
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      async (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loading) {
-          setLoading(true)
-          try {
-            const nextPage = page + 1
-            const { projects: newProjects, hasMore: newHasMore } = await onLoadMore(nextPage)
-            setProjects(prev => {
-              // Create a Set of existing project IDs for efficient lookup
-              const existingIds = new Set(prev.map(p => p.id))
-              // Only add projects that don't already exist
-              const uniqueNewProjects = newProjects.filter(p => !existingIds.has(p.id))
-              return [...prev, ...uniqueNewProjects]
-            })
-            setHasMore(newHasMore)
-            setPage(nextPage)
-          } catch (error) {
-            console.error('Error loading more projects:', error)
-          } finally {
-            setLoading(false)
-          }
-        }
-      },
-      { threshold: 1.0 }
-    )
+    const handleIntersection = async (entries: IntersectionObserverEntry[]): Promise<void> => {
+      const firstEntry = entries[0];
+      if (!firstEntry?.isIntersecting || !hasMore || loading) {
+        return;
+      }
 
-    const currentObserverTarget = observerTarget.current
-    if (currentObserverTarget) {
-      observer.observe(currentObserverTarget)
+      setLoading(true);
+      try {
+        const nextPage = page + 1;
+        const { projects: newProjects, hasMore: newHasMore } = await onLoadMore(nextPage);
+        
+        setProjects(prev => {
+          const existingIds = new Set(prev.map(p => p.id));
+          const uniqueNewProjects = newProjects.filter(p => !existingIds.has(p.id));
+          return [...prev, ...uniqueNewProjects];
+        });
+        
+        setHasMore(newHasMore);
+        setPage(nextPage);
+      } catch (error) {
+        console.error(
+          'Error loading more projects:',
+          error instanceof Error ? error.message : 'Unknown error'
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const observer = new IntersectionObserver(handleIntersection, {
+      threshold: 1.0,
+      rootMargin: '100px'
+    });
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
     }
 
     return () => {
-      if (currentObserverTarget) {
-        observer.unobserve(currentObserverTarget)
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
       }
-    }
-  }, [hasMore, loading, onLoadMore, page])
+      observer.disconnect();
+    };
+  }, [hasMore, loading, onLoadMore, page]);
 
   return (
     <div className="space-y-24">

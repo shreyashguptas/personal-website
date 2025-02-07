@@ -1,3 +1,5 @@
+import type { LucideIcon } from 'lucide-react'
+
 // Project Types
 export interface Project {
   id: string;
@@ -17,7 +19,7 @@ export interface Section {
   title: string;
   content: string;
   image: string;
-  Icon: any; // LucideIcon type
+  Icon: LucideIcon;
   birthDate?: Date;
 }
 
