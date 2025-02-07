@@ -1,6 +1,6 @@
 'use client'
 
-import { Project } from '@/app/projects/types'
+import { Project } from '@/types/pages'
 import Link from 'next/link'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'

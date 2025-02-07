@@ -1,5 +1,5 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
-import { Database } from './types'
+import { Database } from '@/types/supabase'
 
 export const createClient = () => {
   return createSupabaseClient<Database>(

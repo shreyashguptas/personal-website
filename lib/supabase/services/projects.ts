@@ -1,5 +1,5 @@
 import { supabase } from '../config'
-import type { Database } from '../types'
+import type { Database } from '@/types/supabase'
 import { cache } from 'react'
 
 type Project = Database['public']['Tables']['projects']['Row']

@@ -1,4 +1,4 @@
-import { Section } from './types'
+import { Section } from '@/types/pages'
 import { BookOpen, Dog, MountainIcon as Mountains, Ribbon, Candy } from 'lucide-react'
 
 function calculateAge(birthDate: Date): number {

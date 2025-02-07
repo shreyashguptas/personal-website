@@ -1,5 +1,5 @@
 import { supabase, handleDatabaseError } from '../config'
-import type { Database, BlogStatus, BlogTag } from '../types'
+import type { Database, BlogStatus, BlogTag } from '@/types/supabase'
 import { format } from 'date-fns'
 import { compileMDX } from '@/lib/mdx'
 import { MDXRemoteSerializeResult } from 'next-mdx-remote'

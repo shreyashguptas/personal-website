@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { supabaseConfig } from './config'
-import type { Database } from './types'
+import type { Database } from '@/types/supabase'
 
 // Export the Supabase client and error handling utilities
 export { supabase, DatabaseError, handleDatabaseError } from './config'
@@ -34,7 +34,7 @@ export {
 } from './services/readings'
 
 // Export database types
-export type { Database, BlogStatus, BlogTag } from './types'
+export type { Database, BlogStatus, BlogTag } from '@/types/supabase'
 
 // Utility functions
 export function getStorageFileUrl(bucket: string, path: string) {

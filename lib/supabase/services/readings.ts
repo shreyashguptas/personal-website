@@ -1,5 +1,5 @@
 import { supabase, handleDatabaseError } from '../config'
-import type { Database } from '../types'
+import type { Database } from '@/types/supabase'
 import { format } from 'date-fns'
 
 type Reading = Database['public']['Tables']['readings']['Row']

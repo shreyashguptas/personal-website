@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-import type { Database } from './types'
+import type { Database } from '@/types/supabase'
 
 // Simple check for build time vs runtime
 const isBuildTime = process.env.NODE_ENV === 'production' && typeof window === 'undefined'

@@ -2,7 +2,7 @@
 
 import { useRef } from 'react'
 import Image from 'next/image'
-import { Section as SectionType } from '../types'
+import { Section as SectionType } from '@/types/pages'
 
 interface SectionProps {
   section: SectionType
