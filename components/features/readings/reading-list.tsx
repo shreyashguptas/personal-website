@@ -83,12 +83,14 @@ export function ReadingList({ initialReadings, hasMore: initialHasMore, onLoadMo
     <div className="space-y-6">
       {/* Header Section */}
       <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Readings</h1>
         <Select value={selectedTag} onValueChange={setSelectedTag}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select a tag" />
+            <SelectValue placeholder="Filter by tag" />
           </SelectTrigger>
           <SelectContent>
-            {['all', ...availableTags].map((tag) => (
+            <SelectItem value="all">All</SelectItem>
+            {availableTags.map((tag) => (
               <SelectItem key={tag} value={tag}>
                 {tag.charAt(0).toUpperCase() + tag.slice(1)}
               </SelectItem>

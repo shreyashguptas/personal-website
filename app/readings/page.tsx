@@ -13,15 +13,12 @@ export default async function ReadingsPage() {
     ])
 
     return (
-      <div className="space-y-8">
-        <h1 className="text-3xl font-bold">Readings</h1>
-        <ReadingList 
-          initialReadings={initialData.readings}
-          hasMore={initialData.hasMore}
-          onLoadMore={loadMoreReadings}
-          availableTags={tags}
-        />
-      </div>
+      <ReadingList 
+        initialReadings={initialData.readings}
+        hasMore={initialData.hasMore}
+        onLoadMore={loadMoreReadings}
+        availableTags={tags}
+      />
     )
   } catch (error) {
     console.error('Error loading readings:', error)
