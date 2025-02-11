@@ -60,20 +60,22 @@ export default async function BlogPage(props: PageProps) {
     }
 
     return (
-      <article className="prose prose-neutral dark:prose-invert max-w-none">
+      <article className="max-w-3xl mx-auto">
         {/* Blog Header */}
-        <header className="mb-8">
-          <p className="text-sm text-muted-foreground mb-2">
+        <header className="mb-16 space-y-4">
+          {/* Title */}
+          <h1 className="text-4xl font-bold tracking-tight">
+            {blog.title}
+          </h1>
+          
+          {/* Date */}
+          <p className="text-sm text-muted-foreground">
             {format(new Date(blog.date), 'MMMM yyyy')}
           </p>
-          <h1 className="text-4xl font-bold mb-4">{blog.title}</h1>
-          {blog.description && (
-            <p className="text-xl text-muted-foreground">{blog.description}</p>
-          )}
         </header>
 
         {/* Blog Content */}
-        <div className="mt-8">
+        <div className="prose prose-neutral dark:prose-invert max-w-none">
           <MDXContent source={blog.source} />
         </div>
       </article>
