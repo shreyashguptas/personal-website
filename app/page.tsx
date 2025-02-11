@@ -1,6 +1,7 @@
 import Image from 'next/image'
+import Link from 'next/link'
 
-export default function Home() {
+export default function Home(): JSX.Element {
   return (
     <div>
       <section className="min-h-[calc(100vh-12rem)] flex flex-col justify-center">
@@ -15,7 +16,34 @@ export default function Home() {
           </div>
           
           <h1 className="text-[1.75rem] md:text-[2.25rem] lg:text-[2.75rem] font-normal tracking-[-0.02em] leading-[1.2]">
-          Hi, I'm Shreyash—a 24-year-old Associate Director of Data Analytics and technologist passionate about how technology shapes our world, building software that empowers informed decision-making.
+            Hi, I'm Shreyash
+          </h1>
+
+          <h1 className="text-[1.75rem] md:text-[2rem] lg:text-[2.25rem] font-normal tracking-[-0.02em] leading-[1.2]">
+            I <Link href="/projects" className="group relative hover:text-primary transition-colors">
+              <span className="relative">
+                build
+                <span className="absolute -bottom-0 left-0 w-full h-[4px] bg-current" />
+              </span>
+            </Link> software that empowers informed decision-making and solves meaningful problems.
+          </h1>
+
+          <h1 className="text-[1.75rem] md:text-[2rem] lg:text-[2.25rem] font-normal tracking-[-0.02em] leading-[1.2]">
+            I <Link href="/blogs" className="group relative hover:text-primary transition-colors">
+              <span className="relative">
+                write
+                <span className="absolute -bottom-0 left-0 w-full h-[4px] bg-current" />
+              </span>
+            </Link> about my journey in technology, sharing lessons learned and insights gained along the way.
+          </h1>
+          
+          <h1 className="text-[1.75rem] md:text-[2rem] lg:text-[2.25rem] font-normal tracking-[-0.02em] leading-[1.2]">
+            I <Link href="/reading" className="group relative hover:text-primary transition-colors">
+              <span className="relative">
+                read
+                <span className="absolute -bottom-0 left-0 w-full h-[4px] bg-current" />
+              </span>
+            </Link> widely—business, technology, history, and beyond—to fuel my curiosity and growth.
           </h1>
         </div>
       </section>
