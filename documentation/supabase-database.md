@@ -15,7 +15,7 @@ CREATE TYPE blog_status AS ENUM ('published', 'draft');
 CREATE TABLE blogs (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   title TEXT NOT NULL,
-  description TEXT NOT NULL,
+  description TEXT,
   content TEXT NOT NULL,
   date TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   slug TEXT NOT NULL UNIQUE,
@@ -24,6 +24,57 @@ CREATE TABLE blogs (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
+
+-- Function to generate URL-friendly slugs
+CREATE OR REPLACE FUNCTION slugify("value" TEXT)
+RETURNS TEXT AS $$
+  WITH "unaccented" AS (
+    SELECT unaccent("value") AS "value"
+  ),
+  "lowercase" AS (
+    SELECT lower("value") AS "value"
+    FROM "unaccented"
+  ),
+  "removed_quotes" AS (
+    SELECT regexp_replace("value", '[''"]+', '', 'gi') AS "value"
+    FROM "lowercase"
+  ),
+  "hyphenated" AS (
+    SELECT regexp_replace("value", '[^a-z0-9\-_]+', '-', 'gi') AS "value"
+    FROM "removed_quotes"
+  ),
+  "trimmed" AS (
+    SELECT regexp_replace(regexp_replace("value", '\-+$', ''), '^\-', '') AS "value"
+    FROM "hyphenated"
+  )
+  SELECT "value" FROM "trimmed";
+$$ LANGUAGE SQL STRICT IMMUTABLE;
+
+-- Function to generate unique blog slugs
+CREATE OR REPLACE FUNCTION generate_blog_slug()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Only generate a slug if one isn't provided
+  IF NEW.slug IS NULL OR NEW.slug = '' THEN
+    NEW.slug := slugify(NEW.title);
+  END IF;
+  
+  -- Ensure uniqueness by appending a number if necessary
+  WHILE EXISTS(SELECT 1 FROM blogs WHERE slug = NEW.slug AND id != NEW.id) LOOP
+    NEW.slug := regexp_replace(NEW.slug, '-\d+$', '');
+    NEW.slug := NEW.slug || '-' || floor(random() * 1000)::text;
+  END LOOP;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger for automatic slug generation
+CREATE TRIGGER generate_blog_slug_trigger
+  BEFORE INSERT OR UPDATE OF title
+  ON blogs
+  FOR EACH ROW
+  EXECUTE FUNCTION generate_blog_slug();
 ```
 
 #### Readings Table

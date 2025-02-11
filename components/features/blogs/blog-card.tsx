@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { Card } from '@/components/ui/card'
 import type { BlogWithFormattedDate } from '@/lib/supabase'
+import { format } from 'date-fns'
 
 interface BlogCardProps {
   blog: BlogWithFormattedDate
@@ -13,14 +14,20 @@ export function BlogCard({ blog }: BlogCardProps) {
     <article key={blog.id} className="flex flex-col space-y-4">
       {/* Date */}
       <p className="text-sm text-muted-foreground">
-        {blog.formattedDate}
+        {format(new Date(blog.date), 'MMMM yyyy')}
       </p>
 
       {/* Title */}
-      <h2 className="text-2xl font-semibold">{blog.title}</h2>
+      <Link href={`/blogs/${blog.slug}`} className="block group">
+        <h2 className="text-2xl font-semibold group-hover:text-primary transition-colors">
+          {blog.title}
+        </h2>
+      </Link>
 
       {/* Description */}
-      <p className="text-muted-foreground">{blog.description}</p>
+      {blog.description && (
+        <p className="text-muted-foreground">{blog.description}</p>
+      )}
 
       {/* Content Preview */}
       <Link 

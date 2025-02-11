@@ -4,6 +4,14 @@ import { useState, useEffect, useRef } from 'react'
 import { BlogWithFormattedDate, PaginatedBlogs } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
 import { Card } from "@/components/ui/card"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { format } from 'date-fns'
 
 interface BlogListProps {
   initialBlogs: BlogWithFormattedDate[]
@@ -78,33 +86,19 @@ export function BlogList({ initialBlogs, availableTags, hasMore: initialHasMore,
       {/* Header Section */}
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Blogs</h1>
-        <div className="flex gap-2 overflow-x-auto">
-          <button
-            onClick={() => setSelectedTag('all')}
-            className={cn(
-              "px-3 py-1.5 text-sm font-medium rounded-full transition-colors",
-              selectedTag === 'all'
-                ? "bg-primary text-primary-foreground"
-                : "bg-accent/50 text-accent-foreground hover:bg-accent/70"
-            )}
-          >
-            All
-          </button>
-          {availableTags.map((tag) => (
-            <button
-              key={tag}
-              onClick={() => setSelectedTag(tag)}
-              className={cn(
-                "px-3 py-1.5 text-sm font-medium rounded-full whitespace-nowrap transition-colors",
-                selectedTag === tag
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-accent/50 text-accent-foreground hover:bg-accent/70"
-              )}
-            >
-              {tag.charAt(0).toUpperCase() + tag.slice(1)}
-            </button>
-          ))}
-        </div>
+        <Select value={selectedTag} onValueChange={setSelectedTag}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filter by tag" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+            {availableTags.map((tag) => (
+              <SelectItem key={tag} value={tag}>
+                {tag.charAt(0).toUpperCase() + tag.slice(1)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Blog Posts */}
@@ -117,14 +111,20 @@ export function BlogList({ initialBlogs, availableTags, hasMore: initialHasMore,
                 <div className="flex-1 space-y-6">
                   {/* Date */}
                   <p className="text-sm text-muted-foreground">
-                    {blog.formattedDate}
+                    {format(new Date(blog.date), 'MMMM yyyy')}
                   </p>
 
                   {/* Title */}
-                  <h2 className="text-2xl font-semibold">{blog.title}</h2>
+                  <a href={`/blogs/${blog.slug}`} className="block group">
+                    <h2 className="text-2xl font-semibold group-hover:text-primary transition-colors">
+                      {blog.title}
+                    </h2>
+                  </a>
 
                   {/* Description */}
-                  <p className="text-muted-foreground">{blog.description}</p>
+                  {blog.description && (
+                    <p className="text-muted-foreground">{blog.description}</p>
+                  )}
 
                   {/* Read Button */}
                   <div>
@@ -139,11 +139,13 @@ export function BlogList({ initialBlogs, availableTags, hasMore: initialHasMore,
 
                 {/* Right Column - Content Preview */}
                 <div className="flex-1">
-                  <Card className="h-full p-6 bg-muted/50 hover:bg-muted transition-colors">
-                    <p className="text-base text-muted-foreground leading-relaxed line-clamp-[8]">
-                      {blog.content}
-                    </p>
-                  </Card>
+                  <a href={`/blogs/${blog.slug}`} className="block group">
+                    <Card className="h-full p-6 bg-muted/50 transition-colors group-hover:bg-muted group-hover:border-primary">
+                      <p className="text-base text-muted-foreground leading-relaxed line-clamp-[8]">
+                        {blog.content}
+                      </p>
+                    </Card>
+                  </a>
                 </div>
               </div>
             </article>

@@ -2,6 +2,7 @@ import { getBlogBySlug } from '@/lib/supabase'
 import { notFound } from 'next/navigation'
 import { MDXContent } from '@/components/mdx/mdx-content'
 import type { Metadata } from 'next'
+import { format } from 'date-fns'
 
 // Force dynamic rendering for blog posts
 export const dynamic = 'force-dynamic'
@@ -63,10 +64,12 @@ export default async function BlogPage(props: PageProps) {
         {/* Blog Header */}
         <header className="mb-8">
           <p className="text-sm text-muted-foreground mb-2">
-            {blog.formattedDate}
+            {format(new Date(blog.date), 'MMMM yyyy')}
           </p>
           <h1 className="text-4xl font-bold mb-4">{blog.title}</h1>
-          <p className="text-xl text-muted-foreground">{blog.description}</p>
+          {blog.description && (
+            <p className="text-xl text-muted-foreground">{blog.description}</p>
+          )}
         </header>
 
         {/* Blog Content */}

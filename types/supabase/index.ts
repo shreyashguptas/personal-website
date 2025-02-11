@@ -5,7 +5,7 @@ export type BlogTag = string
 interface BlogsTable {
   id: string
   title: string
-  description: string
+  description?: string
   content: string
   date: string
   slug: string
