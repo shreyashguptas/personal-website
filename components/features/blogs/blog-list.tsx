@@ -108,23 +108,20 @@ export function BlogList({ initialBlogs, availableTags, hasMore: initialHasMore,
             <article>
               <div className="flex flex-col md:flex-row gap-8">
                 {/* Left Column - Blog Info */}
-                <div className="flex-1 space-y-6">
-                  {/* Date */}
-                  <p className="text-sm text-muted-foreground">
-                    {format(new Date(blog.date), 'MMMM yyyy')}
-                  </p>
+                <div className="flex-1 flex flex-col justify-between py-6">
+                  <div className="space-y-4">
+                    {/* Date */}
+                    <p className="text-sm text-muted-foreground">
+                      {format(new Date(blog.date), 'MMMM yyyy')}
+                    </p>
 
-                  {/* Title */}
-                  <a href={`/blogs/${blog.slug}`} className="block group">
-                    <h2 className="text-2xl font-semibold group-hover:text-primary transition-colors">
-                      {blog.title}
-                    </h2>
-                  </a>
-
-                  {/* Description */}
-                  {blog.description && (
-                    <p className="text-muted-foreground">{blog.description}</p>
-                  )}
+                    {/* Title */}
+                    <a href={`/blogs/${blog.slug}`} className="block group">
+                      <h2 className="text-2xl font-semibold group-hover:text-primary transition-colors">
+                        {blog.title}
+                      </h2>
+                    </a>
+                  </div>
 
                   {/* Read Button */}
                   <div>
@@ -139,7 +136,7 @@ export function BlogList({ initialBlogs, availableTags, hasMore: initialHasMore,
 
                 {/* Right Column - Content Preview */}
                 <div className="flex-1">
-                  <a href={`/blogs/${blog.slug}`} className="block group">
+                  <a href={`/blogs/${blog.slug}`} className="block group h-full">
                     <Card className="h-full p-6 bg-muted/50 transition-colors group-hover:bg-muted group-hover:border-primary">
                       <p className="text-base text-muted-foreground leading-relaxed line-clamp-[8]">
                         {blog.content}
