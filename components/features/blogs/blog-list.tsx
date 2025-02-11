@@ -138,8 +138,8 @@ export function BlogList({ initialBlogs, availableTags, hasMore: initialHasMore,
                 <div className="flex-1">
                   <a href={`/blogs/${blog.slug}`} className="block group h-full">
                     <Card className="h-full p-6 bg-muted/50 transition-colors group-hover:bg-muted group-hover:border-primary">
-                      <p className="text-base text-muted-foreground leading-relaxed line-clamp-[8]">
-                        {blog.content}
+                      <p className="text-base text-muted-foreground leading-relaxed line-clamp-[8] overflow-hidden">
+                        {blog.content.trim() + '...'}
                       </p>
                     </Card>
                   </a>
