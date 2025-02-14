@@ -3,14 +3,16 @@ import { notFound } from 'next/navigation'
 import { MDXContent } from '@/components/mdx/mdx-content'
 import type { Metadata } from 'next'
 import { format } from 'date-fns'
+import { Suspense } from 'react'
+import { BlogSkeleton } from '@/components/skeletons/blog-skeleton'
 
-// Force dynamic rendering for blog posts
-export const dynamic = 'force-dynamic'
-export const dynamicParams = true
-export const revalidate = 60
+// Dynamic route configuration
+export const dynamic = 'error'      // Proper error handling
+export const dynamicParams = true   // Enable dynamic parameters
+export const revalidate = 3600      // Cache invalidation time (1 hour)
 
-type PageProps = {
-  params: Promise<{ slug: string }>
+interface PageProps {
+  params: Promise<{ slug: string }> // Note: params must be treated as a Promise
 }
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
@@ -50,38 +52,30 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
   }
 }
 
-export default async function BlogPage(props: PageProps) {
-  try {
-    const { slug } = await props.params
-    const blog = await getBlogBySlug(slug)
+export default async function BlogPage({ params }: PageProps): Promise<React.ReactElement> {
+  const { slug } = await params
+  const blog = await getBlogBySlug(slug)
 
-    if (!blog) {
-      notFound()
-    }
-
-    return (
-      <article className="max-w-3xl mx-auto">
-        {/* Blog Header */}
-        <header className="mb-16 space-y-4">
-          {/* Title */}
-          <h1 className="text-4xl font-bold tracking-tight">
-            {blog.title}
-          </h1>
-          
-          {/* Date */}
-          <p className="text-sm text-muted-foreground">
-            {format(new Date(blog.date), 'MMMM yyyy')}
-          </p>
-        </header>
-
-        {/* Blog Content */}
-        <div className="prose prose-neutral dark:prose-invert max-w-none">
-          <MDXContent source={blog.source} />
-        </div>
-      </article>
-    )
-  } catch (error) {
-    console.error('Error loading blog:', error)
+  if (!blog) {
     notFound()
   }
+
+  if (!blog.source) {
+    throw new Error('Blog content could not be processed')
+  }
+
+  return (
+    <article className="max-w-3xl mx-auto py-8 space-y-8">
+      <header className="space-y-4">
+        <h1 className="text-3xl font-bold">{blog.title}</h1>
+        <p className="text-muted-foreground">
+          {format(new Date(blog.date), 'MMMM d, yyyy')}
+        </p>
+      </header>
+      
+      <Suspense fallback={<BlogSkeleton />}>
+        <MDXContent source={blog.source} />
+      </Suspense>
+    </article>
+  )
 } 
