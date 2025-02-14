@@ -10,8 +10,11 @@ export default function Home(): JSX.Element {
             <Image
               src="/images/headshot.jpg"
               alt="Shreyash Gupta Headshot"
-              fill
-              className="object-cover"
+              width={160}
+              height={160}
+              priority
+              sizes="(max-width: 768px) 140px, 160px"
+              className="object-cover w-full h-full"
             />
           </div>
           
