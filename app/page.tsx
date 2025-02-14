@@ -38,7 +38,7 @@ export default function Home(): JSX.Element {
           </h1>
           
           <h1 className="text-[1.75rem] md:text-[2rem] lg:text-[2.25rem] font-normal tracking-[-0.02em] leading-[1.2]">
-            I <Link href="/reading" className="group relative hover:text-primary transition-colors">
+            I <Link href="/readings" className="group relative hover:text-primary transition-colors">
               <span className="relative">
                 read
                 <span className="absolute -bottom-0 left-0 w-full h-[4px] bg-current" />
