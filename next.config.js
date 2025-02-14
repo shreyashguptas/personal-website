@@ -28,20 +28,81 @@ const nextConfig = {
   output: 'standalone',
   reactStrictMode: true,
   poweredByHeader: false,
-  webpack: (config, { isServer }) => {
+
+  // Performance Optimizations for both Development and Production
+  onDemandEntries: {
+    // Keep pages in memory for longer during development
+    maxInactiveAge: 60 * 60 * 1000, // 1 hour
+    pagesBufferLength: 5,
+  },
+  
+  // Compiler options
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+
+  // Experimental features
+  experimental: {
+    optimizeCss: true,
+    webpackBuildWorker: true,
+  },
+
+  // Server configuration
+  serverExternalPackages: [], // Updated from serverComponentsExternalPackages
+
+  webpack: (config, { dev, isServer }) => {
+    // Shared optimizations for both dev and prod
+    config.optimization = {
+      ...config.optimization,
+      runtimeChunk: 'single',
+      splitChunks: {
+        chunks: 'all',
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+            priority: 20,
+          },
+          common: {
+            name: 'common',
+            minChunks: 2,
+            chunks: 'all',
+            priority: 10,
+            reuseExistingChunk: true,
+            enforce: true,
+          },
+        },
+      },
+    }
+
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,
       }
     }
+
+    // Development-specific optimizations
+    if (dev) {
+      // Enable fast refresh with minimal overhead
+      config.optimization.moduleIds = 'named'
+      config.optimization.chunkIds = 'named'
+    }
+
     // Suppress punycode warning
     config.ignoreWarnings = [
       { module: /node_modules\/punycode/ }
     ]
+
     return config
   },
   transpilePackages: ['next-mdx-remote']
+}
+
+// Set higher memory limit for Node.js
+if (process.env.NODE_ENV === 'development') {
+  process.env.NODE_OPTIONS = process.env.NODE_OPTIONS || '--max-old-space-size=4096'
 }
 
 module.exports = withBundleAnalyzer(nextConfig)
