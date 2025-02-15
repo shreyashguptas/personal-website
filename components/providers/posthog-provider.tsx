@@ -21,7 +21,7 @@ function initPostHog() {
 
   try {
     posthog.init(apiKey, {
-      api_host: 'https://eu.i.posthog.com',
+      api_host: 'https://us.i.posthog.com',
       loaded: (posthog) => {
         if (process.env.NODE_ENV === 'development') {
           posthog.debug()
