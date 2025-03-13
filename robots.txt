@@ -1,4 +1,4 @@
-# robots.txt for https://shreyashgupta.in
+# robots.txt for https://shreyashg.com
 # Last updated: 2024-03-21
 
 # Allow all bots but with crawl-delay
@@ -18,4 +18,4 @@ Disallow: /*.svg$
 Disallow: /*.webp$
 
 # Sitemap location
-Sitemap: https://shreyashgupta.in/sitemap.xml 
+Sitemap: https://shreyashg.com/sitemap.xml 
