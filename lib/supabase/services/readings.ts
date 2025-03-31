@@ -15,7 +15,7 @@ export interface PaginatedReadings {
   hasMore: boolean
 }
 
-export async function getAllReadings(page: number = 1, pageSize: number = 10): Promise<PaginatedReadings> {
+export async function getAllReadings(page: number = 1, pageSize: number = 15): Promise<PaginatedReadings> {
   try {
     const from = (page - 1) * pageSize
     const to = from + pageSize - 1
