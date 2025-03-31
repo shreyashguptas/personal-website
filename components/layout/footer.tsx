@@ -31,6 +31,14 @@ export function Footer() {
             >
               X
             </Link>
+            <Link 
+              href="https://www.youtube.com/@Shreyashguptas" 
+              className="hover:text-foreground transition-colors"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              YouTube
+            </Link>
           </div>
         </div>
       </div>
