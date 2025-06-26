@@ -1,33 +1,60 @@
-import { getAllBlogs, getUniqueTags } from '@/lib/supabase'
-import { BlogList } from '@/components/features/blogs/blog-list'
-import { loadMoreBlogs } from './actions'
+import { getAllPosts } from '@/lib/blog'
+import Link from 'next/link'
+import Image from 'next/image'
 
-// Revalidate data every minute in production, but stay dynamic in development
-export const revalidate = 60
+export default function BlogsPage() {
+  const posts = getAllPosts()
 
-export default async function BlogsPage() {
-  try {
-    const [initialData, tags] = await Promise.all([
-      getAllBlogs(1),
-      getUniqueTags()
-    ])
-
-    return (
-      <BlogList
-        initialBlogs={initialData.blogs}
-        availableTags={tags}
-        hasMore={initialData.hasMore}
-        onLoadMore={loadMoreBlogs}
-      />
-    )
-  } catch (error) {
-    console.error('Error loading blogs:', error)
-    return (
-      <div className="space-y-8">
-        <h1 className="text-3xl font-bold">Blogs</h1>
-        <p className="text-muted-foreground">Failed to load blogs. Please try again later.</p>
+  return (
+    <div className="mx-auto max-w-2xl">
+      <div className="mb-16">
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+          Blog
+        </h1>
+        <p className="text-lg text-muted-foreground">
+          Stories and ideas from my journey
+        </p>
       </div>
-    )
-  }
+
+      {posts.length === 0 ? (
+        <p className="text-muted-foreground">No posts yet. Check back soon!</p>
+      ) : (
+        <div className="space-y-12">
+          {posts.map((post) => (
+            <article key={post.slug} className="group">
+              <Link href={`/blogs/${post.slug}`} className="block space-y-3">
+                {post.coverImage && (
+                  <div className="relative aspect-[16/9] overflow-hidden rounded-lg bg-muted">
+                    <Image
+                      src={post.coverImage}
+                      alt={post.title}
+                      fill
+                      className="object-cover transition-transform group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                  </div>
+                )}
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-semibold tracking-tight group-hover:underline">
+                    {post.title}
+                  </h2>
+                  <p className="text-muted-foreground line-clamp-2">
+                    {post.excerpt}
+                  </p>
+                  <time className="text-sm text-muted-foreground">
+                    {new Date(post.date).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </time>
+                </div>
+              </Link>
+            </article>
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
 

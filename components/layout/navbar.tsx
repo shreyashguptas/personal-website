@@ -2,81 +2,35 @@
 
 import * as React from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { cn } from '@/lib/utils'
-import { useState, useEffect } from 'react'
-
-const navigationItems = [
-  { name: 'Home', href: '/' },
-  { name: 'Projects', href: '/projects' },
-  { name: 'Blogs', href: '/blogs' },
-  { name: 'Readings', href: '/readings' },
-]
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  navigationMenuTriggerStyle,
+} from '@/components/ui/navigation-menu'
 
 export function Navbar() {
-  const pathname = usePathname()
-  const [isNavigating, setIsNavigating] = useState<boolean>(false)
-  const [prevPath, setPrevPath] = useState<string>(pathname)
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout | undefined
-
-    if (pathname !== prevPath) {
-      setIsNavigating(true)
-      setPrevPath(pathname)
-      
-      timer = setTimeout(() => {
-        setIsNavigating(false)
-      }, 400) // Original duration for smoother transition
-    }
-
-    return () => {
-      if (timer) {
-        clearTimeout(timer)
-      }
-    }
-  }, [pathname, prevPath])
-
   return (
     <header className="flex justify-center mb-8">
-      <nav className="relative z-10 flex gap-1 rounded-lg bg-background p-1 items-center">
-        {navigationItems.map((item) => {
-          const isActive = pathname === item.href
-          const wasActive = prevPath === item.href
-          
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                'group relative select-none rounded-md px-3 py-1.5 text-sm outline-none transition-colors duration-200',
-                'text-muted-foreground hover:text-foreground',
-                isActive && 'text-foreground'
-              )}
-            >
-              <span className="relative z-10">
-                {item.name}
-                <span 
-                  className={cn(
-                    'absolute -bottom-1.5 h-[2px] bg-foreground',
-                    'transition-all duration-400 ease-in-out',
-                    // Default state
-                    'w-0 left-1/2 transform -translate-x-1/2',
-                    // Hover state when not active and not navigating
-                    !isActive && !isNavigating && 'group-hover:w-[calc(100%+0.5rem)] group-hover:left-[50%] group-hover:-translate-x-1/2',
-                    // Active state
-                    isActive && !isNavigating && 'w-[calc(100%+0.5rem)] left-[50%] -translate-x-1/2',
-                    // Exit animation
-                    wasActive && isNavigating && 'w-0 left-[50%] -translate-x-1/2',
-                    // Entry animation
-                    isActive && isNavigating && 'w-[calc(100%+0.5rem)] left-[50%] -translate-x-1/2'
-                  )}
-                />
-              </span>
+      <NavigationMenu>
+        <NavigationMenuList>
+          <NavigationMenuItem>
+            <Link href="/" legacyBehavior passHref>
+              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                Home
+              </NavigationMenuLink>
             </Link>
-          )
-        })}
-      </nav>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <Link href="/blogs" legacyBehavior passHref>
+              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                Blog
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>
     </header>
   )
 }
