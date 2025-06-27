@@ -9,9 +9,9 @@ type Props = {
 const Alert = ({ preview }: Props) => {
   return (
     <div
-      className={cn("border-b dark:bg-slate-800", {
-        "bg-neutral-800 border-neutral-800 text-white": preview,
-        "bg-neutral-50 border-neutral-200": !preview,
+      className={cn("border-b border-gray-200 dark:border-gray-800", {
+        "bg-black border-black text-white": preview,
+        "bg-gray-50 border-gray-200 dark:bg-gray-900 dark:border-gray-800": !preview,
       })}
     >
       <Container>
@@ -21,7 +21,7 @@ const Alert = ({ preview }: Props) => {
               This page is a preview.{" "}
               <a
                 href="/api/exit-preview"
-                className="underline hover:text-teal-300 duration-200 transition-colors"
+                className="underline hover:text-gray-600 dark:hover:text-gray-400 duration-200 transition-colors"
               >
                 Click here
               </a>{" "}
@@ -32,7 +32,7 @@ const Alert = ({ preview }: Props) => {
               The source code for this blog is{" "}
               <a
                 href={`https://github.com/vercel/next.js/tree/canary/examples/${EXAMPLE_PATH}`}
-                className="underline hover:text-blue-600 duration-200 transition-colors"
+                className="underline hover:text-gray-600 dark:hover:text-gray-400 duration-200 transition-colors"
               >
                 available on GitHub
               </a>
