@@ -5,7 +5,7 @@ coverImage: ""
 date: "2023-04-13T13:40:44.000Z"
 author:
   name: Shreyash Gupta
-  picture: ""
+  picture: "/assets/blog/authors/shreyash.png"
 ogImage:
   url: "/assets/blog/preview/cover.jpeg"
 ---

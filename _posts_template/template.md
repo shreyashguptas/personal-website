@@ -4,7 +4,7 @@ excerpt: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmo
 coverImage: "/assets/blog/preview/cover.jpeg"
 date: "2020-03-16T05:35:07.322Z"
 author:
-  name: Joe Haddad
+  name: Shreyash Gupta
   picture: "/assets/blog/authors/shreyash.png"
 ogImage:
   url: "/assets/blog/preview/cover.jpeg"
