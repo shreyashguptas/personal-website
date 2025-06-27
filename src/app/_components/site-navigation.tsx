@@ -24,6 +24,11 @@ export function SiteNavigation() {
               <Link href="/blog">Blog</Link>
             </NavigationMenuLink>
           </NavigationMenuItem>
+            <NavigationMenuItem>
+            <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+              <Link href="/projects">Project</Link>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
     </div>
