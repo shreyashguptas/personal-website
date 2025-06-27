@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import cn from "classnames";
 import { ThemeSwitcher } from "./_components/theme-switcher";
+import { SiteNavigation } from "./_components/site-navigation";
 
 import "./globals.css";
 
@@ -61,6 +62,7 @@ export default function RootLayout({
         className={cn(inter.className, "bg-white text-black dark:bg-black dark:text-white transition-colors duration-200")}
       >
         <ThemeSwitcher />
+        <SiteNavigation />
         <div className="min-h-screen">{children}</div>
       </body>
     </html>
