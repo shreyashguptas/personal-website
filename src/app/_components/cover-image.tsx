@@ -6,19 +6,24 @@ type Props = {
   title: string;
   src: string;
   slug?: string;
+  variant?: "default" | "hero";
 };
 
-const CoverImage = ({ title, src, slug }: Props) => {
+const CoverImage = ({ title, src, slug, variant = "default" }: Props) => {
+  const heightClass = variant === "hero" ? "h-80" : "h-64";
+  
   const image = (
-    <Image
-      src={src}
-      alt={`Cover Image for ${title}`}
-      className={cn("shadow-sm w-full rounded-lg", {
-        "hover:shadow-lg transition-shadow duration-200": slug,
-      })}
-      width={1300}
-      height={630}
-    />
+    <div className={cn("relative w-full overflow-hidden rounded-lg shadow-sm", heightClass)}>
+      <Image
+        src={src}
+        alt={`Cover Image for ${title}`}
+        fill
+        className={cn("object-cover", {
+          "hover:shadow-lg transition-shadow duration-200": slug,
+        })}
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      />
+    </div>
   );
   return (
     <div className="sm:mx-0">

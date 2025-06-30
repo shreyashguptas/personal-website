@@ -25,4 +25,6 @@ Another bonus? Grok is currently offering its best models at low costs—or even
 
 ### Final Thoughts
 
-I highly recommend Grok over other AI chat apps unless you have very specific requirements. While I don't use Grok for coding (other models handle that better), it excels at answering questions, detailed explanations, and versatile media inputs. It's stable, fast, and simple. Give it a shot—you won't be disappointed. 
+I highly recommend Grok over other AI chat apps unless you have very specific requirements. While I don't use Grok for coding (other models handle that better), it excels at answering questions, detailed explanations, and versatile media inputs. It's stable, fast, and simple. Give it a shot—you won't be disappointed.
+
+![grokai-logo](/blog/content/grokai-logo.png)
