@@ -1,13 +1,10 @@
 ---
 title: "Choosing the Right AI Chat Tool in 2025"
 excerpt: ""
-coverImage: ""
 date: "2025-02-19T00:10:05.000Z"
 author:
   name: Shreyash Gupta
   picture: "/blog/authors/shreyash.png"
-ogImage:
-  url: "/blog/preview/cover.jpeg"
 ---
 
 AI chat tools are everywhere now. Like the early days of search engines, we're in a phase where everyone's trying to figure out which one to use. ChatGPT might dominate Google Trends, but that doesn't automatically make it the right choice for you.
@@ -19,7 +16,6 @@ Let's break this down simply: The major players - OpenAI, XAI, Mistral, Meta, Go
 But here's the interesting part: subscribing to each service individually quickly becomes expensive. ChatGPT is $20, Grok's latest version is $40, and Mistral charges $20. The costs add up fast.
 
 This is where platforms like [Perplexity.ai](http://Perplexity.ai) come in. Instead of managing multiple subscriptions, you get access to most of these models in one place. They've even developed their own model called Sonar, based on Llama with their own modifications in addition to providing access to models from the major players.
-![Table with AI Models and their Task type](https://otndlfnjbqxuaanhdsum.supabase.co/storage/v1/object/public/gif//Table%20with%20AI%20Models%20and%20their%20Task%20type)
 
 What makes this approach powerful is the ability to choose the right tool for each task. Need to write something creative? Claude might be your best bet. Working on code? Claude (not GPT-4 as some suggest) often provides better responses.
 

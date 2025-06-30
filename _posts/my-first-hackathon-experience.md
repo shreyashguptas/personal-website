@@ -1,13 +1,10 @@
 ---
 title: "My First Hackathon Experience"
 excerpt: ""
-coverImage: ""
 date: "2025-04-08T21:07:15.000Z"
 author:
   name: Shreyash Gupta
   picture: "/blog/authors/shreyash.png"
-ogImage:
-  url: "/blog/preview/cover.jpeg"
 ---
 
 I never planned to attend a hackathon. It wasn't even on my radar. But sometimes, life throws you into situations that push you out of your comfort zone—and this was one of those moments.

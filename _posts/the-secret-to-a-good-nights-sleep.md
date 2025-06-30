@@ -1,13 +1,10 @@
 ---
 title: "The Secret to a Good Night's Sleep"
 excerpt: "Sleep Debt: Your Body Wants Its Money Back!"
-coverImage: ""
 date: "2023-05-19T13:30:49.000Z"
 author:
   name: Shreyash Gupta
   picture: "/blog/authors/shreyash.png"
-ogImage:
-  url: "/blog/preview/cover.jpeg"
 ---
 
 Introduction

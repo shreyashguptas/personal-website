@@ -1,13 +1,10 @@
 ---
 title: "Harness Your Senses: The Art of Dual-Tasking Without Multitasking"
 excerpt: "Maximizing Productivity by Engaging Multiple Senses Simultaneously"
-coverImage: ""
 date: "2023-10-12T13:16:31.000Z"
 author:
   name: Shreyash Gupta
   picture: "/blog/authors/shreyash.png"
-ogImage:
-  url: "/blog/preview/cover.jpeg"
 ---
 
 Ever wished you could juggle tasks efficiently without feeling overwhelmed? It's possible, but not in the way you might think.

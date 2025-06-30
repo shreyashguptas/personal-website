@@ -1,13 +1,10 @@
 ---
 title: "Fix the unread email apocalypse"
 excerpt: "Regain Control of Your Email Inbox"
-coverImage: ""
 date: "2023-03-02T14:49:07.000Z"
 author:
   name: Shreyash Gupta
   picture: "/blog/authors/shreyash.png"
-ogImage:
-  url: "/blog/preview/cover.jpeg"
 ---
 
 There are two types of people: those whose email inbox is always empty, and those whose inbox always has millions of unopened emails. My guess is that you are the one with a million unopened emails, and this newsletter is just for you. If you are on the other end of the spectrum and never have any unread emails, close this email, and I will see you next week!

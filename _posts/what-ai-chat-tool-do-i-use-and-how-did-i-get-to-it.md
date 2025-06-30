@@ -1,13 +1,10 @@
 ---
 title: "What AI Chat tool do I use and How did I get to it?"
 excerpt: ""
-coverImage: ""
 date: "2025-05-23T14:39:53.000Z"
 author:
   name: Shreyash Gupta
   picture: "/blog/authors/shreyash.png"
-ogImage:
-  url: "/blog/preview/cover.jpeg"
 ---
 
 If you've only been using ChatGPT and haven't explored anything else, here's a little rundown of how I landed on my preferred AI tool that I use daily.

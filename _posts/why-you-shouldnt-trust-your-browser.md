@@ -1,13 +1,10 @@
 ---
 title: "Why You Shouldn't Trust Your Browser: Protecting from Data Brokers"
 excerpt: "Be productive, not vulnerable: A guide to secure multitasking"
-coverImage: ""
 date: "2023-02-02T14:54:20.000Z"
 author:
   name: Shreyash Gupta
   picture: "/blog/authors/shreyash.png"
-ogImage:
-  url: "/blog/preview/cover.jpeg"
 ---
 
 First of all, thank you for subscribing to this newsletter. Whether you're reading this as an email or through a web browser, I'm glad you're here. Speaking of browsers, have you ever stopped to think about the one you're using right now? Most of us use whatever comes pre-installed on our devices, but have you ever wondered if it's actually the best option for you?

@@ -1,13 +1,10 @@
 ---
 title: "Vibe Coding Your Way Out of Vibe Coding"
 excerpt: ""
-coverImage: ""
 date: "2025-03-20T17:13:46.000Z"
 author:
   name: Shreyash Gupta
   picture: "/blog/authors/shreyash.png"
-ogImage:
-  url: "/blog/preview/cover.jpeg"
 ---
 
 There's a lot of talk lately about "vibe coders." The term itself was popularized by Andrej Karpathy—one of the original developers behind Tesla's autonomous driving and OpenAI's GPT models. Nowadays, Karpathy spends his time democratizing AI, making videos that teach complex concepts in simple ways. In one of his famous tweets, he described vibe coding as the practice of just speaking your thoughts into an AI tool and having it generate code for you—building websites, creating features, fixing bugs, all without needing deep programming knowledge.

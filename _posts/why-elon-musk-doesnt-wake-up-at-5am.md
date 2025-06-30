@@ -1,13 +1,10 @@
 ---
 title: "Why Elon Musk Doesn't Wake Up at 5AM (And Maybe You Shouldn't Either)"
 excerpt: "The Problem with Waking Up at 5AM: Insights from Elon Musk and Root Cause Analysis"
-coverImage: ""
 date: "2023-04-13T13:40:44.000Z"
 author:
   name: Shreyash Gupta
   picture: "/blog/authors/shreyash.png"
-ogImage:
-  url: "/blog/preview/cover.jpeg"
 ---
 
 First things first, let's address the elephant in the room: waking up at 5AM.

@@ -1,13 +1,10 @@
 ---
 title: "The Great Notification Purge"
 excerpt: "Eliminate phone notifications distractions and Increase Productivity"
-coverImage: ""
 date: "2023-03-23T13:46:53.000Z"
 author:
   name: Shreyash Gupta
   picture: "/blog/authors/shreyash.png"
-ogImage:
-  url: "/blog/preview/cover.jpeg"
 ---
 
 Do you ever wake up in the morning and find yourself drowning in a sea of notifications from countless apps? It's like having a hundred people asking you a thousand questions, all asking for your attention. But let's be real, you can't answer them all, and most of them aren't even valuable to your life.

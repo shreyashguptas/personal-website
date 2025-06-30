@@ -1,13 +1,10 @@
 ---
 title: "Reclaim +100 hours of your time with Youtube."
 excerpt: "Discover the Hidden Cost of Ads and Save +100 Hours"
-coverImage: ""
 date: "2023-07-13T13:23:17.000Z"
 author:
   name: Shreyash Gupta
   picture: "/blog/authors/shreyash.png"
-ogImage:
-  url: "/blog/preview/cover.jpeg"
 ---
 
 Imagine this: you're eagerly waiting to watch your favorite YouTube video, and bam! An ad pops up, interrupting your flow. Frustrating, right?

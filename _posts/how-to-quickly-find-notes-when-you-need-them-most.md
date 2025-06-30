@@ -1,13 +1,10 @@
 ---
 title: "How to Quickly Find Notes When You Need Them Most"
 excerpt: "Stop Searching and Start Tagging!"
-coverImage: ""
 date: "2023-02-09T14:52:28.000Z"
 author:
   name: Shreyash Gupta
   picture: "/blog/authors/shreyash.png"
-ogImage:
-  url: "/blog/preview/cover.jpeg"
 ---
 
 Do you ever scroll through your disorganized notes app, trying to find that one note you need, only to come up empty? I've been there and it's incredibly frustrating.

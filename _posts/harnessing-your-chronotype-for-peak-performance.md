@@ -1,13 +1,10 @@
 ---
 title: "Harnessing your chronotype for peak 🏔️ performance 🏎️"
 excerpt: "Chronotypes: It's like astrology, but for productivity."
-coverImage: ""
 date: "2023-04-21T13:38:39.000Z"
 author:
   name: Shreyash Gupta
   picture: "/blog/authors/shreyash.png"
-ogImage:
-  url: "/blog/preview/cover.jpeg"
 ---
 
 Are you a morning riser☀️ or a night owl🦉?

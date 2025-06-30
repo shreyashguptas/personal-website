@@ -1,5 +1,6 @@
 import { Post } from "@/interfaces/post";
 import { Project } from "@/interfaces/project";
+import { extractFirstImageFromMarkdown } from "@/lib/utils";
 import fs from "fs";
 import matter from "gray-matter";
 import { join } from "path";
@@ -17,7 +18,15 @@ export function getPostBySlug(slug: string) {
   const fileContents = fs.readFileSync(fullPath, "utf8");
   const { data, content } = matter(fileContents);
 
-  return { ...data, slug: realSlug, content } as Post;
+  // Extract the first image from markdown content to use as cover image
+  const coverImage = extractFirstImageFromMarkdown(content);
+
+  return { 
+    ...data, 
+    slug: realSlug, 
+    content,
+    coverImage: coverImage || undefined 
+  } as Post;
 }
 
 export function getAllPosts(): Post[] {

@@ -1,13 +1,10 @@
 ---
 title: "One Year of Python: From Novice to Enthusiast"
 excerpt: "How my experience can help you start learning something new"
-coverImage: ""
 date: "2024-07-14T13:14:52.000Z"
 author:
   name: Shreyash Gupta
   picture: "/blog/authors/shreyash.png"
-ogImage:
-  url: "/blog/preview/cover.jpeg"
 ---
 
 So, it's been about a year since I seriously started learning Python. Can you believe it? I remember back in ninth grade when my friends tried to show me how to print a simple "Hello World" in Python. Man, it was the hardest thing for my mind to grasp. I kept wondering, "Why am I even doing this?"

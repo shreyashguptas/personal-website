@@ -1,13 +1,10 @@
 ---
 title: "The Power of Iteration: Lessons from Kindergarteners and Building Websites"
 excerpt: "Iterate. Iterate. Iterate."
-coverImage: ""
 date: "2024-07-22T13:14:08.000Z"
 author:
   name: Shreyash Gupta
   picture: "/blog/authors/shreyash.png"
-ogImage:
-  url: "/blog/preview/cover.jpeg"
 ---
 
 So, I watched this really cool TED Talk by Tom Wujec called "Build a tower, build a team" and it got me thinking about how important iteration is in everything we do. In the video, they had this challenge where different groups - kindergarteners, CEOs, business students - had to build the tallest structure using just spaghetti noodles and marshmallows. Guess who won? The kindergarteners!

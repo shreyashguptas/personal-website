@@ -1,13 +1,10 @@
 ---
 title: "Sick Day Survival Guide"
 excerpt: "Tips and Tricks for Binge-Watching and Recovery"
-coverImage: ""
 date: "2023-03-31T13:45:04.000Z"
 author:
   name: Shreyash Gupta
   picture: "/blog/authors/shreyash.png"
-ogImage:
-  url: "/blog/preview/cover.jpeg"
 ---
 
 Ever had a week where everything seems to go wrong?

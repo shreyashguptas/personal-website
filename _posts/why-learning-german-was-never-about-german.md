@@ -1,13 +1,10 @@
 ---
 title: "Why Learning German Was Never About German"
 excerpt: "A 100-day journey of turning German lessons into a bedtime ritual that sparked unexpected connections and habits."
-coverImage: ""
 date: "2025-02-11T00:41:43.000Z"
 author:
   name: Shreyash Gupta
   picture: "/blog/authors/shreyash.png"
-ogImage:
-  url: "/blog/preview/cover.jpeg"
 ---
 
 Most people wait for the perfect moment to start a new habit. They imagine some magical Monday or New Year's Day when everything will align. But habits rarely start that way.

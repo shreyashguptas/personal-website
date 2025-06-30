@@ -1,13 +1,10 @@
 ---
 title: "How not to get Fired using AI"
 excerpt: "Don't Let Poor Writing Skills Hurt Your Career: Use AI to Your Advantage"
-coverImage: ""
 date: "2023-04-06T13:43:30.000Z"
 author:
   name: Shreyash Gupta
   picture: "/blog/authors/shreyash.png"
-ogImage:
-  url: "/blog/preview/cover.jpeg"
 ---
 
 Have you ever used AI chat tools to not get fired? Well I have and you can learn something from me today.

@@ -1,13 +1,10 @@
 ---
 title: "Sick of feeling uninspired at work? Try tweaking your environment"
 excerpt: "How Small Changes Lead to Big Results"
-coverImage: ""
 date: "2023-06-29T13:26:01.000Z"
 author:
   name: Shreyash Gupta
   picture: "/blog/authors/shreyash.png"
-ogImage:
-  url: "/blog/preview/cover.jpeg"
 ---
 
 Your environment is killing your productivity.

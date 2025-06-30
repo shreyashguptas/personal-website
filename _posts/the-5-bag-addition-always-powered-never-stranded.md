@@ -1,13 +1,10 @@
 ---
 title: "The $5 Bag Addition: Always Powered, Never Stranded!"
 excerpt: "The Pouch of Power: How YOU can Outsmart YOUR Forgetful Brain"
-coverImage: ""
 date: "2023-08-10T13:20:14.000Z"
 author:
   name: Shreyash Gupta
   picture: "/blog/authors/shreyash.png"
-ogImage:
-  url: "/blog/preview/cover.jpeg"
 ---
 
 Have you ever traveled somewhere and forgot to pack your charging cord for your phone?

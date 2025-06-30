@@ -1,13 +1,10 @@
 ---
 title: "Talk to AI about your questions"
 excerpt: "It does not judge you"
-coverImage: ""
 date: "2024-08-30T13:10:22.000Z"
 author:
   name: Shreyash Gupta
   picture: "/blog/authors/shreyash.png"
-ogImage:
-  url: "/blog/preview/cover.jpeg"
 ---
 
 links to everything I talk about at the end

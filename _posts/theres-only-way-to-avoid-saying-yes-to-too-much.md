@@ -1,13 +1,10 @@
 ---
 title: "There's Only Way to Avoid Saying Yes to Too Much"
 excerpt: "How to Use a Calendar to Take Control of Your Life"
-coverImage: ""
 date: "2023-05-11T13:33:05.000Z"
 author:
   name: Shreyash Gupta
   picture: "/blog/authors/shreyash.png"
-ogImage:
-  url: "/blog/preview/cover.jpeg"
 ---
 
 "Hey, do you want to catch up and get some coffee this Saturday?"

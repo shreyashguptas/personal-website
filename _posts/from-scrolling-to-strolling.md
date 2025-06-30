@@ -1,13 +1,10 @@
 ---
 title: "From Scrolling to Strolling: How I Outsmarted Social Media with This One Weird Browser Trick"
 excerpt: "Increasing Friction to Boost Productivity and Reclaim Your Time"
-coverImage: ""
 date: "2023-02-16T14:50:31.000Z"
 author:
   name: Shreyash Gupta
   picture: "/blog/authors/shreyash.png"
-ogImage:
-  url: "/blog/preview/cover.jpeg"
 ---
 
 We know that creating systems is one way to be more productive, but another thing we have all heard about and possibly done is reducing our social media screen time.

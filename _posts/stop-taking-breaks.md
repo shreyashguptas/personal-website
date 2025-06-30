@@ -1,13 +1,10 @@
 ---
 title: "Stop taking breaks..."
 excerpt: "Are you taking Breaks or making Excuses?"
-coverImage: ""
 date: "2023-06-22T13:26:53.000Z"
 author:
   name: Shreyash Gupta
   picture: "/blog/authors/shreyash.png"
-ogImage:
-  url: "/blog/preview/cover.jpeg"
 ---
 
 Taking breaks when it's actually laziness.
