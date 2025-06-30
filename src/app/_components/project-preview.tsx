@@ -8,7 +8,7 @@ type Props = {
 
 export function ProjectPreview({ project }: Props) {
   return (
-    <div className="flex flex-col md:flex-row items-start gap-8 py-12">
+    <div className="flex flex-col md:flex-row items-start gap-12 py-12">
       {/* Left side - Project info */}
       <div className="flex-1">
         <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">{project.year}</div>
@@ -29,12 +29,13 @@ export function ProjectPreview({ project }: Props) {
       </div>
       
       {/* Right side - Project image */}
-      <div className="w-full md:w-96 h-64 relative rounded-lg overflow-hidden">
+      <div className="w-full md:w-[600px] rounded-lg overflow-hidden">
         <Image
           src={project.image}
           alt={project.title}
-          fill
-          className="object-cover"
+          width={600}
+          height={400}
+          className="w-full h-auto object-contain"
         />
       </div>
     </div>
