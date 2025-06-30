@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import cn from "classnames";
 import { ThemeSwitcher } from "./_components/theme-switcher";
 import { SiteNavigation } from "./_components/site-navigation";
+import { Footer } from "./_components/footer";
 
 import "./globals.css";
 
@@ -63,7 +64,10 @@ export default function RootLayout({
       >
         <ThemeSwitcher />
         <SiteNavigation />
-        <div className="min-h-screen">{children}</div>
+        <div className="min-h-screen flex flex-col">
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </div>
       </body>
     </html>
   );

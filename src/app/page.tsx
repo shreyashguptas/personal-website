@@ -17,9 +17,9 @@ export default function HomePage() {
   const featuredProject = allProjects.find(p => p.title === FEATURED_PROJECT_NAME) || allProjects[0];
 
   return (
-    <main className="relative min-h-screen overflow-hidden">
+    <div className="relative overflow-hidden">
       <Container>
-        <div className="mt-16 relative z-10">
+        <div className="mt-16 relative z-10 pb-16">
           {/* Mobile: Image above title */}
           <div className="md:hidden mb-8">
             <div className="relative w-48 h-48 rounded-lg overflow-hidden">
@@ -67,6 +67,6 @@ export default function HomePage() {
           />
         </div>
       </div>
-    </main>
+    </div>
   );
 }
