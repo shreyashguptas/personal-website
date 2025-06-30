@@ -32,7 +32,7 @@ export default function HomePage() {
             src="/headshot/headshot.jpg"
             alt="Shreyash Gupta"
             fill
-            className="object-cover object-center"
+            className="object-cover object-[105%_center]"
             priority
           />
         </div>
