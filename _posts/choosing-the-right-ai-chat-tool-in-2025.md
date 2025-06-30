@@ -26,3 +26,5 @@ For those who prioritize speed and value, there's t3.chat. At $8 per month, it's
 The future I'm hoping for is one where AI tools automatically select the best model for your specific task. Until then, understanding which model excels at what will help you maximize your productivity with these tools.
 
 The key isn't finding the "best" AI chat tool - it's knowing which tool best serves your specific needs. 
+
+![choosing-the-right-ai-chat-tool-in-2025](/blog/content/choosing-the-right-ai-chat-tool-in-2025.png)

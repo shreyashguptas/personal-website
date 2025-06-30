@@ -26,3 +26,5 @@ Duolingo has also changed my relationship with my phone. Instead of mindless scr
 The irony is that I started this without any practical goal. I have no plans to live in Germany. I might visit someday, but that's not the point. The value lies in the daily practice, the conversations it sparks, and the small ways it has enriched my routine.
 
 I shall report back in 1000 days and see if I learned something new. Maybe I am fluent in German by then. 
+
+![why-learning-german-was-never-about-german](/blog/content/why-learning-german-was-never-about-german.png)
