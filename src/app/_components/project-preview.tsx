@@ -11,18 +11,18 @@ export function ProjectPreview({ project }: Props) {
     <div className="flex flex-col md:flex-row items-start gap-8 py-12">
       {/* Left side - Project info */}
       <div className="flex-1">
-        <div className="text-sm text-gray-500 mb-2">{project.year}</div>
+        <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">{project.year}</div>
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-4">
           {project.title}
         </h2>
-        <p className="text-gray-600 mb-6 leading-relaxed">
+        <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
           {project.description}
         </p>
         <Link
           href={project.projectUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-block bg-black text-white px-6 py-3 rounded-md font-medium hover:bg-gray-800 transition-colors"
+          className="inline-block bg-black dark:bg-white text-white dark:text-black px-6 py-3 rounded-md font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
         >
           View Project
         </Link>

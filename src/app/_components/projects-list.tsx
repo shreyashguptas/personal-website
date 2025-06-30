@@ -11,11 +11,9 @@ export function ProjectsList({ projects }: Props) {
       {projects.map((project, index) => (
         <div key={project.slug}>
           <ProjectPreview project={project} />
-          {/* Separator line between projects */}
+          {/* Separator line between projects - spans full content width */}
           {index < projects.length - 1 && (
-            <div className="mx-8">
-              <hr className="border-gray-200" />
-            </div>
+            <hr className="border-gray-200 dark:border-gray-700 border-t-[0.5px]" />
           )}
         </div>
       ))}
