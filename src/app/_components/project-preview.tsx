@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { type Project } from "@/interfaces/project";
+import { extractYearFromDate } from "@/lib/utils";
 
 type Props = {
   project: Project;
@@ -13,7 +14,7 @@ export function ProjectPreview({ project }: Props) {
     <div className={`flex flex-col ${hasImage ? 'md:flex-row' : ''} items-start gap-12 py-12`}>
       {/* Left side - Project info */}
       <div className="flex-1">
-        <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">{project.year}</div>
+        <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">{extractYearFromDate(project.date)}</div>
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-4">
           {project.title}
         </h2>

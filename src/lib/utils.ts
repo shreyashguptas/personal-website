@@ -20,4 +20,8 @@ export function extractFirstImageFromMarkdown(content: string): string {
   }
   
   return "";
+}
+
+export function extractYearFromDate(dateString: string): string {
+  return new Date(dateString).getFullYear().toString();
 } 

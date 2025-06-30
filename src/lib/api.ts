@@ -55,7 +55,7 @@ export function getAllProjects(): Project[] {
   const slugs = getProjectSlugs();
   const projects = slugs
     .map((slug) => getProjectBySlug(slug))
-    // sort projects by year in descending order
-    .sort((project1, project2) => (project1.year > project2.year ? -1 : 1));
+    // sort projects by date in descending order
+    .sort((project1, project2) => (project1.date > project2.date ? -1 : 1));
   return projects;
 }

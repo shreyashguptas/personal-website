@@ -1,6 +1,6 @@
 ---
 title: "Project Name"
-year: "2024"
+date: "2024-01-01T00:00:00.000Z"
 description: "A brief description of what this project does and the problem it solves. Keep this concise but informative."
 image: "/path/to/project/image.jpg"
 projectUrl: "https://example.com"
