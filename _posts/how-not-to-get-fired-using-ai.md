@@ -42,7 +42,7 @@ This is what ChatGPT has to say about it
 
 chat-gpt-screenshot-2023
 
-![chat-gpt-screenshot-2023](/images/blogs-images-optimized/chat-gpt-screenshot-2023.webp)
+![chat-gpt-screenshot-2023](/blog/content/chat-gpt-screenshot-2023.png)
 
 Lets goo!!! This is what we need AI for. Those bad days when you just can not frame that sentence for these professional settings.
 

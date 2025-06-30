@@ -34,7 +34,7 @@ Here's what I did:
 
    - Future value potential
 
-![white-board-picture](/images/blogs-images-optimized/white-board-picture.webp)
+![white-board-picture](/blog/content/white-board-picture.jpg)
 
 Note: Don't overthink the ratings when you're filling out your table. Your first instinct is usually pretty spot-on, and too much analysis can lead to those sneaky biases we're trying to avoid.
 

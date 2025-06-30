@@ -27,7 +27,7 @@ I flipped my desk mat from its blue side to the more vibrant orange/leather side
 
 desk-setup-before-and-after-yellow-desk-mat
 
-![desk-setup-before-and-after-yellow-desk-mat](/images/blogs-images-optimized/desk-setup-before-and-after-yellow-desk-mat.webp)
+![desk-setup-before-and-after-yellow-desk-mat](/blog/content/desk-setup-before-and-after-yellow-desk-mat.png)
 
 Now, every time I glance at my desk, it invites me to sit down and immerse myself in my tasks with renewed excitement.
 

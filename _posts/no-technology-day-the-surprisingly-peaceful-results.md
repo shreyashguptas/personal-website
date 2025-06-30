@@ -28,7 +28,7 @@ I kept everything in my closet for the night and decided not to look at it until
 
 I went to take a nice shower before bed so as I was getting in the shower I said, "Hey Siri, play my music". No response and I suddenly realized that I unplugged it like 10 minutes ago. LOL
 
-![apple-homepod-unplugged](/images/blogs-images-optimized/apple-homepod-unplugged.webp)
+![apple-homepod-unplugged](/blog/content/apple-homepod-unplugged.png)
 
 For the rest of the night, I let myself be bored. If I remembered anything I had to do, like email a professor or anything else, I wrote it on a piece of paper.
 

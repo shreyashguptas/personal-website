@@ -36,7 +36,7 @@ Now I am not saying to put your poop schedule on the calendar too. Well, now tha
 
 Here is how my calendar for a week looks on a macro scale:
 
-![calendar-screenshot](/images/blogs-images-optimized/calendar-screenshot.webp)
+![calendar-screenshot](/blog/content/calendar-screenshot.png)
 
 Here is my breakdown on what goes and doesn't go on my calendar
 

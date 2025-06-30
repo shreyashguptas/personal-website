@@ -56,7 +56,7 @@ Let's say 2 years later I'm running a business and want to talk to my team about
 
 What I can do is spend hours researching on the web and share some boring ass advice. Or I can open the notes app and click on the #culture and #leadership tags. It will show me all the notes I've taken related to those topics including the one from that one podcast I heard 2 years ago which resonated with me. I can quickly read the information and share it with my team.
 
-![notes-app-management-with-tags-screenshot](/images/blogs-images-optimized/notes-app-management-with-tags-screenshot.webp)
+![notes-app-management-with-tags-screenshot](/blog/content/notes-app-management-with-tags-screenshot.png)
 
 This system can be applied to any area of life. From school, college, job, and freelancing. Anything that requires you to put in the information of any kind.
 

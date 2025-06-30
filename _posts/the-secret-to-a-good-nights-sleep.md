@@ -32,7 +32,7 @@ Now every night I make sure to wear my watch.
 
 Now during the night I have to do absolutely nothing and the watch looks at the heart rates, hand movement, respiratory and probably other things to calculate the 4 stages of my sleep.
 
-![apple-health-sleep-hours](/images/blogs-images-optimized/apple-health-sleep-hours.webp)
+![apple-health-sleep-hours](/blog/content/apple-health-sleep-hours.jpg)
 
 Understanding the Sleep Stages?
 Awake- During the night there are periodical times where we wake up. Those are the orange bars.
@@ -56,7 +56,7 @@ I workout everyday where I lift heavy weights, run and bike long distances. When
 
 Now I look at deep sleep and try to maximize it as much. If you sleep for 8 hours a night then your deep sleep can be anywhere from 62 to 110 minutes.
 
-![apple-health-apps-deep-sleep-point-out](/images/blogs-images-optimized/apple-health-apps-deep-sleep-point-out.webp)
+![apple-health-apps-deep-sleep-point-out](/blog/content/apple-health-apps-deep-sleep-point-out.jpg)
 
 There are not a ton of things you can do to maximize deep sleep here are things that have worked for me:
 

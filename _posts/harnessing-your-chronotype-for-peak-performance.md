@@ -42,7 +42,7 @@ From 1PM to 3PM I respond to emails, work with other people to help them fix any
 
 After 4 usually I will wrap things at work but when I get home I will work on my personal stuff like this newsletter or my podcast which is where the creative work time comes along.
 
-![chronotype-day-time-energy-chart](/images/blogs-images-optimized/chronotype-day-time-energy-chart.webp)
+![chronotype-day-time-energy-chart](/blog/content/chronotype-day-time-energy-chart.jpg)
 
 On the other hand, if you're a night owl, don't try to force yourself to be productive in the morning when your brain is still foggy.
 

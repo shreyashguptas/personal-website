@@ -28,7 +28,7 @@ Here is how I always have every charging cord available to me no matter what.
 
 I got this small pouch.
 
-![cable-bag-pouch](/images/blogs-images-optimized/cable-bag-pouch.webp)
+![cable-bag-pouch](/blog/content/cable-bag-pouch.jpg)
 
 It was 5$.
 

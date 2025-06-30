@@ -34,7 +34,7 @@ But the thing is, not every routine works for everyone. Not even Elon Musk wakes
 
 Here…
 
-![elon-musk-tweet-at-2-am](/images/blogs-images-optimized/elon-musk-tweet-at-2-am.webp)
+![elon-musk-tweet-at-2-am](/blog/content/elon-musk-tweet-at-2-am.jpg)
 
 Now, I'm not saying that waking up early is bad. It just might not work for everyone.
 
