@@ -7,8 +7,10 @@ type Props = {
 };
 
 export function ProjectPreview({ project }: Props) {
+  const hasImage = project.image && project.image.trim() !== "";
+
   return (
-    <div className="flex flex-col md:flex-row items-start gap-12 py-12">
+    <div className={`flex flex-col ${hasImage ? 'md:flex-row' : ''} items-start gap-12 py-12`}>
       {/* Left side - Project info */}
       <div className="flex-1">
         <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">{project.year}</div>
@@ -18,26 +20,30 @@ export function ProjectPreview({ project }: Props) {
         <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
           {project.description}
         </p>
-        <Link
-          href={project.projectUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-block bg-black dark:bg-white text-white dark:text-black px-6 py-3 rounded-md font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
-        >
-          View Project
-        </Link>
+        {project.projectUrl && project.projectUrl.trim() !== "" && (
+          <Link
+            href={project.projectUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block bg-black dark:bg-white text-white dark:text-black px-6 py-3 rounded-md font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
+          >
+            View Project
+          </Link>
+        )}
       </div>
       
-      {/* Right side - Project image */}
-      <div className="w-full md:w-[600px] rounded-lg overflow-hidden">
-        <Image
-          src={project.image}
-          alt={project.title}
-          width={600}
-          height={400}
-          className="w-full h-auto object-contain"
-        />
-      </div>
+      {/* Right side - Project image (only if image exists) */}
+      {hasImage && (
+        <div className="w-full md:w-[600px] rounded-lg overflow-hidden">
+          <Image
+            src={project.image}
+            alt={project.title}
+            width={600}
+            height={400}
+            className="w-full h-auto object-contain"
+          />
+        </div>
+      )}
     </div>
   );
 } 
