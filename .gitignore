@@ -4,5 +4,6 @@ node_modules/
 website-data-export/
 
 *projects_rows.csv
+*blogs_rows.csv
 
 .DS_Store
