@@ -7,7 +7,7 @@ type Props = {
 
 export function ProjectsList({ projects }: Props) {
   return (
-    <div className="mt-16">
+    <div className="mt-2">
       {projects.map((project, index) => (
         <div key={project.slug}>
           <ProjectPreview project={project} />

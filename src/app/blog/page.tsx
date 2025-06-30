@@ -12,7 +12,7 @@ export default function BlogPage() {
   const morePosts = allPosts.slice(1);
 
   return (
-    <main>
+    <main className="relative min-h-screen overflow-hidden">
       <Container>
         <Intro />
         <HeroPost
