@@ -5,9 +5,9 @@ coverImage: ""
 date: "2023-06-29T13:26:01.000Z"
 author:
   name: Shreyash Gupta
-  picture: "/assets/blog/authors/shreyash.png"
+  picture: "/blog/authors/shreyash.png"
 ogImage:
-  url: "/assets/blog/preview/cover.jpeg"
+  url: "/blog/preview/cover.jpeg"
 ---
 
 Your environment is killing your productivity.

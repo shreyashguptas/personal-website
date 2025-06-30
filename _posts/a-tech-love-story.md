@@ -5,9 +5,9 @@ coverImage: ""
 date: "2023-08-03T13:22:35.000Z"
 author:
   name: Shreyash Gupta
-  picture: "/assets/blog/authors/shreyash.png"
+  picture: "/blog/authors/shreyash.png"
 ogImage:
-  url: "/assets/blog/preview/cover.jpeg"
+  url: "/blog/preview/cover.jpeg"
 ---
 
 For 11 years, I've been watching all kinds of tech videos. Imagine Apple's coolest shows, exciting battles between Android and iOS, creative desk setups, and super cool app arrangements. All these videos boosted my love for tech like watering a plant!

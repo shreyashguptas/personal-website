@@ -5,9 +5,9 @@ coverImage: ""
 date: "2023-05-05T13:35:08.000Z"
 author:
   name: Shreyash Gupta
-  picture: "/assets/blog/authors/shreyash.png"
+  picture: "/blog/authors/shreyash.png"
 ogImage:
-  url: "/assets/blog/preview/cover.jpeg"
+  url: "/blog/preview/cover.jpeg"
 ---
 
 How does your morning look? Is it filled with going through your notifications the first thing in the day, blasting music in the shower on your phone or smart speaker, or playing games on your iPad? No wonder we're constantly stimulated with technology 24/7.

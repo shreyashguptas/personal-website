@@ -5,9 +5,9 @@ coverImage: ""
 date: "2023-04-13T13:40:44.000Z"
 author:
   name: Shreyash Gupta
-  picture: "/assets/blog/authors/shreyash.png"
+  picture: "/blog/authors/shreyash.png"
 ogImage:
-  url: "/assets/blog/preview/cover.jpeg"
+  url: "/blog/preview/cover.jpeg"
 ---
 
 First things first, let's address the elephant in the room: waking up at 5AM.

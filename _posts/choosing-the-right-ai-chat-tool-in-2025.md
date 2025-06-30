@@ -5,9 +5,9 @@ coverImage: ""
 date: "2025-02-19T00:10:05.000Z"
 author:
   name: Shreyash Gupta
-  picture: "/assets/blog/authors/shreyash.png"
+  picture: "/blog/authors/shreyash.png"
 ogImage:
-  url: "/assets/blog/preview/cover.jpeg"
+  url: "/blog/preview/cover.jpeg"
 ---
 
 AI chat tools are everywhere now. Like the early days of search engines, we're in a phase where everyone's trying to figure out which one to use. ChatGPT might dominate Google Trends, but that doesn't automatically make it the right choice for you.

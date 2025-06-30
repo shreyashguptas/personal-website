@@ -5,9 +5,9 @@ coverImage: ""
 date: "2025-05-23T14:39:53.000Z"
 author:
   name: Shreyash Gupta
-  picture: "/assets/blog/authors/shreyash.png"
+  picture: "/blog/authors/shreyash.png"
 ogImage:
-  url: "/assets/blog/preview/cover.jpeg"
+  url: "/blog/preview/cover.jpeg"
 ---
 
 If you've only been using ChatGPT and haven't explored anything else, here's a little rundown of how I landed on my preferred AI tool that I use daily.

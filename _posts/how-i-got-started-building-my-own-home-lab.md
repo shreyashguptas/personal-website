@@ -5,9 +5,9 @@ coverImage: ""
 date: "2024-12-17T02:35:51.000Z"
 author:
   name: Shreyash Gupta
-  picture: "/assets/blog/authors/shreyash.png"
+  picture: "/blog/authors/shreyash.png"
 ogImage:
-  url: "/assets/blog/preview/cover.jpeg"
+  url: "/blog/preview/cover.jpeg"
 ---
 
 I've gone from not knowing the difference between Linux distributions to running a lightweight Kubernetes (K3S) cluster and deploying web applications — and while I'm still new to this field, the growth has been undeniable.

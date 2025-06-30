@@ -5,9 +5,9 @@ coverImage: ""
 date: "2023-02-02T14:54:20.000Z"
 author:
   name: Shreyash Gupta
-  picture: "/assets/blog/authors/shreyash.png"
+  picture: "/blog/authors/shreyash.png"
 ogImage:
-  url: "/assets/blog/preview/cover.jpeg"
+  url: "/blog/preview/cover.jpeg"
 ---
 
 First of all, thank you for subscribing to this newsletter. Whether you're reading this as an email or through a web browser, I'm glad you're here. Speaking of browsers, have you ever stopped to think about the one you're using right now? Most of us use whatever comes pre-installed on our devices, but have you ever wondered if it's actually the best option for you?

@@ -5,9 +5,9 @@ coverImage: ""
 date: "2023-07-13T13:23:17.000Z"
 author:
   name: Shreyash Gupta
-  picture: "/assets/blog/authors/shreyash.png"
+  picture: "/blog/authors/shreyash.png"
 ogImage:
-  url: "/assets/blog/preview/cover.jpeg"
+  url: "/blog/preview/cover.jpeg"
 ---
 
 Imagine this: you're eagerly waiting to watch your favorite YouTube video, and bam! An ad pops up, interrupting your flow. Frustrating, right?

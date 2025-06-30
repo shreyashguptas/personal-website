@@ -5,9 +5,9 @@ coverImage: ""
 date: "2023-03-16T13:47:45.000Z"
 author:
   name: Shreyash Gupta
-  picture: "/assets/blog/authors/shreyash.png"
+  picture: "/blog/authors/shreyash.png"
 ogImage:
-  url: "/assets/blog/preview/cover.jpeg"
+  url: "/blog/preview/cover.jpeg"
 ---
 
 I often talk about downloading new tools to increase productivity, but have you ever wondered when it becomes too much? At what point do you use so many productivity tools that you actually become less productive? I've definitely been there, and I've developed a super simple method to avoid it.

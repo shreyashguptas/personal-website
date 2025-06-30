@@ -5,9 +5,9 @@ coverImage: ""
 date: "2023-08-10T13:20:14.000Z"
 author:
   name: Shreyash Gupta
-  picture: "/assets/blog/authors/shreyash.png"
+  picture: "/blog/authors/shreyash.png"
 ogImage:
-  url: "/assets/blog/preview/cover.jpeg"
+  url: "/blog/preview/cover.jpeg"
 ---
 
 Have you ever traveled somewhere and forgot to pack your charging cord for your phone?

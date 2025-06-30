@@ -5,9 +5,9 @@ coverImage: ""
 date: "2023-03-31T13:45:04.000Z"
 author:
   name: Shreyash Gupta
-  picture: "/assets/blog/authors/shreyash.png"
+  picture: "/blog/authors/shreyash.png"
 ogImage:
-  url: "/assets/blog/preview/cover.jpeg"
+  url: "/blog/preview/cover.jpeg"
 ---
 
 Ever had a week where everything seems to go wrong?

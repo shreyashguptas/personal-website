@@ -5,9 +5,9 @@ coverImage: ""
 date: "2024-09-13T12:57:32.000Z"
 author:
   name: Shreyash Gupta
-  picture: "/assets/blog/authors/shreyash.png"
+  picture: "/blog/authors/shreyash.png"
 ogImage:
-  url: "/assets/blog/preview/cover.jpeg"
+  url: "/blog/preview/cover.jpeg"
 ---
 
 Picture this: You're sitting at your desk, staring at a form you need to fill out online. Everything's going smoothly until you hit a snag – you need to upload a PDF, but all you've got is an image file.

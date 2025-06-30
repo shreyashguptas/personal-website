@@ -5,9 +5,9 @@ coverImage: ""
 date: "2024-11-09T13:55:13.000Z"
 author:
   name: Shreyash Gupta
-  picture: "/assets/blog/authors/shreyash.png"
+  picture: "/blog/authors/shreyash.png"
 ogImage:
-  url: "/assets/blog/preview/cover.jpeg"
+  url: "/blog/preview/cover.jpeg"
 ---
 
 You know that feeling when your brain is buzzing with a million project ideas, but you end up either doing nothing or working on something totally random? Yeah, I've been there. Like, way too many times. But I recently figured out a pretty cool system that's helped me get my priorities straight, and I thought I'd share it with you.
