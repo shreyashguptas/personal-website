@@ -6,7 +6,20 @@ export default function HomePage() {
     <main className="relative min-h-screen overflow-hidden">
       <Container>
         <div className="mt-16 relative z-10">
-          <h1 className="text-5xl md:text-8xl font-bold tracking-tighter leading-tight">
+          {/* Mobile: Image above title */}
+          <div className="md:hidden mb-8">
+            <div className="relative w-48 h-48 rounded-lg overflow-hidden">
+              <Image
+                src="/headshot/headshot.jpg"
+                alt="Shreyash Gupta"
+                fill
+                className="object-cover object-center"
+                priority
+              />
+            </div>
+          </div>
+          
+          <h1 className="text-5xl md:text-8xl font-bold tracking-tighter leading-tight text-left">
             Shreyash Gupta.
           </h1>
         </div>
@@ -23,21 +36,6 @@ export default function HomePage() {
             priority
           />
         </div>
-      </div>
-
-      {/* Mobile: Background image with overlay */}
-      <div className="md:hidden absolute inset-0 z-0">
-        <div className="relative h-full w-full">
-          <Image
-            src="/headshot/headshot.jpg"
-            alt="Shreyash Gupta"
-            fill
-            className="object-cover object-center opacity-20"
-            priority
-          />
-        </div>
-        {/* Dark overlay for better text readability */}
-        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
       </div>
     </main>
   );
