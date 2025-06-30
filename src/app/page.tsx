@@ -14,7 +14,7 @@ export default function HomePage() {
       
       {/* Desktop: Right-side headshot image with half-cutoff effect */}
       <div className="hidden md:block absolute top-0 right-0 h-screen w-1/2 overflow-hidden">
-        <div className="relative h-full w-full translate-x-1/2">
+        <div className="relative h-full w-full translate-x-[45%]">
           <Image
             src="/headshot/headshot.jpg"
             alt="Shreyash Gupta"
