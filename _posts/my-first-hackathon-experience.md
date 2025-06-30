@@ -64,7 +64,7 @@ Despite solid mock trials during practice runs, our presenter stumbled during th
 
 Out of 36 teams participating in the hackathon, *The Jeffersons* placed fifth—not bad for a team that met just hours before starting! While disappointing not to win any prizes, it felt rewarding knowing how far we'd come together under challenging circumstances.
 
-![me-working-with-the-team-on-ideating-and-planning](/blog/content/My First Hackathon Experience.webp)
+![me-working-with-the-team-on-ideating-and-planning](/blog/content/my-first-hackathon-experience.webp)
 
 ### Reflections
 
