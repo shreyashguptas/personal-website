@@ -2,6 +2,7 @@ import Container from "@/app/_components/container";
 import { MinimalPostPreview } from "@/app/_components/minimal-post-preview";
 import { MinimalProjectHighlight } from "@/app/_components/minimal-project-highlight";
 import { MinimalNavigation } from "@/app/_components/minimal-navigation";
+import { SocialLinks } from "@/app/_components/social-links";
 import { getAllPosts, getAllProjects } from "@/lib/api";
 import Image from "next/image";
 
@@ -17,9 +18,9 @@ export default function HomePage() {
   const featuredProject = allProjects.find(p => p.title === FEATURED_PROJECT_NAME) || allProjects[0];
 
   return (
-    <div className="relative overflow-hidden">
+    <main className="relative min-h-screen overflow-hidden">
       <Container>
-        <div className="mt-16 relative z-10 pb-16">
+        <div className="mt-16 relative z-10">
           {/* Mobile: Image above title */}
           <div className="md:hidden mb-8">
             <div className="relative w-48 h-48 rounded-lg overflow-hidden">
@@ -51,11 +52,14 @@ export default function HomePage() {
             
             {/* Minimal navigation */}
             <MinimalNavigation />
+            
+            {/* Social links */}
+            <SocialLinks />
           </div>
         </div>
       </Container>
       
-      {/* Desktop: Right-side headshot image with half-cutoff effect */}
+      {/* Desktop: Right-side headshot image with full height */}
       <div className="hidden md:block absolute top-0 right-0 h-screen w-1/2 overflow-hidden">
         <div className="relative h-full w-full translate-x-[45%]">
           <Image
@@ -67,6 +71,6 @@ export default function HomePage() {
           />
         </div>
       </div>
-    </div>
+    </main>
   );
 }
