@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import cn from "classnames";
 import { ThemeSwitcher } from "./_components/theme-switcher";
 import { SiteNavigation } from "./_components/site-navigation";
+import { Analytics } from '@vercel/analytics/react';
 
 import "./globals.css";
 
@@ -64,6 +65,7 @@ export default function RootLayout({
         <ThemeSwitcher />
         <SiteNavigation />
         <div className="min-h-screen">{children}</div>
+        <Analytics />
       </body>
     </html>
   );
