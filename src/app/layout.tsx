@@ -5,6 +5,7 @@ import cn from "classnames";
 import { ThemeSwitcher } from "./_components/theme-switcher";
 import { SiteNavigation } from "./_components/site-navigation";
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 import "./globals.css";
 
@@ -66,6 +67,7 @@ export default function RootLayout({
         <SiteNavigation />
         <div className="min-h-screen">{children}</div>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
