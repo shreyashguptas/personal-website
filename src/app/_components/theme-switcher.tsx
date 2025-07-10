@@ -9,7 +9,7 @@ declare global {
 const STORAGE_KEY = "nextjs-blog-starter-theme";
 
 /** function to be injected in script tag for avoiding FOUC (Flash of Unstyled Content) */
-export const NoFOUCScript = (storageKey: string) => {
+export const NoFOUCScript = () => {
   const SYSTEM = "system";
   const DARK = "dark";
   const LIGHT = "light";
@@ -45,8 +45,6 @@ export const NoFOUCScript = (storageKey: string) => {
   media.addEventListener("change", window.updateDOM);
 };
 
-let updateDOM: () => void;
-
 const Script = memo(() => (
   <script
     dangerouslySetInnerHTML={{
@@ -55,13 +53,14 @@ const Script = memo(() => (
   />
 ));
 
+Script.displayName = 'ThemeSwitcherScript';
+
 /**
  * This component which applies classes and transitions automatically based on system preference.
  */
 export const ThemeSwitcher = () => {
   useEffect(() => {
-    // store global functions to local variables to avoid any interference
-    updateDOM = window.updateDOM;
+    // Theme switching is handled by the injected script
   }, []);
 
   return <Script />;

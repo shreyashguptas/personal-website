@@ -1,5 +1,3 @@
-import { CMS_NAME } from "@/lib/constants";
-
 export function Intro() {
   return (
     <div className="mt-16 relative z-10">

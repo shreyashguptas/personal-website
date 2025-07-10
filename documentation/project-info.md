@@ -1,72 +1,116 @@
-# A statically generated blog example using Next.js, Markdown, and TypeScript
+# Shreyash Gupta - Personal Website & Blog
 
-This is the existing [blog-starter](https://github.com/vercel/next.js/tree/canary/examples/blog-starter) plus TypeScript.
+This is a modern personal website and blog built with Next.js 15, featuring optimized performance, image optimization, and analytics integration.
 
-This example showcases Next.js's [Static Generation](https://nextjs.org/docs/app/building-your-application/routing/layouts-and-templates) feature using Markdown files as the data source.
+## 🚀 Features
 
-The blog posts are stored in `/_posts` as Markdown files with front matter support. Adding a new Markdown file in there will create a new blog post.
+- **Next.js 15.3.5** with App Router and React 19
+- **Fully optimized images** with automatic WebP/AVIF conversion
+- **Dark/Light theme** with system preference detection
+- **Static generation** for excellent performance
+- **Analytics integration** with Vercel Web Analytics and Speed Insights
+- **TypeScript** for type safety
+- **Tailwind CSS** for styling
+- **Responsive design** with mobile-first approach
 
-To create the blog posts we use [`remark`](https://github.com/remarkjs/remark) and [`remark-html`](https://github.com/remarkjs/remark-html) to convert the Markdown files into an HTML string, and then send it down as a prop to the page. The metadata of every post is handled by [`gray-matter`](https://github.com/jonschlinkert/gray-matter) and also sent in props to the page.
+## 📁 Project Structure
 
-## Demo
+The website includes both a blog and a projects portfolio:
 
-[https://next-blog-starter.vercel.app/](https://next-blog-starter.vercel.app/)
+### Blog Posts
+- Stored in `/_posts` as Markdown files with front matter
+- Automatically converted to optimized HTML with image processing
+- Support for cover images and author information
+- SEO optimized with proper metadata
 
-## Deploy your own
+### Projects Portfolio
+- Stored in `/_projects` as Markdown files
+- Features project images, technologies, and live links
+- Responsive grid layout with image optimization
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/vercel/next.js/tree/canary/examples/blog-starter&project-name=blog-starter&repository-name=blog-starter)
+## 🖼️ Image Optimization
 
-### Related examples
+The website features comprehensive image optimization:
 
-- [AgilityCMS](/examples/cms-agilitycms)
-- [Builder.io](/examples/cms-builder-io)
-- [ButterCMS](/examples/cms-buttercms)
-- [Contentful](/examples/cms-contentful)
-- [Cosmic](/examples/cms-cosmic)
-- [DatoCMS](/examples/cms-datocms)
-- [DotCMS](/examples/cms-dotcms)
-- [Drupal](/examples/cms-drupal)
-- [Enterspeed](/examples/cms-enterspeed)
-- [Ghost](/examples/cms-ghost)
-- [GraphCMS](/examples/cms-graphcms)
-- [Kontent.ai](/examples/cms-kontent-ai)
-- [MakeSwift](/examples/cms-makeswift)
-- [Payload](/examples/cms-payload)
-- [Plasmic](/examples/cms-plasmic)
-- [Prepr](/examples/cms-prepr)
-- [Prismic](/examples/cms-prismic)
-- [Sanity](/examples/cms-sanity)
-- [Sitecore XM Cloud](/examples/cms-sitecore-xmcloud)
-- [Sitefinity](/examples/cms-sitefinity)
-- [Storyblok](/examples/cms-storyblok)
-- [TakeShape](/examples/cms-takeshape)
-- [Tina](/examples/cms-tina)
-- [Umbraco](/examples/cms-umbraco)
-- [Umbraco heartcore](/examples/cms-umbraco-heartcore)
-- [Webiny](/examples/cms-webiny)
-- [WordPress](/examples/cms-wordpress)
-- [Blog Starter](/examples/blog-starter)
+- **Next.js Image component** for all static images
+- **Automatic format conversion** to WebP and AVIF
+- **Responsive image sizes** (256w to 3840w)
+- **Blog image optimization** via custom markdown processor
+- **GIF preservation** - animated GIFs maintain animation while getting basic optimization
+- **Lazy loading** for improved performance
 
-## How to use
+### Image Processing Pipeline
+1. **Component Images**: Use Next.js `<Image>` component with responsive `srcSet`
+2. **Blog Images**: Processed through `markdownToHtml.ts` with regex-based optimization
+3. **Project Images**: Optimized through React components with proper sizing
 
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init), [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/), or [pnpm](https://pnpm.io) to bootstrap the example:
+## 📊 Analytics & Performance
 
-```bash
-npx create-next-app --example blog-starter blog-starter-app
-```
+- **Vercel Web Analytics**: Privacy-friendly visitor tracking
+- **Speed Insights**: Core Web Vitals monitoring
+- **Optimized builds**: Static generation for all pages
+- **Performance-first**: Lazy loading, image optimization, and efficient bundling
 
-```bash
-yarn create next-app --example blog-starter blog-starter-app
-```
+## 🎨 Design System
 
-```bash
-pnpm create next-app --example blog-starter blog-starter-app
-```
+- **Clean typography** with Inter font
+- **Automatic theme switching** based on system preference
+- **Responsive design** with mobile-first approach
+- **Consistent spacing** and component library
+- **Accessible colors** with proper contrast ratios
 
-Your blog should be up and running on [http://localhost:3000](http://localhost:3000)! If it doesn't work, post on [GitHub discussions](https://github.com/vercel/next.js/discussions).
+## 🛠️ Tech Stack
 
-Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
+- **Framework**: Next.js 15.3.5
+- **Runtime**: React 19.1.0
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Content**: Markdown with front matter
+- **Deployment**: Vercel
+- **Analytics**: Vercel Web Analytics & Speed Insights
 
-# Notes
+## 📝 Content Management
 
-`blog-starter` uses [Tailwind CSS](https://tailwindcss.com) [(v3.0)](https://tailwindcss.com/blog/tailwindcss-v3).
+### Adding Blog Posts
+1. Create a new `.md` file in `/_posts`
+2. Include front matter with title, date, excerpt, coverImage, and author
+3. Write content in Markdown
+4. Images are automatically optimized when referenced
+
+### Adding Projects
+1. Create a new `.md` file in `/_projects`
+2. Include front matter with project details
+3. Add project image in `/public/project/`
+4. Images are automatically optimized
+
+## 🔧 Development
+
+### Scripts
+- `npm run dev` - Start development server with Turbopack
+- `npm run build` - Build for production
+- `npm start` - Start production server
+- `npx next lint` - Run ESLint checks
+
+### Key Components
+- **ThemeSwitcher**: Automatic dark/light mode with system preference
+- **SiteNavigation**: Main navigation with responsive design
+- **Image Components**: Optimized image rendering across the site
+- **Analytics**: Integrated Vercel analytics and speed monitoring
+
+## 🌐 Deployment
+
+The website is optimized for Vercel deployment with:
+- Static generation for all pages
+- Automatic image optimization
+- Edge function support
+- Built-in analytics integration
+
+Deploy with Vercel: [Deploy](https://vercel.com/new)
+
+## 📈 Performance Optimizations
+
+- **Image Optimization**: Automatic WebP/AVIF conversion with multiple sizes
+- **Static Generation**: All pages pre-rendered at build time
+- **Code Splitting**: Automatic code splitting with Next.js
+- **Font Optimization**: Inter font with display swap
+- **Bundle Analysis**: Optimized chunk sizes and loading strategies

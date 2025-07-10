@@ -21,8 +21,8 @@ export default function HomePage() {
     <main className="relative min-h-screen overflow-hidden">
       <Container>
         <div className="mt-16 relative z-10">
-          {/* Mobile: Image above title */}
-          <div className="md:hidden mb-8">
+          {/* Mobile: Image above title (below 1412px) */}
+          <div className="desktop:hidden mb-8">
             <div className="relative w-48 h-48 rounded-lg overflow-hidden">
               <Image
                 src="/headshot/headshot.jpg"
@@ -34,7 +34,7 @@ export default function HomePage() {
             </div>
           </div>
           
-          <h1 className="text-5xl md:text-8xl font-bold tracking-tighter leading-tight text-left mb-16">
+          <h1 className="text-5xl desktop:text-8xl font-bold tracking-tighter leading-tight text-left mb-16">
             Shreyash Gupta.
           </h1>
 
@@ -59,8 +59,8 @@ export default function HomePage() {
         </div>
       </Container>
       
-      {/* Desktop: Right-side headshot image with full height */}
-      <div className="hidden md:block absolute top-0 right-0 h-screen w-1/2 overflow-hidden">
+      {/* Desktop: Right-side headshot image with full height (1412px and above) */}
+      <div className="hidden desktop:block absolute top-0 right-0 h-screen w-1/2 overflow-hidden">
         <div className="relative h-full w-full translate-x-[45%]">
           <Image
             src="/headshot/headshot.jpg"

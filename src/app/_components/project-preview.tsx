@@ -42,7 +42,7 @@ export function ProjectPreview({ project }: Props) {
             width={600}
             height={400}
             className="w-full h-auto object-contain"
-            unoptimized
+            sizes="(max-width: 768px) 100vw, 600px"
           />
         </div>
       )}
