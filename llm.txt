@@ -1,0 +1,7 @@
+Scraping of this website is permitted under the following conditions:
+
+1. Do not overload the website with excessive requests. Please be considerate with your scraping frequency and volume.
+2. You must provide clear credit to this website as the source of any data or content you extract. This can be in the form of a link or explicit attribution wherever the data is used or displayed.
+3. If possible, notify the website owner about your scraping activity for transparency.
+
+Thank you for respecting these guidelines and supporting responsible web scraping. 
