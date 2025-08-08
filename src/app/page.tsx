@@ -6,16 +6,26 @@ import { SocialLinks } from "@/app/_components/social-links";
 import { getAllPosts, getAllProjects } from "@/lib/api";
 import Image from "next/image";
 
-// Configure which project to feature by changing this name to match any project title from _projects
-const FEATURED_PROJECT_NAME = "Congressional Bill Tracker";
-
 export default function HomePage() {
   const allPosts = getAllPosts();
   const allProjects = getAllProjects();
   
   // Get the latest post and featured project
   const latestPost = allPosts[0];
-  const featuredProject = allProjects.find(p => p.title === FEATURED_PROJECT_NAME) || allProjects[0];
+  const featuredProject = allProjects[0];
+
+  // Diagnostics (dev-only): Verify project ordering and chosen featured project
+  if (process.env.NODE_ENV !== "production") {
+    // Log the first few projects to confirm ordering (latest first)
+    console.log(
+      "[HomePage] Projects order (top 5):",
+      allProjects.slice(0, 5).map((p) => ({ title: p.title, date: p.date }))
+    );
+    console.log(
+      "[HomePage] Featured project:",
+      featuredProject ? { title: featuredProject.title, date: featuredProject.date } : null
+    );
+  }
 
   return (
     <main className="relative min-h-screen overflow-hidden">
