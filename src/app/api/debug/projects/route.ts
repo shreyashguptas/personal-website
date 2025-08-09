@@ -23,12 +23,13 @@ export async function GET() {
       cwd: process.cwd(),
       projectsTop5: snapshot,
     });
-  } catch (error: any) {
-    console.error("[Debug] error reading projects:", error?.message);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("[Debug] error reading projects:", errorMessage);
     return NextResponse.json(
       {
         environment: process.env.VERCEL ? "vercel" : process.env.NODE_ENV,
-        error: error?.message || String(error),
+        error: errorMessage,
         cwd: process.cwd(),
       },
       { status: 500 }
