@@ -22,6 +22,26 @@ export function extractFirstImageFromMarkdown(content: string): string {
   return "";
 }
 
+/**
+ * Extracts the nth image URL from markdown content (1-based index)
+ * @param content - The markdown content string
+ * @param index - 1-based index of the image to extract
+ * @returns The nth image URL found, or empty string if none found
+ */
+export function extractNthImageFromMarkdown(content: string, index: number): string {
+  if (!content || index < 1) return "";
+  const imageRegexGlobal = /!\[[^\]]*\]\(([^)]+)\)/g;
+  let match: RegExpExecArray | null;
+  let count = 0;
+  while ((match = imageRegexGlobal.exec(content)) !== null) {
+    count += 1;
+    if (count === index) {
+      return match[1] || "";
+    }
+  }
+  return "";
+}
+
 export function extractYearFromDate(dateString: string): string {
   return new Date(dateString).getFullYear().toString();
 } 

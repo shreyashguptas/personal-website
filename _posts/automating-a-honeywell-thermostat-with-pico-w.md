@@ -5,9 +5,8 @@ date: "2025-08-04T00:00:00.000Z"
 author:
   name: Shreyash Gupta
   picture: "/blog/authors/shreyash.png"
+coverImage: "/blog/content/honeywell-home-thermostat-on-the-wall-with-the-raspberry-pi-pico.jpeg"
 ---
-
-![honeywell-home-thermostat-on-the-wall-with-the-raspberry-pi-pico](/blog/content/honeywell-home-thermostat-on-the-wall-with-the-raspberry-pi-pico.jpeg)
 
 I care a lot about sleep. One small ritual that matters is temperature: cooler at night, warmer in the morning. The problem is that rituals become chores when you do them manually. Every night I’d tell myself to tap the thermostat down. Some nights I forgot. And like all small frictions, it added up—not just the time, but the mental bookkeeping.
 
@@ -34,6 +33,8 @@ People think the hard part of projects like this is the electronics. Often it’
 - Those six leads route to relays controlled by a Raspberry Pi Pico W.
 - The Pico W is connected to Home Assistant.
 - Home Assistant runs two automations on a schedule: lower at night, raise in the morning.
+
+![honeywell-home-thermostat-on-the-wall-with-the-raspberry-pi-pico](/blog/content/honeywell-home-thermostat-on-the-wall-with-the-raspberry-pi-pico.jpeg)
 
 There’s a nice honesty to prototypes. You can see exactly how they work. The wires are visible. The relay clicks are audible. When it runs at 9:30 p.m., you hear three soft ticks and feel the room take care of itself.
 
