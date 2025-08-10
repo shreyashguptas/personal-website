@@ -1,6 +1,6 @@
 import { Post } from "@/interfaces/post";
 import { Project } from "@/interfaces/project";
-import { extractFirstImageFromMarkdown } from "@/lib/utils";
+import { extractFirstImageFromMarkdown, extractNthImageFromMarkdown } from "@/lib/utils";
 import fs from "fs";
 import matter from "gray-matter";
 import { join } from "path";
@@ -18,14 +18,51 @@ export function getPostBySlug(slug: string) {
   const fileContents = fs.readFileSync(fullPath, "utf8");
   const { data, content } = matter(fileContents);
 
-  // Extract the first image from markdown content to use as cover image
-  const coverImage = extractFirstImageFromMarkdown(content);
+  // Determine cover image with front matter override and content fallback
+  const contentFirstImage = extractFirstImageFromMarkdown(content);
+  const frontMatter = data as Partial<Post> & { coverImageIndex?: number | string };
+  const frontmatterCoverImage = frontMatter.coverImage?.toString().trim();
+  const frontmatterCoverImageIndexRaw = frontMatter.coverImageIndex;
+  const coverImageIndex = typeof frontmatterCoverImageIndexRaw === "number"
+    ? frontmatterCoverImageIndexRaw
+    : typeof frontmatterCoverImageIndexRaw === "string" && frontmatterCoverImageIndexRaw.trim() !== ""
+      ? Number(frontmatterCoverImageIndexRaw)
+      : undefined;
+
+  let resolvedCoverImage: string | undefined = undefined;
+  if (frontmatterCoverImage && frontmatterCoverImage.length > 0) {
+    resolvedCoverImage = frontmatterCoverImage;
+    // Logging to validate behavior and precedence
+    console.log(`[posts] Using front matter coverImage for slug "${realSlug}": ${frontmatterCoverImage}`);
+    if (contentFirstImage && contentFirstImage !== frontmatterCoverImage) {
+      console.log(
+        `[posts] Front matter coverImage overrides first content image for slug "${realSlug}". Content first image: ${contentFirstImage}`
+      );
+    }
+  } else if (coverImageIndex && Number.isFinite(coverImageIndex) && coverImageIndex > 0) {
+    const nthImage = extractNthImageFromMarkdown(content, coverImageIndex);
+    if (nthImage) {
+      resolvedCoverImage = nthImage;
+      console.log(`[posts] Using nth content image (index=${coverImageIndex}) as coverImage for slug "${realSlug}": ${nthImage}`);
+    } else {
+      console.log(`[posts] coverImageIndex=${coverImageIndex} specified but not found; falling back to first image if available for slug "${realSlug}"`);
+      if (contentFirstImage) {
+        resolvedCoverImage = contentFirstImage;
+      }
+    }
+  } else if (contentFirstImage && contentFirstImage.length > 0) {
+    resolvedCoverImage = contentFirstImage;
+    console.log(`[posts] Using first content image as coverImage for slug "${realSlug}": ${contentFirstImage}`);
+  } else {
+    console.log(`[posts] No cover image found for slug "${realSlug}"`);
+  }
 
   return { 
     ...data, 
     slug: realSlug, 
     content,
-    coverImage: coverImage || undefined 
+    // Ensure precedence: computed resolvedCoverImage takes priority over any raw data.coverImage
+    coverImage: resolvedCoverImage || undefined 
   } as Post;
 }
 

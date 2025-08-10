@@ -73,9 +73,14 @@ The website features comprehensive image optimization:
 
 ### Adding Blog Posts
 1. Create a new `.md` file in `/_posts`
-2. Include front matter with title, date, excerpt, coverImage, and author
+2. Include front matter with title, date, excerpt, optional `coverImage`, and author
 3. Write content in Markdown
 4. Images are automatically optimized when referenced
+
+Notes:
+- If `coverImage` is provided in front matter, it will be used as the blog post cover image.
+- Alternatively, you can set `coverImageIndex` (1-based) to use the nth image from the content.
+- If both are omitted, the first image referenced in the Markdown content is used as a fallback.
 
 ### Adding Projects
 1. Create a new `.md` file in `/_projects`
