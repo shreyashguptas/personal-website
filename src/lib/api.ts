@@ -57,12 +57,36 @@ export function getPostBySlug(slug: string) {
     console.log(`[posts] No cover image found for slug "${realSlug}"`);
   }
 
-  return { 
-    ...data, 
-    slug: realSlug, 
+  // Build excerpt: prefer front matter; otherwise derive from first paragraph
+  const frontmatterExcerptRaw = (data as Partial<Post>).excerpt;
+  const frontmatterExcerpt = typeof frontmatterExcerptRaw === "string" ? frontmatterExcerptRaw.trim() : "";
+  const derivedExcerpt = (() => {
+    const withoutCode = content.replace(/```[\s\S]*?```/g, " ");
+    const firstParagraph = withoutCode.split(/\n\s*\n/).find((p) => p.trim().length > 0) || "";
+    const text = firstParagraph
+      // strip images ![alt](url)
+      .replace(/!\[[^\]]*\]\([^\)]*\)/g, " ")
+      // strip links [text](url)
+      .replace(/\[[^\]]*\]\([^\)]*\)/g, "$1")
+      // strip markdown emphasis/headers/inline code
+      .replace(/[#*_`>~\-]+/g, " ")
+      // collapse whitespace
+      .replace(/\s+/g, " ")
+      .trim();
+    return text.slice(0, 180);
+  })();
+  const resolvedExcerpt = frontmatterExcerpt.length > 0 ? frontmatterExcerpt : derivedExcerpt;
+  if (!(frontmatterExcerpt.length > 0) && resolvedExcerpt.length > 0) {
+    console.log(`[posts] Auto-generated excerpt for slug "${realSlug}": "${resolvedExcerpt.slice(0, 80)}"...`);
+  }
+
+  return {
+    ...(data as object),
+    slug: realSlug,
     content,
+    excerpt: resolvedExcerpt,
     // Ensure precedence: computed resolvedCoverImage takes priority over any raw data.coverImage
-    coverImage: resolvedCoverImage || undefined 
+    coverImage: resolvedCoverImage || undefined,
   } as Post;
 }
 

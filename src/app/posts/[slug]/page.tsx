@@ -1,4 +1,6 @@
 import { Metadata } from "next";
+import Script from "next/script";
+import { absoluteUrl } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import { getAllPosts, getPostBySlug } from "@/lib/api";
 import markdownToHtml from "@/lib/markdownToHtml";
@@ -22,6 +24,21 @@ export default async function Post(props: Params) {
       <Container>
         <Header />
         <article className="mb-32">
+          {post && (
+            <Script id="post-jsonld" type="application/ld+json" strategy="afterInteractive">
+              {JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "BlogPosting",
+                headline: post.title,
+                datePublished: post.date,
+                dateModified: post.date,
+                author: {
+                  "@type": "Person",
+                  name: post.author?.name || "Shreyash Gupta",
+                },
+              })}
+            </Script>
+          )}
           <PostHeader
             title={post.title}
             coverImage={post.coverImage}
@@ -53,9 +70,22 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
 
   return {
     title,
+    description: post.excerpt || undefined,
+    alternates: {
+      canonical: `/posts/${post.slug}`,
+    },
     openGraph: {
+      type: "article",
+      url: `/posts/${post.slug}`,
       title,
-      ...(post.coverImage && { images: [post.coverImage] }),
+      description: post.excerpt || undefined,
+      ...(post.coverImage && { images: [absoluteUrl(post.coverImage)!] }),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: post.excerpt || undefined,
+      images: post.coverImage ? [absoluteUrl(post.coverImage)!] : undefined,
     },
   };
 }

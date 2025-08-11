@@ -1,6 +1,24 @@
 import Container from "@/app/_components/container";
 import { ProjectsList } from "@/app/_components/projects-list";
 import { getAllProjects } from "@/lib/api";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Projects | Shreyash Gupta",
+  description: "Selected projects by Shreyash Gupta.",
+  alternates: { canonical: "/projects" },
+  openGraph: {
+    type: "website",
+    url: "/projects",
+    title: "Projects | Shreyash Gupta",
+    description: "Selected projects by Shreyash Gupta.",
+  },
+  twitter: {
+    card: "summary",
+    title: "Projects | Shreyash Gupta",
+    description: "Selected projects by Shreyash Gupta.",
+  },
+};
 
 export default function ProjectsPage() {
   const allProjects = getAllProjects();
