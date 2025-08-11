@@ -53,7 +53,7 @@ The website features comprehensive image optimization:
 
 ## 🔍 SEO & Indexing
 
-- **Environment**: Set `NEXT_PUBLIC_SITE_URL` to your canonical domain (no trailing slash)
+- **Environment**: Production defaults to `https://shreyashg.com`. Set `NEXT_PUBLIC_SITE_URL` (no trailing slash) only if you need a different domain.
 - **Sitemap**: `/sitemap.xml` generated via `src/app/sitemap.ts`
 - **Robots**: `/robots.txt` generated via `src/app/robots.ts` (includes `Sitemap` and `Host`)
 - **RSS**: `/feed.xml` generated via `src/app/feed.xml/route.ts`
