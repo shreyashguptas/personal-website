@@ -1,11 +1,9 @@
 export function getSiteUrl(): string {
   const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim();
   if (!raw) {
+    // Default sensibly: use canonical domain in production, localhost in dev
     if (process.env.NODE_ENV === "production") {
-      // Only warn in production to keep local dev clean
-      console.warn(
-        "[SEO] NEXT_PUBLIC_SITE_URL is not set; defaulting to http://localhost:3000. This will produce incorrect canonicals/OG URLs in production."
-      );
+      return "https://shreyashg.com";
     }
     return "http://localhost:3000";
   }
@@ -16,10 +14,9 @@ export function getSiteUrl(): string {
     new URL(withoutTrailingSlash);
     return withoutTrailingSlash;
   } catch {
+    // If invalid, fall back as above
     if (process.env.NODE_ENV === "production") {
-      console.warn(
-        `[SEO] NEXT_PUBLIC_SITE_URL is invalid (\"${raw}\"); defaulting to http://localhost:3000.`
-      );
+      return "https://shreyashg.com";
     }
     return "http://localhost:3000";
   }
