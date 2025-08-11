@@ -51,6 +51,21 @@ The website features comprehensive image optimization:
 - **Optimized builds**: Static generation for all pages
 - **Performance-first**: Lazy loading, image optimization, and efficient bundling
 
+## 🔍 SEO & Indexing
+
+- **Environment**: Set `NEXT_PUBLIC_SITE_URL` to your canonical domain (no trailing slash)
+- **Sitemap**: `/sitemap.xml` generated via `src/app/sitemap.ts`
+- **Robots**: `/robots.txt` generated via `src/app/robots.ts` (includes `Sitemap` and `Host`)
+- **RSS**: `/feed.xml` generated via `src/app/feed.xml/route.ts`
+- **Metadata**: Page-level metadata via Next.js Metadata API
+  - Global defaults in `src/app/layout.tsx`
+  - Blog index in `src/app/blog/page.tsx`
+  - Projects index in `src/app/projects/page.tsx`
+  - Post-level `generateMetadata` in `src/app/posts/[slug]/page.tsx`
+- **Structured data**: Blog posts include `BlogPosting` JSON-LD
+- **Excerpts**: Auto-derived if front matter `excerpt` is missing (see `src/lib/api.ts`)
+- See `documentation/seo.md` for full details
+
 ## 🎨 Design System
 
 - **Clean typography** with Inter font

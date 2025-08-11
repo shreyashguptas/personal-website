@@ -13,8 +13,6 @@ export async function GET() {
     }));
 
     const snapshot = projects.slice(0, 5);
-    // Minimal server log to help diagnose prod vs dev ordering/contents
-    console.log("[Debug] projectsTop5 snapshot:", snapshot);
 
     return NextResponse.json({
       environment: process.env.VERCEL ? "vercel" : process.env.NODE_ENV,

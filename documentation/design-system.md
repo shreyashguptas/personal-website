@@ -138,6 +138,14 @@ export default function Component() {
 - **Performance metrics**: Load times and optimization scores
 - **User experience**: Real user monitoring data
 
+## SEO Integration
+
+- Canonical URLs: Managed via Next.js Metadata API. Global canonical `/` in `src/app/layout.tsx`; per-page canonicals for `/blog`, `/projects`, and each post.
+- Open Graph/Twitter: Defaults in layout; per-post overrides include absolute image URLs when available.
+- Structured Data: `BlogPosting` JSON-LD injected on post pages.
+- Discovery: `/sitemap.xml` and `/robots.txt` generated at build/runtime; `/feed.xml` for subscribers and discovery tools.
+- Base URL: `NEXT_PUBLIC_SITE_URL` must be set in production for correct absolute URLs.
+
 ## Responsive Design
 
 ### Breakpoints (Tailwind CSS)

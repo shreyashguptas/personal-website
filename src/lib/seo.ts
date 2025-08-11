@@ -1,10 +1,12 @@
 export function getSiteUrl(): string {
   const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim();
   if (!raw) {
-    // Diagnostic: warn at build/runtime if base URL is missing
-    console.warn(
-      "[SEO] NEXT_PUBLIC_SITE_URL is not set; defaulting to http://localhost:3000. This will produce incorrect canonicals/OG URLs in production."
-    );
+    if (process.env.NODE_ENV === "production") {
+      // Only warn in production to keep local dev clean
+      console.warn(
+        "[SEO] NEXT_PUBLIC_SITE_URL is not set; defaulting to http://localhost:3000. This will produce incorrect canonicals/OG URLs in production."
+      );
+    }
     return "http://localhost:3000";
   }
   const withoutTrailingSlash = raw.endsWith("/") ? raw.slice(0, -1) : raw;
@@ -14,9 +16,11 @@ export function getSiteUrl(): string {
     new URL(withoutTrailingSlash);
     return withoutTrailingSlash;
   } catch {
-    console.warn(
-      `[SEO] NEXT_PUBLIC_SITE_URL is invalid (\"${raw}\"); defaulting to http://localhost:3000.`
-    );
+    if (process.env.NODE_ENV === "production") {
+      console.warn(
+        `[SEO] NEXT_PUBLIC_SITE_URL is invalid (\"${raw}\"); defaulting to http://localhost:3000.`
+      );
+    }
     return "http://localhost:3000";
   }
 }
