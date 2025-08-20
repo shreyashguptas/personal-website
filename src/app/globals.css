@@ -2,6 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom cursor styles */
+body {
+  cursor: none;
+}
+
+/* Ensure the custom cursor is visible */
+#__next {
+  cursor: none;
+}
+
+/* Hide cursor on all elements when custom cursor is active */
+* {
+  cursor: none !important;
+}
+
+/* Show default cursor on interactive elements for better UX when needed */
+a:hover, button:hover, input:hover, textarea:hover, select:hover, 
+[role="button"]:hover, [tabindex]:hover {
+  cursor: none;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

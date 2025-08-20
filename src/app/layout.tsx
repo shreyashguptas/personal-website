@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 import cn from "classnames";
 import { ThemeSwitcher } from "./_components/theme-switcher";
 import { SiteNavigation } from "./_components/site-navigation";
+import { CustomCursor } from "./_components/custom-cursor";
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
@@ -80,6 +81,7 @@ export default function RootLayout({
       <body
         className={cn(inter.className, "bg-white text-black dark:bg-black dark:text-white transition-colors duration-200")}
       >
+        <CustomCursor />
         <ThemeSwitcher />
         <SiteNavigation />
         <div className="min-h-screen">{children}</div>
