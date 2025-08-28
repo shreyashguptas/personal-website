@@ -12,14 +12,8 @@ body {
   cursor: none;
 }
 
-/* Hide cursor on all elements when custom cursor is active */
+/* Hide system cursor globally; our CustomCursor handles modes */
 * {
-  cursor: none !important;
-}
-
-/* Show default cursor on interactive elements for better UX when needed */
-a:hover, button:hover, input:hover, textarea:hover, select:hover, 
-[role="button"]:hover, [tabindex]:hover {
   cursor: none;
 }
 

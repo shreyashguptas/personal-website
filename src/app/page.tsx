@@ -8,73 +8,32 @@ export default function HomePage() {
   // Removed content listings to focus on a clean chat-first landing
 
   return (
-    <main className="relative min-h-screen overflow-hidden">
+    <main className="relative min-h-screen">
       <Container>
-        {/* Mobile/Tablet Layout (below 1412px) */}
-        <div className="desktop:hidden">
-          <div className="mt-16 max-w-4xl mx-auto px-4 sm:px-8 lg:px-12">
-            {/* Image above title - left-aligned on all sizes */}
-            <div className="flex justify-start mb-8">
-              <div className="relative w-48 h-48 rounded-lg overflow-hidden">
-                <Image
-                  src="/headshot/headshot.jpg"
-                  alt="Shreyash Gupta"
-                  fill
-                  className="object-cover object-center"
-                  priority
-                />
-              </div>
+        <div className="mt-10 desktop:grid desktop:grid-cols-[minmax(320px,520px)_1fr] desktop:gap-8">
+          {/* Left column: image and name, left-aligned */}
+          <div className="flex flex-col items-start">
+            <div className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-lg overflow-hidden">
+              <Image
+                src="/headshot/headshot.jpg"
+                alt="Shreyash Gupta"
+                fill
+                className="object-cover object-center"
+                priority
+              />
             </div>
-            
-            {/* Title - responsive sizing, left-aligned */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter leading-tight text-left mb-16">
+            <h1 className="mt-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter leading-tight text-left">
               Shreyash Gupta.
             </h1>
-
-            {/* Content sections - responsive width and spacing */}
-            <div className="max-w-2xl mx-auto sm:mx-0 space-y-12">
-              {/* Inline Chat (primary section) */}
-              <InlineChat />
-
-              {/* Minimal navigation & social */}
-              <MinimalNavigation />
-              <SocialLinks />
-            </div>
+            {/* Footer now contains links; nothing else here */}
           </div>
-        </div>
 
-        {/* Desktop Layout (1412px and above) */}
-        <div className="hidden desktop:block">
-          <div className="mt-16 relative z-10">
-            <h1 className="text-5xl desktop:text-8xl font-bold tracking-tighter leading-tight text-left mb-16">
-              Shreyash Gupta.
-            </h1>
-
-            {/* Content sections */}
-            <div className="max-w-lg space-y-12">
-              {/* Inline Chat (primary section) */}
-              <InlineChat />
-
-              {/* Minimal navigation & social */}
-              <MinimalNavigation />
-              <SocialLinks />
-            </div>
+          {/* Right column: chat. Let natural height determine footer spacing; keep input visible inside. */}
+          <div className="mt-10 desktop:mt-0">
+            <InlineChat />
           </div>
         </div>
       </Container>
-      
-      {/* Desktop: Right-side headshot image with full height (1412px and above) */}
-      <div className="hidden desktop:block absolute top-0 right-0 h-screen w-1/2 overflow-hidden">
-        <div className="relative h-full w-full translate-x-[45%]">
-          <Image
-            src="/headshot/headshot.jpg"
-            alt="Shreyash Gupta"
-            fill
-            className="object-cover object-[105%_center]"
-            priority
-          />
-        </div>
-      </div>
     </main>
   );
 }

@@ -8,6 +8,7 @@ import { SiteNavigation } from "./_components/site-navigation";
 import { CustomCursor } from "./_components/custom-cursor";
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { SiteFooter } from "./_components/footer";
 
 import "./globals.css";
 
@@ -16,7 +17,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Shreyash Gupta",
   description:
-    "Personal website and blog of Shreyash Gupta - Software Engineer, Tech Enthusiast, and Content Creator.",
+    "Personal website and blog of Shreyash Gupta - Data Scientist, Software Engineer, and Tech Enthusiast.",
   metadataBase: new URL(getSiteUrl()),
   alternates: {
     canonical: "/",
@@ -84,7 +85,8 @@ export default function RootLayout({
         <CustomCursor />
         <ThemeSwitcher />
         <SiteNavigation />
-        <div className="min-h-screen">{children}</div>
+        <div>{children}</div>
+        <SiteFooter />
         <Analytics />
         <SpeedInsights />
       </body>

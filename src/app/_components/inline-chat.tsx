@@ -118,15 +118,12 @@ export function InlineChat() {
 
   return (
     <section aria-labelledby="inline-chat-heading" className="w-full">
-      <div className="mx-auto max-w-4xl rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/60 dark:bg-black/40 backdrop-blur p-5 sm:p-8 shadow-sm">
+      <div className="mx-auto w-full rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/60 dark:bg-black/40 backdrop-blur p-5 sm:p-8 shadow-sm flex flex-col min-h-[60svh] md:min-h-[70svh] max-h-[90svh]">
         <div className="mb-3 flex items-center justify-between">
-          <h2 id="inline-chat-heading" className="text-lg sm:text-xl font-semibold">
-            Let's chat
-          </h2>
         </div>
 
         {/* Messages */}
-        <div ref={scrollRef} className="space-y-3 h-[55vh] max-h-[70vh] min-h-[320px] overflow-y-auto pr-1 sm:pr-2" aria-live="polite">
+        <div ref={scrollRef} className="space-y-3 flex-1 min-h-0 overflow-y-auto pr-1 sm:pr-2" aria-live="polite">
           {messages.length === 0 && (
             <div className="flex items-start gap-2">
               <Image src="/headshot/headshot.jpg" alt="Shreyash" width={28} height={28} className="rounded-full object-cover" />
