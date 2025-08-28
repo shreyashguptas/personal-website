@@ -5,6 +5,7 @@ import { MinimalNavigation } from "@/app/_components/minimal-navigation";
 import { SocialLinks } from "@/app/_components/social-links";
 import { getAllPosts, getAllProjects } from "@/lib/api";
 import Image from "next/image";
+import { InlineChat } from "@/app/_components/inline-chat";
 
 export default function HomePage() {
   const allPosts = getAllPosts();
@@ -52,6 +53,9 @@ export default function HomePage() {
                 <MinimalProjectHighlight project={featuredProject} />
               )}
               
+              {/* Inline Chat */}
+              <InlineChat />
+
               {/* Minimal navigation */}
               <MinimalNavigation />
               
@@ -80,6 +84,9 @@ export default function HomePage() {
                 <MinimalProjectHighlight project={featuredProject} />
               )}
               
+              {/* Inline Chat */}
+              <InlineChat />
+
               {/* Minimal navigation */}
               <MinimalNavigation />
               
