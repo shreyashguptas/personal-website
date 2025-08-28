@@ -42,8 +42,9 @@ function readMarkdownDirectory(dirPath: string, type: SourceType): RawDoc[] {
     const raw = fs.readFileSync(fullPath, "utf8");
     const parsed = matter(raw);
     const slug = file.replace(/\.md$/, "");
-    const title = String((parsed.data as any)?.title || slug);
-    const dateRaw = (parsed.data as any)?.date;
+    const fmRecord = parsed.data as Record<string, unknown>;
+    const title = String((fmRecord?.title as string | undefined) || slug);
+    const dateRaw = fmRecord?.date as string | undefined;
     let date: string | undefined = undefined;
     if (dateRaw) {
       const d = new Date(dateRaw);
@@ -56,10 +57,14 @@ function readMarkdownDirectory(dirPath: string, type: SourceType): RawDoc[] {
     // Keep only a reasonable amount per source to control index size
     const limited = normalized.slice(0, 16000);
 
-    const fm: any = parsed.data || {};
-    const summary = type === "post" ? (typeof fm.excerpt === "string" ? fm.excerpt : "") : (typeof fm.description === "string" ? fm.description : "");
-    const technologies: string[] | undefined = Array.isArray(fm.technologies) ? fm.technologies.map((t: any) => String(t)) : undefined;
-    const projectUrl: string | undefined = typeof fm.projectUrl === "string" ? fm.projectUrl : undefined;
+    const fm = (parsed.data || {}) as Record<string, unknown>;
+    const summary = type === "post"
+      ? (typeof fm.excerpt === "string" ? fm.excerpt : "")
+      : (typeof fm.description === "string" ? fm.description : "");
+    const technologies: string[] | undefined = Array.isArray(fm.technologies)
+      ? (fm.technologies as unknown[]).map((t) => String(t))
+      : undefined;
+    const projectUrl: string | undefined = typeof fm.projectUrl === "string" ? (fm.projectUrl as string) : undefined;
 
     // Metadata block to prime retrieval for date/title/tech queries
     const metaLines = [
@@ -100,7 +105,7 @@ function normalizeMarkdown(md: string): string {
     // Remove links [text](url) -> text
     .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
     // Strip markdown tokens
-    .replace(/[>#*_`~\-]+/g, " ")
+    .replace(/[>#*_`~-]+/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -135,7 +140,7 @@ async function main() {
   const projects = readMarkdownDirectory("_projects", "project");
   const all = [...posts, ...projects];
 
-  console.log(`Embedding ${all.length} chunks...`);
+  console.info(`Embedding ${all.length} chunks...`);
 
   const embedded: EmbeddedChunk[] = [];
   const model = "text-embedding-3-small";
@@ -146,14 +151,17 @@ async function main() {
     const batch = all.slice(i, i + batchSize);
     const input = batch.map((d) => d.text);
     const res = await openai.embeddings.create({ model, input });
-    res.data.forEach((item: any, idx: number) => {
-      embedded.push({ ...batch[idx], embedding: (item.embedding as number[]) });
+    res.data.forEach((item, idx: number) => {
+      const embedding = Array.isArray((item as { embedding: unknown }).embedding)
+        ? ((item as { embedding: number[] }).embedding)
+        : [];
+      embedded.push({ ...batch[idx], embedding });
     });
-    console.log(`Embedded ${Math.min(i + batchSize, all.length)} / ${all.length}`);
+    console.info(`Embedded ${Math.min(i + batchSize, all.length)} / ${all.length}`);
   }
 
   fs.writeFileSync(outPath, JSON.stringify(embedded), "utf8");
-  console.log(`Wrote index to ${outPath}`);
+  console.info(`Wrote index to ${outPath}`);
 }
 
 main().catch((err) => {

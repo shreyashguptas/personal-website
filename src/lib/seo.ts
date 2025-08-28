@@ -10,7 +10,6 @@ export function getSiteUrl(): string {
   const withoutTrailingSlash = raw.endsWith("/") ? raw.slice(0, -1) : raw;
   try {
     // Validate URL shape
-    // eslint-disable-next-line no-new
     new URL(withoutTrailingSlash);
     return withoutTrailingSlash;
   } catch {

@@ -37,7 +37,7 @@ export function InlineChat() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [sources, setSources] = useState<{ title: string; url: string }[]>([]);
+  const [, setSources] = useState<{ title: string; url: string }[]>([]);
   const [focusUrls, setFocusUrls] = useState<string[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const caretRef = useRef<HTMLSpanElement>(null);
@@ -96,11 +96,14 @@ export function InlineChat() {
           if (markerEnd > jsonStart) {
             const jsonPayload = chunk.slice(jsonStart, markerEnd);
             try {
-              const parsed = JSON.parse(jsonPayload);
+              const parsed = JSON.parse(jsonPayload) as Array<{ title: string; url: string }>;
               setSources(parsed);
-              const urls: string[] = Array.isArray(parsed) ? parsed.map((s: any) => s?.url).filter(Boolean) : [];
+              const urls: string[] = Array.isArray(parsed) ? parsed.map((s) => s.url).filter(Boolean) : [];
               if (urls.length > 0) setFocusUrls(urls);
-            } catch {}
+            } catch (err) {
+              // Validate that source JSON is parseable and has shape
+              console.warn("[inline-chat] invalid sources payload", { err });
+            }
           }
           assistantText += chunk.slice(0, markerStart);
         } else {
@@ -134,7 +137,7 @@ export function InlineChat() {
         <div ref={scrollRef} className="space-y-3 max-h-72 sm:max-h-80 overflow-y-auto pr-1">
           {messages.length === 0 && (
             <div className="text-sm sm:text-base opacity-80">
-              Hi, I'm Shreyash (AI). What would you like to know about me?
+              Hi, I&#39;m Shreyash (AI). What would you like to know about me?
             </div>
           )}
           {messages.map((m, i) => (

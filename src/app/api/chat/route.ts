@@ -131,7 +131,6 @@ export async function POST(req: NextRequest) {
     // Choose the requested model, fallback if unavailable
     const preferred = process.env.CHAT_MODEL || "gpt-5-nano-2025-08-07";
     const fallback = process.env.CHAT_MODEL_FALLBACK || "gpt-4o-mini";
-    let response;
     // Prefer Responses API with preferred (gpt-5-nano) to guarantee model usage
     try {
       const input = [
@@ -145,7 +144,7 @@ export async function POST(req: NextRequest) {
         temperature: 0,
         max_output_tokens: 700,
       });
-      const fullText = (resp as any).output_text || "";
+      const fullText = (resp as { output_text?: string }).output_text || "";
       const encoder = new TextEncoder();
       const stream = new ReadableStream<Uint8Array>({
         start(controller) {
@@ -156,6 +155,14 @@ export async function POST(req: NextRequest) {
         },
       });
       const t3 = Date.now();
+      console.info("[chat] responses path", {
+        totalMs: t3 - t0,
+        embedMs: t2 - t1,
+        retrieveMs: t3 - t2,
+        model: preferred,
+        indexSize: index.length,
+        retrieved: retrieved.length,
+      });
       const headers = new Headers({
         "content-type": "text/plain; charset=utf-8",
         "x-latency-ms": String(t3 - t0),
@@ -171,9 +178,9 @@ export async function POST(req: NextRequest) {
       // Fallback to Chat Completions with preferred; only if that fails use the fallback model
       let usedModel = preferred;
       // Use the SDK's concrete stream type to avoid TS mismatch
-      let response: any = null;
+      let responseStream: AsyncIterable<unknown> | null = null;
       try {
-        response = await openai.chat.completions.create({
+        responseStream = await openai.chat.completions.create({
           model: preferred,
           messages: [
             { role: "system", content: SYSTEM_PROMPT },
@@ -185,7 +192,7 @@ export async function POST(req: NextRequest) {
           stream: true,
         });
       } catch {
-        response = await openai.chat.completions.create({
+        responseStream = await openai.chat.completions.create({
           model: fallback,
           messages: [
             { role: "system", content: SYSTEM_PROMPT },
@@ -204,7 +211,7 @@ export async function POST(req: NextRequest) {
         start(controller) {
           (async () => {
             try {
-              for await (const chunk of (response as AsyncIterable<StreamChunk>)) {
+              for await (const chunk of (responseStream as AsyncIterable<StreamChunk>)) {
                 const choice = chunk.choices?.[0];
                 const delta = choice?.delta?.content ?? "";
                 if (delta) controller.enqueue(encoder.encode(delta));
@@ -220,6 +227,14 @@ export async function POST(req: NextRequest) {
         },
       });
       const t3 = Date.now();
+      console.info("[chat] chat.completions path", {
+        totalMs: t3 - t0,
+        embedMs: t2 - t1,
+        retrieveMs: t3 - t2,
+        model: usedModel,
+        indexSize: index.length,
+        retrieved: retrieved.length,
+      });
       const headers = new Headers({
         "content-type": "text/plain; charset=utf-8",
         "x-latency-ms": String(t3 - t0),
@@ -232,32 +247,6 @@ export async function POST(req: NextRequest) {
       });
       return new Response(stream, { status: 200, headers });
     }
-
-    const encoder = new TextEncoder();
-    type StreamChunk = { choices?: Array<{ delta?: { content?: string } }> };
-    const stream = new ReadableStream<Uint8Array>({
-      start(controller) {
-        (async () => {
-          try {
-            for await (const chunk of (response as AsyncIterable<StreamChunk>)) {
-              const choice = chunk.choices?.[0];
-              const delta = choice?.delta?.content ?? "";
-              if (delta) controller.enqueue(encoder.encode(delta));
-            }
-          } catch {
-            // stream error
-            controller.error(new Error("stream_error"));
-          } finally {
-            // Append sources footer as JSON envelope so client can render links
-            const footer = `\n\n[[SOURCES]]${JSON.stringify(sources)}[[/SOURCES]]`;
-            controller.enqueue(encoder.encode(footer));
-            controller.close();
-          }
-        })();
-      },
-    });
-
-    const t3 = Date.now();
     // (Unreachable: returns happen in both success paths above)
   } catch {
     return new Response("Internal Error", { status: 500 });

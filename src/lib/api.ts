@@ -53,11 +53,11 @@ export function getPostBySlug(slug: string) {
     const firstParagraph = withoutCode.split(/\n\s*\n/).find((p) => p.trim().length > 0) || "";
     const text = firstParagraph
       // strip images ![alt](url)
-      .replace(/!\[[^\]]*\]\([^\)]*\)/g, " ")
+      .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
       // strip links [text](url)
-      .replace(/\[[^\]]*\]\([^\)]*\)/g, "$1")
+      .replace(/\[[^\]]*\]\([^)]*\)/g, "$1")
       // strip markdown emphasis/headers/inline code
-      .replace(/[#*_`>~\-]+/g, " ")
+      .replace(/[#*_`>~-]+/g, " ")
       // collapse whitespace
       .replace(/\s+/g, " ")
       .trim();
