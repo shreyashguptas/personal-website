@@ -3,8 +3,8 @@ import { SocialLinks } from "./social-links";
 
 export function SiteFooter() {
   return (
-    <footer className="mt-10 border-t border-gray-200 dark:border-gray-800">
-      <div className="container mx-auto px-5 py-8">
+    <footer className="mt-4 md:mt-10 border-t border-gray-200 dark:border-gray-800">
+      <div className="container mx-auto px-5 py-6">
         <div className="flex flex-col items-center gap-6">
           <MinimalNavigation />
           <SocialLinks />

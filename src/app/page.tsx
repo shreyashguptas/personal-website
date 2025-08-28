@@ -1,6 +1,4 @@
 import Container from "@/app/_components/container";
-import { MinimalNavigation } from "@/app/_components/minimal-navigation";
-import { SocialLinks } from "@/app/_components/social-links";
 import Image from "next/image";
 import { InlineChat } from "@/app/_components/inline-chat";
 
@@ -29,7 +27,7 @@ export default function HomePage() {
           </div>
 
           {/* Right column: chat. Let natural height determine footer spacing; keep input visible inside. */}
-          <div className="mt-10 desktop:mt-0">
+          <div className="mt-6 desktop:mt-0">
             <InlineChat />
           </div>
         </div>

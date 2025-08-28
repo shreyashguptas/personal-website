@@ -118,7 +118,7 @@ export function InlineChat() {
 
   return (
     <section aria-labelledby="inline-chat-heading" className="w-full">
-      <div className="mx-auto w-full rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/60 dark:bg-black/40 backdrop-blur p-5 sm:p-8 shadow-sm flex flex-col min-h-[60svh] md:min-h-[70svh] max-h-[90svh]">
+      <div className="mx-auto w-full rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/60 dark:bg-black/40 backdrop-blur p-5 sm:p-8 shadow-sm flex flex-col min-h-[55svh] md:min-h-[60svh] max-h-[85svh]">
         <div className="mb-3 flex items-center justify-between">
         </div>
 
