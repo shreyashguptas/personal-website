@@ -9,7 +9,7 @@ export function ProjectsList({ projects }: Props) {
   return (
     <div className="mt-2">
       {projects.map((project, index) => (
-        <div key={project.slug}>
+        <div key={project.slug} id={project.slug}>
           <ProjectPreview project={project} />
           {/* Separator line between projects - spans full content width */}
           {index < projects.length - 1 && (

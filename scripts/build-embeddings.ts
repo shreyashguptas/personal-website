@@ -50,7 +50,7 @@ function readMarkdownDirectory(dirPath: string, type: SourceType): RawDoc[] {
       const d = new Date(dateRaw);
       if (!isNaN(d.getTime())) date = d.toISOString();
     }
-    const url = type === "post" ? `/posts/${slug}` : `/projects`;
+    const url = type === "post" ? `/posts/${slug}` : `/projects#${slug}`;
     const content = String(parsed.content || "");
     const normalized = normalizeMarkdown(content);
 

@@ -98,4 +98,75 @@ export function getEarliestPost(index: RetrievedDoc[]): RetrievedDoc | null {
   return posts[0] || null;
 }
 
+// Prefer the representative chunk for a slug (chunk index 0 when available)
+function selectRepresentativeChunk(docs: RetrievedDoc[]): RetrievedDoc {
+  const chunk0 = docs.find((d) => /:\d+$/.test(d.id) && d.id.endsWith(":0"));
+  return chunk0 || docs[0];
+}
+
+export function filterByType(index: RetrievedDoc[], type: "post" | "project"): RetrievedDoc[] {
+  return index.filter((d) => d.type === type);
+}
+
+export function getLatestPost(index: RetrievedDoc[]): RetrievedDoc | null {
+  const posts = index.filter((d) => d.type === "post" && d.date);
+  if (posts.length === 0) return null;
+  // Group by slug to pick one representative chunk per post
+  const slugToDocs = new Map<string, RetrievedDoc[]>();
+  for (const d of posts) {
+    const list = slugToDocs.get(d.slug) || [];
+    list.push(d);
+    slugToDocs.set(d.slug, list);
+  }
+  const representatives: RetrievedDoc[] = [];
+  for (const [, docs] of slugToDocs) {
+    // use the same date across chunks; any doc with date will do
+    const rep = selectRepresentativeChunk(docs);
+    representatives.push(rep);
+  }
+  representatives.sort((a, b) => new Date(b.date as string).getTime() - new Date(a.date as string).getTime());
+  return representatives[0] || null;
+}
+
+export function getLatestProject(index: RetrievedDoc[]): RetrievedDoc | null {
+  const projects = index.filter((d) => d.type === "project" && d.date);
+  if (projects.length === 0) return null;
+  // Group by slug to pick one representative chunk per project
+  const slugToDocs = new Map<string, RetrievedDoc[]>();
+  for (const d of projects) {
+    const list = slugToDocs.get(d.slug) || [];
+    list.push(d);
+    slugToDocs.set(d.slug, list);
+  }
+  const representatives: RetrievedDoc[] = [];
+  for (const [, docs] of slugToDocs) {
+    const rep = selectRepresentativeChunk(docs);
+    representatives.push(rep);
+  }
+  representatives.sort((a, b) => new Date(b.date as string).getTime() - new Date(a.date as string).getTime());
+  return representatives[0] || null;
+}
+
+export function getPreviousOfSameType(index: RetrievedDoc[], anchor: RetrievedDoc): RetrievedDoc | null {
+  if (!anchor.date) return null;
+  const sameType = index.filter((d) => d.type === anchor.type && d.date);
+  if (sameType.length === 0) return null;
+  const slugToDocs = new Map<string, RetrievedDoc[]>();
+  for (const d of sameType) {
+    const list = slugToDocs.get(d.slug) || [];
+    list.push(d);
+    slugToDocs.set(d.slug, list);
+  }
+  const reps: RetrievedDoc[] = [];
+  for (const [, docs] of slugToDocs) reps.push(selectRepresentativeChunk(docs));
+  reps.sort((a, b) => new Date(b.date as string).getTime() - new Date(a.date as string).getTime());
+  const anchorIdx = reps.findIndex((d) => d.slug === anchor.slug);
+  if (anchorIdx >= 0 && anchorIdx + 1 < reps.length) {
+    return reps[anchorIdx + 1];
+  }
+  // Fallback: pick the latest item strictly older than anchor date
+  const anchorTime = new Date(anchor.date as string).getTime();
+  const older = reps.find((d) => new Date(d.date as string).getTime() < anchorTime);
+  return older || null;
+}
 

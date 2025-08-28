@@ -2,7 +2,17 @@ import { NextRequest } from "next/server";
 import OpenAI from "openai";
 import { z } from "zod";
 import { getRateLimiter, localRateLimit } from "@/lib/rateLimit";
-import { buildContext, lexicalFallback, loadIndex, topKSimilar, getEarliestPost } from "@/lib/rag";
+import {
+  buildContext,
+  lexicalFallback,
+  loadIndex,
+  topKSimilar,
+  getEarliestPost,
+  getLatestProject,
+  getLatestPost,
+  filterByType,
+  getPreviousOfSameType,
+} from "@/lib/rag";
 
 export const runtime = 'nodejs';
 
@@ -115,9 +125,9 @@ export async function POST(req: NextRequest) {
     // Retrieve
     const index = loadIndex();
     const focusDocs = index.filter((d) => focusUrls.includes(d.url));
-    const pronounFollowUp = /\b(it|that|this|the post|the blog)\b/i.test(userMessage);
+    const isPronounFollowUp = /\b(it|that|this|the post|the blog)\b/i.test(userMessage);
     let retrieved = [] as typeof index;
-    if (pronounFollowUp && focusDocs.length > 0) {
+    if (isPronounFollowUp && focusDocs.length > 0) {
       retrieved = focusDocs.slice(0, 5);
     } else {
       retrieved = topKSimilar(index, queryEmbedding, 5);
@@ -125,18 +135,75 @@ export async function POST(req: NextRequest) {
         retrieved = lexicalFallback(index, userMessage, 5);
       }
     }
+    // Intent detection: latest project, latest post, or restrict by type
+    const asksLatestProject = /latest\s+(project|thing\s+you\s+built|work(ed)?\s+on)/i.test(userMessage);
+    const asksLatestPost = /latest\s+(blog|post|article|write\w*)/i.test(userMessage);
+    const asksProjectsOnly = /\b(project|projects)\b/i.test(userMessage) && !/\b(post|blog|article|write)/i.test(userMessage);
+    const asksPostsOnly = /\b(post|blog|article|write)/i.test(userMessage) && !/\b(project|projects)\b/i.test(userMessage);
+    const asksPrevious = /(previous|before\s+that|prior|earlier\s+than\s+that)/i.test(userMessage);
+
     const earliest = /first\s+blog|first\s+post|earliest\s+blog|earliest\s+post/i.test(userMessage) ? getEarliestPost(index) : null;
     const mergedDocs = [...focusDocs, ...retrieved];
     const dedup = new Map<string, typeof index[number]>();
     for (const d of mergedDocs) dedup.set(d.id, d);
     let contextDocs = Array.from(dedup.values()).slice(0, 5);
+    // Deterministic overrides for specific intents
+    if (asksPrevious) {
+      // Choose previous item relative to the most prominent item in context
+      const anchor = contextDocs[0];
+      if (anchor) {
+        const prev = getPreviousOfSameType(index, anchor);
+        if (prev) {
+          contextDocs = [prev, ...contextDocs.filter((d) => d.slug !== prev.slug)].slice(0, 5);
+        }
+      }
+    } else if (asksLatestProject) {
+      const latestProj = getLatestProject(index);
+      if (latestProj) {
+        contextDocs = [latestProj, ...contextDocs.filter((d) => d.slug !== latestProj.slug)].slice(0, 5);
+      }
+    } else if (asksLatestPost) {
+      const latestP = getLatestPost(index);
+      if (latestP) {
+        contextDocs = [latestP, ...contextDocs.filter((d) => d.slug !== latestP.slug)].slice(0, 5);
+      }
+    } else if (asksProjectsOnly) {
+      const onlyProjects = filterByType(contextDocs, "project");
+      if (onlyProjects.length > 0) contextDocs = onlyProjects;
+    } else if (asksPostsOnly) {
+      const onlyPosts = filterByType(contextDocs, "post");
+      if (onlyPosts.length > 0) contextDocs = onlyPosts;
+    }
     if (earliest) {
       contextDocs = [earliest, ...contextDocs.filter((d) => d.id !== earliest.id)].slice(0, 5);
     }
     const { context, sources } = buildContext(contextDocs, 3500, userMessage);
+    // Lightweight diagnostics
+    try {
+      const diag = {
+        indexSize: index.length,
+        retrievedCount: retrieved.length,
+        contextCount: contextDocs.length,
+        intent: {
+          asksLatestProject,
+          asksLatestPost,
+          asksProjectsOnly,
+          asksPostsOnly,
+          earliest: Boolean(earliest),
+        },
+        typesInContext: contextDocs.reduce((acc: Record<string, number>, d) => {
+          acc[d.type] = (acc[d.type] || 0) + 1;
+          return acc;
+        }, {}),
+        topSlugs: contextDocs.map((d) => `${d.type}:${d.slug}`),
+      };
+      console.info("[chat] retrieval_diag", diag);
+    } catch {
+      // best-effort diagnostics only
+    }
 
     // Put context and question into a single user message
-    const combinedUser = `Context:\n${context}\n\nRules:\n- When the question asks for the first blog/post, identify the earliest by date in the Context.\n- Include inline links using markdown [Title](URL).\n- Use the conversation history to resolve pronouns and follow-ups, but never override or invent facts beyond Context.\n\nQuestion: ${userMessage}`;
+    const combinedUser = `Context:\n${context}\n\nRules:\n- When the question asks for the first blog/post, identify the earliest by date in the Context.\n- When asked for the latest project or post, use the most recent by date.\n- When asked for the previous item ("before that"), select the chronologically previous item of the same type.\n- Prefer projects when the user asks about what I built or worked on.\n- Include inline links using markdown [Title](URL).\n- Use the conversation history to resolve pronouns and follow-ups, but never override or invent facts beyond Context.\n\nQuestion: ${userMessage}`;
 
     // Choose the requested model via env only and stream Chat Completions
     const preferred = process.env.CHAT_MODEL;
