@@ -2,13 +2,45 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 type Message = { role: "system" | "user" | "assistant"; content: string };
 
-const SUGGESTIONS = [
-  "What was the latest blog you wrote about?",
-  "What’s the latest project you’ve worked on?",
-];
+type TimeOfDay = "morning" | "afternoon" | "evening";
+
+function getTimeOfDay(date: Date = new Date()): TimeOfDay {
+  const hour = date.getHours();
+  if (hour >= 5 && hour < 12) return "morning";
+  if (hour >= 12 && hour < 18) return "afternoon";
+  return "evening";
+}
+
+function buildSuggestions(period: TimeOfDay, returningVisitor: boolean): string[] {
+  const base: string[] = [
+    "What was the latest blog you wrote about?",
+    "What’s the latest project you’ve worked on?",
+  ];
+  const byTime: Record<TimeOfDay, string[]> = {
+    morning: [
+      "Give me a quick overview to start my day.",
+      "Recommend one recent post to read this morning.",
+    ],
+    afternoon: [
+      "What problem are you currently exploring?",
+      "Show me a recent project update.",
+    ],
+    evening: [
+      "Summarize a project I should explore tonight.",
+      "Recommend a short read from your blog.",
+    ],
+  };
+  const returning = returningVisitor ? ["What changed since my last visit?"] : [];
+  const set = [...byTime[period], ...base, ...returning];
+  // De-dup while preserving order
+  const seen = new Set<string>();
+  const unique = set.filter((s) => (seen.has(s) ? false : (seen.add(s), true)));
+  return unique.slice(0, 4);
+}
 
 function renderMarkdown(md: string) {
   // Very small, safe markdown renderer: links, bold/italic, lists, paragraphs
@@ -42,6 +74,9 @@ export function InlineChat() {
   const [focusUrls, setFocusUrls] = useState<string[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>("morning");
+  const [returningVisitor, setReturningVisitor] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
   
 
   useEffect(() => {
@@ -56,6 +91,23 @@ export function InlineChat() {
   }, []);
 
   // Removed custom blinking caret to rely on native caret for consistency
+
+  // Compute greeting context and build suggestion list
+  useEffect(() => {
+    const period = getTimeOfDay();
+    setTimeOfDay(period);
+    let isReturning = false;
+    try {
+      isReturning = localStorage.getItem("sg_hasVisited") === "1";
+      localStorage.setItem("sg_hasVisited", "1");
+    } catch {
+      // best-effort only
+    }
+    setReturningVisitor(isReturning);
+    const built = buildSuggestions(period, isReturning);
+    setSuggestions(built);
+    console.info("[inline-chat] greeting_context", { period, returningVisitor: isReturning, suggestions: built });
+  }, []);
 
   const send = async (text: string) => {
     const trimmed = text.trim();
@@ -128,7 +180,7 @@ export function InlineChat() {
             <div className="flex items-start gap-2">
               <Image src="/headshot/headshot.jpg" alt="Shreyash" width={28} height={28} className="rounded-full object-cover" />
               <div className="inline-block rounded-2xl bg-gray-100 text-black dark:bg-gray-900 dark:text-white px-3 py-2 max-w-[80%] text-sm sm:text-base">
-                Hey — I’m Shreyash. Ask me anything about my work, projects, or blog posts. If you’re not sure where to start, try a quick question.
+                {`Hey, good ${timeOfDay}${returningVisitor ? ", welcome back" : ""} — I’m Shreyash. Ask me anything about my work, projects, or blog posts. If you’re not sure where to start, try a quick question below or take a shortcut.`}
               </div>
             </div>
           )}
@@ -160,11 +212,14 @@ export function InlineChat() {
         <div className="mt-4">
           {/* Suggestion prompts above input */}
           <div className="flex flex-col items-end gap-2 mb-3">
-            {SUGGESTIONS.map((s) => (
+            {suggestions.map((s) => (
               <button
                 key={s}
                 className="text-left text-sm sm:text-base rounded-2xl border border-dashed border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-950 transition self-end max-w-[80%]"
-                onClick={() => send(s)}
+                onClick={() => {
+                  console.info("[inline-chat] suggestion_click", { suggestion: s });
+                  send(s);
+                }}
               >
                 {s}
               </button>
