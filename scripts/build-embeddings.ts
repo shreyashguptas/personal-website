@@ -162,4 +162,47 @@ async function main() {
   const projects = readMarkdownDirectory("_projects", "project");
   const resume = readMarkdownDirectory("_resume", "resume");
 
-  console.log(`\n[build-embeddings] Summary:`
+  console.log(`\n[build-embeddings] Summary:`);
+  console.log(`  Posts: ${posts.length}`);
+  console.log(`  Projects: ${projects.length}`);
+  console.log(`  Resume: ${resume.length}`);
+  
+  // Log projects with dates for verification
+  if (projects.length > 0) {
+    console.log(`\n[build-embeddings] Projects with dates:`);
+    const projectsWithDates = projects.filter(p => p.date).sort((a, b) => new Date(b.date!).getTime() - new Date(a.date!).getTime());
+    projectsWithDates.forEach(p => {
+      console.log(`  ${p.date}: ${p.title}`);
+    });
+  }
+
+  const all = [...posts, ...projects, ...resume];
+
+  console.info(`Embedding ${all.length} chunks...`);
+
+  const embedded: EmbeddedChunk[] = [];
+  const model = PROMPT_CONFIG.embeddings.model;
+
+  // Batch in small groups for reliability
+  const batchSize = PROMPT_CONFIG.embeddings.batchSize;
+  for (let i = 0; i < all.length; i += batchSize) {
+    const batch = all.slice(i, i + batchSize);
+    const input = batch.map((d) => d.text);
+    const res = await openai.embeddings.create({ model, input });
+    res.data.forEach((item, idx: number) => {
+      const embedding = Array.isArray((item as { embedding: unknown }).embedding)
+        ? ((item as { embedding: number[] }).embedding)
+        : [];
+      embedded.push({ ...batch[idx], embedding });
+    });
+    console.info(`Embedded ${Math.min(i + batchSize, all.length)} / ${all.length}`);
+  }
+
+  fs.writeFileSync(outPath, JSON.stringify(embedded), "utf8");
+  console.info(`Wrote index to ${outPath}`);
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
