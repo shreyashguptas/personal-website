@@ -8,10 +8,10 @@ export default function HomePage() {
   return (
     <main className="relative">
       <Container>
-        <div className="mt-10 desktop:grid desktop:grid-cols-[minmax(320px,520px)_1fr] desktop:gap-8">
-          {/* Left column: image and name, left-aligned */}
-          <div className="flex flex-col items-start">
-            <div className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-lg overflow-hidden">
+        <div className="mt-10 desktop:grid desktop:grid-cols-[minmax(320px,520px)_1fr] desktop:gap-8 desktop:items-center">
+          {/* Left column: image and name, centered vertically on desktop */}
+          <div className="flex flex-col items-start desktop:justify-center desktop:min-h-[60vh]">
+            <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 xl:w-56 xl:h-56 rounded-lg overflow-hidden">
               <Image
                 src="/headshot/headshot.jpg"
                 alt="Shreyash Gupta"
@@ -20,7 +20,7 @@ export default function HomePage() {
                 priority
               />
             </div>
-            <h1 className="mt-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter leading-tight text-left">
+            <h1 className="mt-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tighter leading-tight text-left">
               Shreyash Gupta.
             </h1>
             {/* Footer now contains links; nothing else here */}
