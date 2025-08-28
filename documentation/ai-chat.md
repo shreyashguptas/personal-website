@@ -32,8 +32,7 @@ This document explains the end‑to‑end AI chat feature: how it’s built, whe
 ### Environment Variables
 
 - `OPENAI_API_KEY` (required): API key; never quoted in `.env` (use `OPENAI_API_KEY=sk-...`).  
-- `CHAT_MODEL` (optional): defaults to `gpt-5-nano-2025-08-07` (explicit version avoids fallback).  
-- `CHAT_MODEL_FALLBACK` (optional): defaults to `gpt-4o-mini`.
+- `CHAT_MODEL` (optional): defaults to `gpt-4o-mini`
 - `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` (optional): enable production‑grade rate limiting.
 
 ### Build and Run

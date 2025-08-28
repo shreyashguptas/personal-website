@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 
 type Message = { role: "system" | "user" | "assistant"; content: string };
 
@@ -218,6 +217,7 @@ export function InlineChat() {
                 className="text-left text-sm sm:text-base rounded-2xl border border-dashed border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-950 transition self-end max-w-[80%]"
                 onClick={() => {
                   console.info("[inline-chat] suggestion_click", { suggestion: s });
+                  setSuggestions((prev) => prev.filter((t) => t !== s));
                   send(s);
                 }}
               >
@@ -228,7 +228,14 @@ export function InlineChat() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              send(input);
+              const trimmed = input.trim();
+              if (!trimmed || loading) {
+                console.info("[inline-chat] typed_submit_ignored", { reason: !trimmed ? "empty" : "loading" });
+                return;
+              }
+              console.info("[inline-chat] typed_submit", { hideSuggestions: true });
+              setSuggestions([]);
+              send(trimmed);
             }}
             className="flex items-center gap-2"
           >
