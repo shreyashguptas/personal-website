@@ -7,3 +7,5 @@ website-data-export/
 *blogs_rows.csv
 
 .DS_Store
+
+.env
