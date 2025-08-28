@@ -9,6 +9,7 @@ export interface RetrievedDoc {
   url: string;
   text: string;
   embedding: number[];
+  date?: string;
 }
 
 let cachedIndex: RetrievedDoc[] | null = null;
@@ -53,7 +54,8 @@ export function buildContext(
   const sources: { title: string; url: string }[] = [];
   let acc = "";
   for (const d of docs) {
-    const header = `\n\n[Title] ${d.title}\n[URL] ${d.url}\n[Excerpt]\n`;
+    const dateLine = d.date ? ` [Date] ${d.date}` : "";
+    const header = `\n\n[Title] ${d.title}${dateLine}\n[URL] ${d.url}\n[Excerpt]\n`;
     if ((acc + header).length > tokenLimitChars) break;
     acc += header;
     const chunk = d.text.slice(0, Math.max(0, tokenLimitChars - acc.length));
@@ -87,6 +89,13 @@ export function lexicalFallback(index: RetrievedDoc[], query: string, k = 3): Re
   });
   scored.sort((a, b) => b.score - a.score);
   return scored.filter((s) => s.score > 0).slice(0, k).map((s) => s.d);
+}
+
+export function getEarliestPost(index: RetrievedDoc[]): RetrievedDoc | null {
+  const posts = index.filter((d) => d.type === "post" && d.date);
+  if (posts.length === 0) return null;
+  posts.sort((a, b) => new Date(a.date as string).getTime() - new Date(b.date as string).getTime());
+  return posts[0] || null;
 }
 
 

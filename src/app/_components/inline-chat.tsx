@@ -11,11 +11,36 @@ const SUGGESTIONS = [
   "How to contact Shreyash?",
 ];
 
+function renderMarkdown(md: string) {
+  // Very small, safe markdown renderer: links, bold/italic, lists, paragraphs
+  // 1) Escape HTML
+  const escaped = md.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  // 2) Links [text](url) -> <a>
+  const withLinks = escaped.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_m, text, url) => {
+    try {
+      const u = new URL(url, typeof window !== "undefined" ? window.location.origin : "http://localhost");
+      return `<a href="${u.pathname}${u.search}${u.hash}" class="underline">${text}</a>`;
+    } catch {
+      return text;
+    }
+  });
+  // 3) Bold **text** and Italic *text*
+  const withBold = withLinks.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  const withItal = withBold.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+  // 4) Lists: - item
+  const withLists = withItal.replace(/(?:^|\n)-\s+([^\n]+)/g, (m, item) => `\n<li>${item}</li>`);
+  const wrappedLists = withLists.replace(/(?:<li>[^<]+<\/li>\n?)+/g, (m) => `<ul class="list-disc pl-5">${m}</ul>`);
+  // 5) Newlines -> paragraphs
+  const parts = wrappedLists.split(/\n\n+/).map((p) => `<p>${p.replace(/\n/g, "<br/>")}</p>`);
+  return parts.join("");
+}
+
 export function InlineChat() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [sources, setSources] = useState<{ title: string; url: string }[]>([]);
+  const [focusUrls, setFocusUrls] = useState<string[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const caretRef = useRef<HTMLSpanElement>(null);
 
@@ -44,7 +69,7 @@ export function InlineChat() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ message: trimmed }),
+        body: JSON.stringify({ message: trimmed, focusUrls }),
       });
       if (!res.ok || !res.body) throw new Error("Request failed");
       const reader = res.body.getReader();
@@ -63,6 +88,8 @@ export function InlineChat() {
             try {
               const parsed = JSON.parse(jsonPayload);
               setSources(parsed);
+              const urls: string[] = Array.isArray(parsed) ? parsed.map((s: any) => s?.url).filter(Boolean) : [];
+              if (urls.length > 0) setFocusUrls(urls);
             } catch {}
           }
           assistantText += chunk.slice(0, markerStart);
@@ -94,7 +121,12 @@ export function InlineChat() {
         </div>
 
         {/* Messages */}
-        <div ref={scrollRef} className="space-y-3 max-h-56 sm:max-h-64 overflow-y-auto pr-1">
+        <div ref={scrollRef} className="space-y-3 max-h-72 sm:max-h-80 overflow-y-auto pr-1">
+          {messages.length === 0 && (
+            <div className="text-sm opacity-80">
+              Hi, I'm Shreyash (AI). What would you like to know about me?
+            </div>
+          )}
           {messages.map((m, i) => (
             <div key={i} className={m.role === "user" ? "text-right" : "text-left"}>
               <div
@@ -103,40 +135,16 @@ export function InlineChat() {
                     ? "inline-block rounded-xl bg-gray-900 text-white dark:bg-gray-100 dark:text-black px-3 py-2 max-w-[80%]"
                     : "inline-block rounded-xl bg-gray-100 text-black dark:bg-gray-900 dark:text-white px-3 py-2 max-w-[80%]"
                 }
+                dangerouslySetInnerHTML={
+                  m.role === "assistant"
+                    ? { __html: renderMarkdown(m.content) }
+                    : undefined
+                }
               >
-                {m.content}
+                {m.role !== "assistant" ? m.content : null}
               </div>
             </div>
           ))}
-
-          {!loading && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {SUGGESTIONS.slice(0, 2).map((s) => (
-                <button
-                  key={s}
-                  className="text-left text-xs sm:text-sm border border-gray-200 dark:border-gray-800 rounded-lg px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-950"
-                  onClick={() => send(s)}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {sources.length > 0 && (
-            <details className="pt-2 text-xs opacity-70">
-              <summary className="cursor-pointer select-none">Sources</summary>
-              <ul className="list-disc pl-5 mt-1">
-                {sources.map((s, idx) => (
-                  <li key={idx}>
-                    <a className="underline" href={s.url}>
-                      {s.title}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </details>
-          )}
         </div>
 
         {/* Input */}

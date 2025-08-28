@@ -2,12 +2,13 @@ import { NextRequest } from "next/server";
 import OpenAI from "openai";
 import { z } from "zod";
 import { getRateLimiter, localRateLimit } from "@/lib/rateLimit";
-import { buildContext, lexicalFallback, loadIndex, topKSimilar } from "@/lib/rag";
+import { buildContext, lexicalFallback, loadIndex, topKSimilar, getEarliestPost } from "@/lib/rag";
 
 export const runtime = 'nodejs';
 
 const BodySchema = z.object({
   message: z.string().min(1).max(1000),
+  focusUrls: z.array(z.string()).optional(),
 });
 
 function getClientKey(req: NextRequest): string {
@@ -69,6 +70,7 @@ export async function POST(req: NextRequest) {
       return new Response("Bad Request", { status: 400 });
     }
     const userMessage = parsed.data.message.trim();
+    const focusUrls = (parsed.data.focusUrls || []).filter((u) => typeof u === 'string');
 
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) return new Response("Server Misconfigured", { status: 500 });
@@ -89,14 +91,29 @@ export async function POST(req: NextRequest) {
 
     // Retrieve
     const index = loadIndex();
-    let retrieved = topKSimilar(index, queryEmbedding, 5);
-    if (retrieved.length === 0) {
-      retrieved = lexicalFallback(index, userMessage, 5);
+    const focusDocs = index.filter((d) => focusUrls.includes(d.url));
+    const pronounFollowUp = /\b(it|that|this|the post|the blog)\b/i.test(userMessage);
+    let retrieved = [] as typeof index;
+    if (pronounFollowUp && focusDocs.length > 0) {
+      retrieved = focusDocs.slice(0, 5);
+    } else {
+      retrieved = topKSimilar(index, queryEmbedding, 5);
+      if (retrieved.length === 0) {
+        retrieved = lexicalFallback(index, userMessage, 5);
+      }
     }
-    const { context, sources } = buildContext(retrieved, 6000, userMessage);
+    const earliest = /first\s+blog|first\s+post|earliest\s+blog|earliest\s+post/i.test(userMessage) ? getEarliestPost(index) : null;
+    const mergedDocs = [...focusDocs, ...retrieved];
+    const dedup = new Map<string, typeof index[number]>();
+    for (const d of mergedDocs) dedup.set(d.id, d);
+    let contextDocs = Array.from(dedup.values()).slice(0, 5);
+    if (earliest) {
+      contextDocs = [earliest, ...contextDocs.filter((d) => d.id !== earliest.id)].slice(0, 5);
+    }
+    const { context, sources } = buildContext(contextDocs, 6000, userMessage);
 
     // Put context and question into a single user message
-    const combinedUser = `Context:\n${context}\n\nQuestion: ${userMessage}`;
+    const combinedUser = `Context:\n${context}\n\nRules:\n- When the question asks for the first blog/post, identify the earliest by date in the Context.\n- Include inline links using markdown [Title](URL).\n\nQuestion: ${userMessage}`;
 
     // Choose the requested model, fallback if unavailable
     const preferred = process.env.CHAT_MODEL || "gpt-5-nano";

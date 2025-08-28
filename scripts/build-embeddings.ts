@@ -21,6 +21,10 @@ interface RawDoc {
   slug: string;
   url: string;
   text: string;
+  date?: string; // ISO date if present
+  summary?: string;
+  technologies?: string[];
+  projectUrl?: string;
 }
 
 interface EmbeddedChunk extends RawDoc {
@@ -39,22 +43,48 @@ function readMarkdownDirectory(dirPath: string, type: SourceType): RawDoc[] {
     const parsed = matter(raw);
     const slug = file.replace(/\.md$/, "");
     const title = String((parsed.data as any)?.title || slug);
-    const url = type === "post" ? `/posts/${slug}` : `/projects#${slug}`;
+    const dateRaw = (parsed.data as any)?.date;
+    let date: string | undefined = undefined;
+    if (dateRaw) {
+      const d = new Date(dateRaw);
+      if (!isNaN(d.getTime())) date = d.toISOString();
+    }
+    const url = type === "post" ? `/posts/${slug}` : `/projects`;
     const content = String(parsed.content || "");
     const normalized = normalizeMarkdown(content);
 
     // Keep only a reasonable amount per source to control index size
     const limited = normalized.slice(0, 16000);
 
+    const fm: any = parsed.data || {};
+    const summary = type === "post" ? (typeof fm.excerpt === "string" ? fm.excerpt : "") : (typeof fm.description === "string" ? fm.description : "");
+    const technologies: string[] | undefined = Array.isArray(fm.technologies) ? fm.technologies.map((t: any) => String(t)) : undefined;
+    const projectUrl: string | undefined = typeof fm.projectUrl === "string" ? fm.projectUrl : undefined;
+
+    // Metadata block to prime retrieval for date/title/tech queries
+    const metaLines = [
+      `Type: ${type}`,
+      `Title: ${title}`,
+      date ? `Date: ${date}` : undefined,
+      summary ? `Summary: ${summary}` : undefined,
+      technologies && technologies.length ? `Technologies: ${technologies.join(", ")}` : undefined,
+      projectUrl ? `ProjectURL: ${projectUrl}` : undefined,
+    ].filter(Boolean).join("\n");
+
     const chunks = chunkText(limited, 1200, 200);
     chunks.forEach((text, idx) => {
+      const textWithMeta = idx === 0 ? `${metaLines}\n\n${text}` : text;
       docs.push({
         id: `${type}:${slug}:${idx}`,
         type,
         title,
         slug,
         url,
-        text,
+        text: textWithMeta,
+        date,
+        summary,
+        technologies,
+        projectUrl,
       });
     });
   }

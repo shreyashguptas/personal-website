@@ -1,21 +1,11 @@
 import Container from "@/app/_components/container";
-import { MinimalPostPreview } from "@/app/_components/minimal-post-preview";
-import { MinimalProjectHighlight } from "@/app/_components/minimal-project-highlight";
 import { MinimalNavigation } from "@/app/_components/minimal-navigation";
 import { SocialLinks } from "@/app/_components/social-links";
-import { getAllPosts, getAllProjects } from "@/lib/api";
 import Image from "next/image";
 import { InlineChat } from "@/app/_components/inline-chat";
 
 export default function HomePage() {
-  const allPosts = getAllPosts();
-  const allProjects = getAllProjects();
-  
-  // Get the latest post and featured project
-  const latestPost = allPosts[0];
-  const featuredProject = allProjects[0];
-
-  // Removed verbose diagnostics for a clean dev console
+  // Removed content listings to focus on a clean chat-first landing
 
   return (
     <main className="relative min-h-screen overflow-hidden">
@@ -43,23 +33,20 @@ export default function HomePage() {
 
             {/* Content sections - responsive width and spacing */}
             <div className="max-w-2xl mx-auto sm:mx-0 space-y-12">
-              {/* Latest blog post */}
-              {latestPost && (
-                <MinimalPostPreview post={latestPost} />
-              )}
-              
-              {/* Featured project */}
-              {featuredProject && (
-                <MinimalProjectHighlight project={featuredProject} />
-              )}
-              
-              {/* Inline Chat */}
+              {/* Inline Chat (primary section) */}
               <InlineChat />
 
-              {/* Minimal navigation */}
+              {/* Explore more */}
+              <div className="rounded-xl border border-gray-200 dark:border-gray-800 p-4">
+                <div className="text-sm opacity-80 mb-2">Explore more</div>
+                <div className="flex items-center gap-4 text-sm">
+                  <a className="underline" href="/blog">Blog</a>
+                  <a className="underline" href="/projects">Projects</a>
+                </div>
+              </div>
+
+              {/* Minimal navigation & social */}
               <MinimalNavigation />
-              
-              {/* Social links */}
               <SocialLinks />
             </div>
           </div>
@@ -73,24 +60,21 @@ export default function HomePage() {
             </h1>
 
             {/* Content sections */}
-            <div className="max-w-md space-y-12">
-              {/* Latest blog post */}
-              {latestPost && (
-                <MinimalPostPreview post={latestPost} />
-              )}
-              
-              {/* Featured project */}
-              {featuredProject && (
-                <MinimalProjectHighlight project={featuredProject} />
-              )}
-              
-              {/* Inline Chat */}
+            <div className="max-w-lg space-y-12">
+              {/* Inline Chat (primary section) */}
               <InlineChat />
 
-              {/* Minimal navigation */}
+              {/* Explore more */}
+              <div className="rounded-xl border border-gray-200 dark:border-gray-800 p-4">
+                <div className="text-sm opacity-80 mb-2">Explore more</div>
+                <div className="flex items-center gap-4 text-sm">
+                  <a className="underline" href="/blog">Blog</a>
+                  <a className="underline" href="/projects">Projects</a>
+                </div>
+              </div>
+
+              {/* Minimal navigation & social */}
               <MinimalNavigation />
-              
-              {/* Social links */}
               <SocialLinks />
             </div>
           </div>
