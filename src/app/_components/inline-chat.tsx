@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 
 type Message = { role: "system" | "user" | "assistant"; content: string };
 
 const SUGGESTIONS = [
-  "What's the latest project Shreyash has worked on?",
-  "What was the latest blog post about?",
+  "What was the latest blog you wrote about?",
+  "What’s the latest project you’ve worked on?",
 ];
 
 function renderMarkdown(md: string) {
@@ -40,9 +41,8 @@ export function InlineChat() {
   const [, setSources] = useState<{ title: string; url: string }[]>([]);
   const [focusUrls, setFocusUrls] = useState<string[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const caretRef = useRef<HTMLSpanElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [isFocused, setIsFocused] = useState(false);
+  
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -55,15 +55,7 @@ export function InlineChat() {
     inputRef.current?.focus();
   }, []);
 
-  // Blink caret only when focused and input empty
-  useEffect(() => {
-    if (!isFocused || input.length > 0) return;
-    const id = setInterval(() => {
-      if (!caretRef.current) return;
-      caretRef.current.style.opacity = caretRef.current.style.opacity === "0" ? "1" : "0";
-    }, 650);
-    return () => clearInterval(id);
-  }, [isFocused, input]);
+  // Removed custom blinking caret to rely on native caret for consistency
 
   const send = async (text: string) => {
     const trimmed = text.trim();
@@ -126,27 +118,33 @@ export function InlineChat() {
 
   return (
     <section aria-labelledby="inline-chat-heading" className="w-full">
-      <div className="mx-auto max-w-3xl rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/60 dark:bg-black/40 backdrop-blur p-4 sm:p-6 shadow-sm">
+      <div className="mx-auto max-w-4xl rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/60 dark:bg-black/40 backdrop-blur p-5 sm:p-8 shadow-sm">
         <div className="mb-3 flex items-center justify-between">
-          <h2 id="inline-chat-heading" className="text-base sm:text-lg font-semibold">
-            Ask about me
+          <h2 id="inline-chat-heading" className="text-lg sm:text-xl font-semibold">
+            Let's chat
           </h2>
         </div>
 
         {/* Messages */}
-        <div ref={scrollRef} className="space-y-3 max-h-72 sm:max-h-80 overflow-y-auto pr-1">
+        <div ref={scrollRef} className="space-y-3 h-[55vh] max-h-[70vh] min-h-[320px] overflow-y-auto pr-1 sm:pr-2" aria-live="polite">
           {messages.length === 0 && (
-            <div className="text-sm sm:text-base opacity-80">
-              Hi, I&#39;m Shreyash (AI). What would you like to know about me?
+            <div className="flex items-start gap-2">
+              <Image src="/headshot/headshot.jpg" alt="Shreyash" width={28} height={28} className="rounded-full object-cover" />
+              <div className="inline-block rounded-2xl bg-gray-100 text-black dark:bg-gray-900 dark:text-white px-3 py-2 max-w-[80%] text-sm sm:text-base">
+                Hey — I’m Shreyash. Ask me anything about my work, projects, or blog posts. If you’re not sure where to start, try a quick question.
+              </div>
             </div>
           )}
           {messages.map((m, i) => (
-            <div key={i} className={m.role === "user" ? "text-right" : "text-left"}>
+            <div key={i} className={m.role === "user" ? "flex items-start justify-end" : "flex items-start gap-2"}>
+              {m.role !== "user" && (
+                <Image src="/headshot/headshot.jpg" alt="Shreyash" width={24} height={24} className="rounded-full object-cover mt-1" />
+              )}
               <div
                 className={
                   m.role === "user"
-                    ? "inline-block rounded-xl bg-gray-900 text-white dark:bg-gray-100 dark:text-black px-3 py-2 max-w-[80%] text-sm sm:text-base"
-                    : "inline-block rounded-xl bg-gray-100 text-black dark:bg-gray-900 dark:text-white px-3 py-2 max-w-[80%] text-sm sm:text-base"
+                    ? "inline-block rounded-2xl bg-gray-900 text-white dark:bg-gray-100 dark:text-black px-3 py-2 max-w-[80%] text-sm sm:text-base"
+                    : "inline-block rounded-2xl bg-gray-100 text-black dark:bg-gray-900 dark:text-white px-3 py-2 max-w-[80%] text-sm sm:text-base"
                 }
                 dangerouslySetInnerHTML={
                   m.role === "assistant"
@@ -158,25 +156,23 @@ export function InlineChat() {
               </div>
             </div>
           ))}
-
-          {/* Suggestion chips */}
-          {messages.length === 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {SUGGESTIONS.map((s) => (
-                <button
-                  key={s}
-                  className="text-left text-sm sm:text-base border border-gray-200 dark:border-gray-800 rounded-lg px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-950"
-                  onClick={() => send(s)}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          )}
+          
         </div>
 
         {/* Input */}
         <div className="mt-4">
+          {/* Suggestion prompts above input */}
+          <div className="flex flex-col items-end gap-2 mb-3">
+            {SUGGESTIONS.map((s) => (
+              <button
+                key={s}
+                className="text-left text-sm sm:text-base rounded-2xl border border-dashed border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-950 transition self-end max-w-[80%]"
+                onClick={() => send(s)}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -189,19 +185,14 @@ export function InlineChat() {
                 ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 dark:border-gray-800 bg-transparent pl-9 pr-3 py-3 text-sm sm:text-base focus:outline-none"
+                className="w-full rounded-lg border border-gray-200 dark:border-gray-800 bg-transparent pl-4 pr-3 py-3 text-sm sm:text-base focus:outline-none placeholder:text-gray-400"
+                data-cursor-intent="text"
+                placeholder="Ask me anything about me, my projects, or posts"
                 maxLength={1000}
                 aria-label="Ask a question"
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
                 autoFocus
               />
-              {isFocused && input.length === 0 && (
-                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm sm:text-base select-none flex items-center gap-2">
-                  <span ref={caretRef}>▍</span>
-                  <span>Ask me anything</span>
-                </span>
-              )}
+              
             </div>
             <button
               type="submit"
@@ -212,7 +203,7 @@ export function InlineChat() {
             </button>
           </form>
           <div className="pt-2 text-[10px] opacity-70">
-            AI can hallucinate. Answers are based only on content from this site.
+            AI can hallucinate. Answers are based only on content from this website.
           </div>
         </div>
       </div>
