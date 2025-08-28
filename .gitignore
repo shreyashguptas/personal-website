@@ -9,3 +9,4 @@ website-data-export/
 .DS_Store
 
 .env
+src/data/vector-index.json

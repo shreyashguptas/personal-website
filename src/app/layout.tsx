@@ -8,6 +8,7 @@ import { SiteNavigation } from "./_components/site-navigation";
 import { CustomCursor } from "./_components/custom-cursor";
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { ChatWidget } from "./_components/chat-widget";
 
 import "./globals.css";
 
@@ -85,6 +86,7 @@ export default function RootLayout({
         <ThemeSwitcher />
         <SiteNavigation />
         <div className="min-h-screen">{children}</div>
+        <ChatWidget />
         <Analytics />
         <SpeedInsights />
       </body>
