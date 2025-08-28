@@ -5,30 +5,30 @@ import Image from "next/image";
 
 type Message = { role: "system" | "user" | "assistant"; content: string };
 
-type TimeOfDay = "morning" | "afternoon" | "evening";
+type TimeOfDay = "Morning" | "Afternoon" | "Evening";
 
 function getTimeOfDay(date: Date = new Date()): TimeOfDay {
   const hour = date.getHours();
-  if (hour >= 5 && hour < 12) return "morning";
-  if (hour >= 12 && hour < 18) return "afternoon";
-  return "evening";
+  if (hour >= 5 && hour < 12) return "Morning";
+  if (hour >= 12 && hour < 18) return "Afternoon";
+  return "Evening";
 }
 
 function buildSuggestions(period: TimeOfDay, returningVisitor: boolean): string[] {
   const base: string[] = [
     "What was the latest blog you wrote about?",
-    "What’s the latest project you’ve worked on?",
+    "What's the latest project you've worked on?",
   ];
   const byTime: Record<TimeOfDay, string[]> = {
-    morning: [
+    Morning: [
       "Give me a quick overview to start my day.",
-      "Recommend one recent post to read this morning.",
+      "Recommend one recent post to read this Morning.",
     ],
-    afternoon: [
+    Afternoon: [
       "What problem are you currently exploring?",
       "Show me a recent project update.",
     ],
-    evening: [
+    Evening: [
       "Summarize a project I should explore tonight.",
       "Recommend a short read from your blog.",
     ],
@@ -91,10 +91,9 @@ export function InlineChat() {
   const [focusUrls, setFocusUrls] = useState<string[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>("morning");
+  const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>("Morning");
   const [returningVisitor, setReturningVisitor] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
-  
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -106,8 +105,6 @@ export function InlineChat() {
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
-
-  // Removed custom blinking caret to rely on native caret for consistency
 
   // Compute greeting context and build suggestion list
   useEffect(() => {
@@ -187,7 +184,9 @@ export function InlineChat() {
 
   return (
     <section aria-labelledby="inline-chat-heading" className="w-full">
-      <div className="w-full rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/60 dark:bg-black/40 backdrop-blur p-5 sm:p-6 md:p-7 shadow-sm flex flex-col h-[clamp(420px,72svh,860px)]">
+      <div className="mx-auto w-full rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/60 dark:bg-black/40 backdrop-blur p-5 sm:p-8 shadow-sm flex flex-col min-h-[55svh] md:min-h-[60svh] max-h-[85svh]">
+        <div className="mb-3 flex items-center justify-between">
+        </div>
 
         {/* Messages */}
         <div ref={scrollRef} className="space-y-3 flex-1 min-h-0 overflow-y-auto pr-1 sm:pr-2" aria-live="polite">
@@ -195,15 +194,16 @@ export function InlineChat() {
             <>
               <div className="flex items-start gap-2">
                 <Image src="/headshot/headshot.jpg" alt="Shreyash" width={28} height={28} className="rounded-full object-cover" />
-                <div className="inline-block rounded-2xl bg-gray-100 text-black border border-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 px-3 py-2 max-w-[80%] text-sm sm:text-base">
-                  {`Hey, Good ${timeOfDay}${returningVisitor ? "!!" : ""}
-                   Ask me anything about my work, projects, or blog posts.`}
+                <div className="inline-block rounded-2xl bg-gray-100 text-black dark:bg-gray-900 dark:text-white px-3 py-2 max-w-[80%] text-sm sm:text-base">
+                  {`Good ${timeOfDay}${returningVisitor ? "!!" : ""}
+                  Ask me anything about my work, projects, or blog posts. 
+                  `}
                 </div>
               </div>
               <div className="flex items-start gap-2">
-                <Image src="/headshot/headshot.jpg" alt="Shreyash" width={28} height={28} className="rounded-full object-cover" />
-                <div className="inline-block rounded-2xl bg-gray-100 text-black border border-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 px-3 py-2 max-w-[80%] text-sm sm:text-base">
-                  {`If you’re not sure where to start, try a quick question.`}
+                <Image src="/headshot/headshot.jpg" alt="Shreyash" width={24} height={24} className="rounded-full object-cover" />
+                <div className="inline-block rounded-2xl bg-gray-100 text-black dark:bg-gray-900 dark:text-white px-3 py-2 max-w-[80%] text-sm sm:text-base">
+                If you're not sure where to start, try a quick question below.
                 </div>
               </div>
             </>
@@ -216,8 +216,8 @@ export function InlineChat() {
               <div
                 className={
                   m.role === "user"
-                    ? "inline-block rounded-2xl bg-gray-900 text-white border border-gray-800 dark:bg-gray-200 dark:text-black dark:border-gray-300 px-3 py-2 max-w-[80%] text-sm sm:text-base"
-                    : "inline-block rounded-2xl bg-gray-100 text-black border border-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 px-3 py-2 max-w-[80%] text-sm sm:text-base"
+                    ? "inline-block rounded-2xl bg-gray-900 text-white dark:bg-gray-100 dark:text-black px-3 py-2 max-w-[80%] text-sm sm:text-base"
+                    : "inline-block rounded-2xl bg-gray-100 text-black dark:bg-gray-900 dark:text-white px-3 py-2 max-w-[80%] text-sm sm:text-base"
                 }
                 dangerouslySetInnerHTML={
                   m.role === "assistant"
@@ -235,11 +235,11 @@ export function InlineChat() {
         {/* Input */}
         <div className="mt-4">
           {/* Suggestion prompts above input */}
-          <div className="flex flex-wrap items-start justify-start gap-2 mb-3">
+          <div className="flex flex-col items-end gap-2 mb-3">
             {suggestions.map((s) => (
               <button
                 key={s}
-                className="text-left text-sm sm:text-base rounded-2xl border border-dashed border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-950 transition self-auto max-w-full whitespace-normal break-words"
+                className="text-left text-sm sm:text-base rounded-2xl border border-dashed border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-950 transition self-end max-w-[80%]"
                 onClick={() => {
                   console.info("[inline-chat] suggestion_click", { suggestion: s });
                   setSuggestions((prev) => prev.filter((t) => t !== s));

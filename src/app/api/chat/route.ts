@@ -12,6 +12,7 @@ import {
   getLatestPost,
   filterByType,
   getPreviousOfSameType,
+  getResumeInfo,
 } from "@/lib/rag";
 
 export const runtime = 'nodejs';
@@ -141,6 +142,7 @@ export async function POST(req: NextRequest) {
     const asksProjectsOnly = /\b(project|projects)\b/i.test(userMessage) && !/\b(post|blog|article|write)/i.test(userMessage);
     const asksPostsOnly = /\b(post|blog|article|write)/i.test(userMessage) && !/\b(project|projects)\b/i.test(userMessage);
     const asksPrevious = /(previous|before\s+that|prior|earlier\s+than\s+that)/i.test(userMessage);
+    const asksResume = /\b(resume|work\s+experience|job|employment|career|background|skills|education)\b/i.test(userMessage);
 
     const earliest = /first\s+blog|first\s+post|earliest\s+blog|earliest\s+post/i.test(userMessage) ? getEarliestPost(index) : null;
     const mergedDocs = [...focusDocs, ...retrieved];
@@ -156,6 +158,12 @@ export async function POST(req: NextRequest) {
         if (prev) {
           contextDocs = [prev, ...contextDocs.filter((d) => d.slug !== prev.slug)].slice(0, 5);
         }
+      }
+    } else if (asksResume) {
+      // Prioritize resume information for work experience queries
+      const resumeInfo = getResumeInfo(index);
+      if (resumeInfo) {
+        contextDocs = [resumeInfo, ...contextDocs.filter((d) => d.id !== resumeInfo.id)].slice(0, 5);
       }
     } else if (asksLatestProject) {
       const latestProj = getLatestProject(index);
@@ -189,6 +197,8 @@ export async function POST(req: NextRequest) {
           asksLatestPost,
           asksProjectsOnly,
           asksPostsOnly,
+          asksPrevious: Boolean(asksPrevious),
+          asksResume,
           earliest: Boolean(earliest),
         },
         typesInContext: contextDocs.reduce((acc: Record<string, number>, d) => {
@@ -203,7 +213,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Put context and question into a single user message
-    const combinedUser = `Context:\n${context}\n\nRules:\n- When the question asks for the first blog/post, identify the earliest by date in the Context.\n- When asked for the latest project or post, use the most recent by date.\n- When asked for the previous item ("before that"), select the chronologically previous item of the same type.\n- Prefer projects when the user asks about what I built or worked on.\n- Include inline links using markdown [Title](URL).\n- Use the conversation history to resolve pronouns and follow-ups, but never override or invent facts beyond Context.\n\nQuestion: ${userMessage}`;
+    const combinedUser = `Context:\n${context}\n\nRules:\n- When the question asks for the first blog/post, identify the earliest by date in the Context.\n- When asked for the latest project or post, use the most recent by date.\n- When asked for the previous item ("before that"), select the chronologically previous item of the same type.\n- When asked about work experience, employment, skills, or education, prioritize resume information.\n- Prefer projects when the user asks about what I built or worked on.\n- Include inline links using markdown [Title](URL).\n- Use the conversation history to resolve pronouns and follow-ups, but never override or invent facts beyond Context.\n\nQuestion: ${userMessage}`;
 
     // Choose the requested model via env only and stream Chat Completions
     const preferred = process.env.CHAT_MODEL;

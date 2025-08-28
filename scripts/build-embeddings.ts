@@ -12,7 +12,7 @@ import matter from "gray-matter";
 import OpenAI from "openai";
 import 'dotenv/config';
 
-type SourceType = "post" | "project";
+type SourceType = "post" | "project" | "resume";
 
 interface RawDoc {
   id: string;
@@ -25,6 +25,7 @@ interface RawDoc {
   summary?: string;
   technologies?: string[];
   projectUrl?: string;
+  lastUpdated?: string; // For resume updates
 }
 
 interface EmbeddedChunk extends RawDoc {
@@ -50,7 +51,7 @@ function readMarkdownDirectory(dirPath: string, type: SourceType): RawDoc[] {
       const d = new Date(dateRaw);
       if (!isNaN(d.getTime())) date = d.toISOString();
     }
-    const url = type === "post" ? `/posts/${slug}` : `/projects#${slug}`;
+    const url = type === "post" ? `/posts/${slug}` : type === "project" ? `/projects#${slug}` : `/resume`;
     const content = String(parsed.content || "");
     const normalized = normalizeMarkdown(content);
 
@@ -61,10 +62,11 @@ function readMarkdownDirectory(dirPath: string, type: SourceType): RawDoc[] {
     const summary = type === "post"
       ? (typeof fm.excerpt === "string" ? fm.excerpt : "")
       : (typeof fm.description === "string" ? fm.description : "");
-    const technologies: string[] | undefined = Array.isArray(fm.technologies)
+    const technologies: string[] | undefined = type === "project" && Array.isArray(fm.technologies)
       ? (fm.technologies as unknown[]).map((t) => String(t))
       : undefined;
-    const projectUrl: string | undefined = typeof fm.projectUrl === "string" ? (fm.projectUrl as string) : undefined;
+    const projectUrl: string | undefined = type === "project" && typeof fm.projectUrl === "string" ? (fm.projectUrl as string) : undefined;
+    const lastUpdated: string | undefined = type === "resume" && typeof fm.lastUpdated === "string" ? fm.lastUpdated : undefined;
 
     // Metadata block to prime retrieval for date/title/tech queries
     const metaLines = [
@@ -74,6 +76,7 @@ function readMarkdownDirectory(dirPath: string, type: SourceType): RawDoc[] {
       summary ? `Summary: ${summary}` : undefined,
       technologies && technologies.length ? `Technologies: ${technologies.join(", ")}` : undefined,
       projectUrl ? `ProjectURL: ${projectUrl}` : undefined,
+      lastUpdated ? `LastUpdated: ${lastUpdated}` : undefined,
     ].filter(Boolean).join("\n");
 
     const chunks = chunkText(limited, 1200, 200);
@@ -90,6 +93,7 @@ function readMarkdownDirectory(dirPath: string, type: SourceType): RawDoc[] {
         summary,
         technologies,
         projectUrl,
+        lastUpdated,
       });
     });
   }
@@ -138,7 +142,8 @@ async function main() {
 
   const posts = readMarkdownDirectory("_posts", "post");
   const projects = readMarkdownDirectory("_projects", "project");
-  const all = [...posts, ...projects];
+  const resume = readMarkdownDirectory("_resume", "resume");
+  const all = [...posts, ...projects, ...resume];
 
   console.info(`Embedding ${all.length} chunks...`);
 

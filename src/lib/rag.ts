@@ -3,13 +3,14 @@ import path from "path";
 
 export interface RetrievedDoc {
   id: string;
-  type: "post" | "project";
+  type: "post" | "project" | "resume";
   title: string;
   slug: string;
   url: string;
   text: string;
   embedding: number[];
   date?: string;
+  lastUpdated?: string;
 }
 
 let cachedIndex: RetrievedDoc[] | null = null;
@@ -104,7 +105,7 @@ function selectRepresentativeChunk(docs: RetrievedDoc[]): RetrievedDoc {
   return chunk0 || docs[0];
 }
 
-export function filterByType(index: RetrievedDoc[], type: "post" | "project"): RetrievedDoc[] {
+export function filterByType(index: RetrievedDoc[], type: "post" | "project" | "resume"): RetrievedDoc[] {
   return index.filter((d) => d.type === type);
 }
 
@@ -145,6 +146,20 @@ export function getLatestProject(index: RetrievedDoc[]): RetrievedDoc | null {
   }
   representatives.sort((a, b) => new Date(b.date as string).getTime() - new Date(a.date as string).getTime());
   return representatives[0] || null;
+}
+
+export function getResumeInfo(index: RetrievedDoc[]): RetrievedDoc | null {
+  const resume = index.filter((d) => d.type === "resume");
+  if (resume.length === 0) return null;
+  // Return the representative chunk (first chunk with metadata)
+  return selectRepresentativeChunk(resume);
+}
+
+export function getWorkExperience(index: RetrievedDoc[]): RetrievedDoc | null {
+  const resume = getResumeInfo(index);
+  if (!resume) return null;
+  // For now, return the full resume. In the future, we could parse specific sections
+  return resume;
 }
 
 export function getPreviousOfSameType(index: RetrievedDoc[], anchor: RetrievedDoc): RetrievedDoc | null {
