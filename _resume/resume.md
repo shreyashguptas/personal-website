@@ -4,13 +4,10 @@ type: "resume"
 lastUpdated: "2025-01-27"
 ---
 
-# Shreyash Gupta
-
 ## Contact Information
-- **Email**: shreyash.gupta@shreyashg.com
 - **Website**: shreyashg.com
-- **LinkedIn**: LinkedIn
-- **GitHub**: Github
+- **LinkedIn**: https://www.linkedin.com/in/shreyashgupta5/
+- **GitHub**: https://github.com/shreyashguptas
 
 ## Professional Summary
 Experienced data scientist and software engineer with expertise in analytics, machine learning, and full-stack development. Proven track record of leading technical teams, building scalable applications, and driving data-driven decision making across Fortune 100 companies and startups. Specialized in Python, JavaScript, cloud infrastructure, and emerging technologies.
@@ -39,7 +36,7 @@ Experienced data scientist and software engineer with expertise in analytics, ma
 - Championed and enforced Scrum rituals, accelerating release cadence to "warp speed" (5x faster than early days)
 - Baked customer feedback directly into product roadmap - every month, real users, real talk
 - Fostered fun, resilient cross-functional culture during the chaos of big releases and tight deadlines
-- Bridged the business-tech gap, collaborating with both operators and back-end developers to deliver practical, reliable solutions
+- Bridged the business-tech gap, collaborating with both operators and back-end developers to deliver practical, reliable solutions as an early stage startup
 
 ## Selected Projects & Hackathon Highlights
 

@@ -1,7 +1,10 @@
 import Container from "@/app/_components/container";
-import { getResumeInfo } from "@/lib/rag";
-import { loadIndex } from "@/lib/rag";
 import type { Metadata } from "next";
+import { PostBody } from "@/app/_components/post-body";
+import markdownToHtml from "@/lib/markdownToHtml";
+import fs from "fs";
+import path from "path";
+import matter from "gray-matter";
 
 export const metadata: Metadata = {
   title: "Resume | Shreyash Gupta",
@@ -20,11 +23,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ResumePage() {
-  const index = loadIndex();
-  const resumeInfo = getResumeInfo(index);
-
-  if (!resumeInfo) {
+export default async function ResumePage() {
+  // Read the resume markdown file directly
+  const resumePath = path.join(process.cwd(), "_resume", "resume.md");
+  
+  if (!fs.existsSync(resumePath)) {
     return (
       <main className="relative min-h-screen overflow-hidden">
         <Container>
@@ -33,13 +36,19 @@ export default function ResumePage() {
               Resume.
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 mt-8">
-              Resume information not available. Please check back later.
+              Resume file not found. Please check back later.
             </p>
           </div>
         </Container>
       </main>
     );
   }
+
+  const resumeContent = fs.readFileSync(resumePath, "utf8");
+  const { content } = matter(resumeContent);
+
+  // Convert markdown content to HTML
+  const htmlContent = await markdownToHtml(content);
 
   return (
     <main className="relative min-h-screen overflow-hidden">
@@ -49,11 +58,8 @@ export default function ResumePage() {
             Resume.
           </h1>
           
-          <div className="mt-12 prose prose-lg dark:prose-invert max-w-none">
-            <div 
-              className="whitespace-pre-wrap font-mono text-sm bg-gray-50 dark:bg-gray-900 p-6 rounded-lg border"
-              dangerouslySetInnerHTML={{ __html: resumeInfo.text.replace(/\n/g, '<br/>') }}
-            />
+          <div className="mt-12">
+            <PostBody content={htmlContent} />
           </div>
         </div>
       </Container>

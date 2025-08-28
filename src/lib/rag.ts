@@ -11,6 +11,8 @@ export interface RetrievedDoc {
   embedding: number[];
   date?: string;
   lastUpdated?: string;
+  technologies?: string[];
+  projectUrl?: string;
 }
 
 let cachedIndex: RetrievedDoc[] | null = null;
@@ -44,19 +46,25 @@ export function cosineSimilarity(a: number[], b: number[]): number {
 export function topKSimilar(index: RetrievedDoc[], queryEmbedding: number[], k: number): RetrievedDoc[] {
   const scored = index.map((doc) => ({ doc, score: cosineSimilarity(doc.embedding, queryEmbedding) }));
   scored.sort((a, b) => b.score - a.score);
-  return scored.slice(0, k).map((s) => s.doc);
+  const results = scored.slice(0, k).map((s) => s.doc);
+  
+
+  
+  return results;
 }
 
 export function buildContext(
   docs: RetrievedDoc[],
-  tokenLimitChars = 6000,
+  tokenLimitChars = 6000, // This can stay as a parameter since it's configurable per call
   query?: string
 ): { context: string; sources: { title: string; url: string }[]; keywords: string[] } {
   const sources: { title: string; url: string }[] = [];
   let acc = "";
   for (const d of docs) {
     const dateLine = d.date ? ` [Date] ${d.date}` : "";
-    const header = `\n\n[Title] ${d.title}${dateLine}\n[URL] ${d.url}\n[Excerpt]\n`;
+    const techLine = d.technologies && d.technologies.length > 0 ? ` [Technologies] ${d.technologies.join(", ")}` : "";
+    const projectUrlLine = d.projectUrl ? ` [ProjectURL] ${d.projectUrl}` : "";
+    const header = `\n\n[Title] ${d.title}${dateLine}${techLine}${projectUrlLine}\n[URL] ${d.url}\n[Excerpt]\n`;
     if ((acc + header).length > tokenLimitChars) break;
     acc += header;
     const chunk = d.text.slice(0, Math.max(0, tokenLimitChars - acc.length));
@@ -72,24 +80,58 @@ function extractKeywords(q: string): string[] {
   const words = q.toLowerCase().replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
   const stop = new Set([
     "what","is","the","a","an","of","has","have","on","to","for","about","me","show",
-    "projects","project","blog","blogs","latest","new","recent","worked","work","built","build"
+    "projects","project","blog","blogs","latest","new","recent","worked","work","built","build",
+    "in","you","used","use","using","with","have","had","do","does","did","are","were"
   ]);
-  return Array.from(new Set(words.filter((w) => !stop.has(w)).slice(0, 8)));
+  
+  // Special handling for technology terms - don't filter them out
+  const techTerms = new Set([
+    "pytorch", "tensorflow", "react", "next.js", "python", "machine learning", "ml", "ai", "nlp", 
+    "data analysis", "typescript", "javascript", "node", "supabase", "postgresql", "gradio", 
+    "stable diffusion", "whisper", "raspberry pi", "home assistant", "terraform", "google cloud"
+  ]);
+  
+  const filtered = words.filter((w) => !stop.has(w) || techTerms.has(w));
+  return Array.from(new Set(filtered)).slice(0, 8);
 }
 
 export function lexicalFallback(index: RetrievedDoc[], query: string, k = 3): RetrievedDoc[] {
   const kw = extractKeywords(query);
   if (kw.length === 0) return [];
+  
+  // Check if this is a technology query
+  const isTechQuery = /\b(pytorch|tensorflow|react|next\.js|python|machine learning|ml|ai|nlp|data analysis)\b/i.test(query.toLowerCase());
+  
   const scored = index.map((d) => {
     const hay = `${d.title} ${d.text}`.toLowerCase();
     let score = 0;
+    
+    // Basic text matching
     for (const w of kw) {
       if (hay.includes(w)) score += 1;
     }
+    
+    // Boost score for technology matches in the technologies array
+    if (isTechQuery && d.technologies && d.technologies.length > 0) {
+      const techMatch = kw.some(keyword => 
+        d.technologies!.some(tech => 
+          tech.toLowerCase().includes(keyword.toLowerCase()) || 
+          keyword.toLowerCase().includes(tech.toLowerCase())
+        )
+      );
+      if (techMatch) {
+        score += 10; // Significant boost for technology matches
+      }
+    }
+    
     return { d, score };
   });
+  
   scored.sort((a, b) => b.score - a.score);
-  return scored.filter((s) => s.score > 0).slice(0, k).map((s) => s.d);
+  
+  // For technology queries, return more results to ensure we don't miss any
+  const resultCount = isTechQuery ? Math.min(k * 2, 8) : k;
+  return scored.filter((s) => s.score > 0).slice(0, resultCount).map((s) => s.d);
 }
 
 export function getEarliestPost(index: RetrievedDoc[]): RetrievedDoc | null {

@@ -11,6 +11,7 @@ import path from "path";
 import matter from "gray-matter";
 import OpenAI from "openai";
 import 'dotenv/config';
+import { PROMPT_CONFIG } from "../src/lib/prompts";
 
 type SourceType = "post" | "project" | "resume";
 
@@ -56,7 +57,7 @@ function readMarkdownDirectory(dirPath: string, type: SourceType): RawDoc[] {
     const normalized = normalizeMarkdown(content);
 
     // Keep only a reasonable amount per source to control index size
-    const limited = normalized.slice(0, 16000);
+    const limited = normalized.slice(0, PROMPT_CONFIG.embeddings.maxContentLength);
 
     const fm = (parsed.data || {}) as Record<string, unknown>;
     const summary = type === "post"
@@ -79,7 +80,7 @@ function readMarkdownDirectory(dirPath: string, type: SourceType): RawDoc[] {
       lastUpdated ? `LastUpdated: ${lastUpdated}` : undefined,
     ].filter(Boolean).join("\n");
 
-    const chunks = chunkText(limited, 1200, 200);
+    const chunks = chunkText(limited, PROMPT_CONFIG.embeddings.chunkSize, PROMPT_CONFIG.embeddings.chunkOverlap);
     chunks.forEach((text, idx) => {
       const textWithMeta = idx === 0 ? `${metaLines}\n\n${text}` : text;
       docs.push({
@@ -148,10 +149,10 @@ async function main() {
   console.info(`Embedding ${all.length} chunks...`);
 
   const embedded: EmbeddedChunk[] = [];
-  const model = "text-embedding-3-small";
+  const model = PROMPT_CONFIG.embeddings.model;
 
   // Batch in small groups for reliability
-  const batchSize = 64;
+  const batchSize = PROMPT_CONFIG.embeddings.batchSize;
   for (let i = 0; i < all.length; i += batchSize) {
     const batch = all.slice(i, i + batchSize);
     const input = batch.map((d) => d.text);
