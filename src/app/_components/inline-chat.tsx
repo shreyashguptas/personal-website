@@ -5,10 +5,8 @@ import { useEffect, useRef, useState } from "react";
 type Message = { role: "system" | "user" | "assistant"; content: string };
 
 const SUGGESTIONS = [
-  "What is Shreyash working on lately?",
-  "Show projects Shreyash has built.",
-  "What are the latest blog posts?",
-  "How to contact Shreyash?",
+  "What's the latest project Shreyash has worked on?",
+  "What was the latest blog post about?",
 ];
 
 function renderMarkdown(md: string) {
@@ -123,7 +121,7 @@ export function InlineChat() {
         {/* Messages */}
         <div ref={scrollRef} className="space-y-3 max-h-72 sm:max-h-80 overflow-y-auto pr-1">
           {messages.length === 0 && (
-            <div className="text-sm opacity-80">
+            <div className="text-sm sm:text-base opacity-80">
               Hi, I'm Shreyash (AI). What would you like to know about me?
             </div>
           )}
@@ -132,8 +130,8 @@ export function InlineChat() {
               <div
                 className={
                   m.role === "user"
-                    ? "inline-block rounded-xl bg-gray-900 text-white dark:bg-gray-100 dark:text-black px-3 py-2 max-w-[80%]"
-                    : "inline-block rounded-xl bg-gray-100 text-black dark:bg-gray-900 dark:text-white px-3 py-2 max-w-[80%]"
+                    ? "inline-block rounded-xl bg-gray-900 text-white dark:bg-gray-100 dark:text-black px-3 py-2 max-w-[80%] text-sm sm:text-base"
+                    : "inline-block rounded-xl bg-gray-100 text-black dark:bg-gray-900 dark:text-white px-3 py-2 max-w-[80%] text-sm sm:text-base"
                 }
                 dangerouslySetInnerHTML={
                   m.role === "assistant"
@@ -145,6 +143,21 @@ export function InlineChat() {
               </div>
             </div>
           ))}
+
+          {/* Suggestion chips */}
+          {messages.length === 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {SUGGESTIONS.map((s) => (
+                <button
+                  key={s}
+                  className="text-left text-sm sm:text-base border border-gray-200 dark:border-gray-800 rounded-lg px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-950"
+                  onClick={() => send(s)}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Input */}
@@ -161,13 +174,14 @@ export function InlineChat() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask me about my projects, posts, or background..."
-                className="w-full rounded-lg border border-gray-200 dark:border-gray-800 bg-transparent px-3 py-3 text-sm sm:text-base focus:outline-none"
+                className="w-full rounded-lg border border-gray-200 dark:border-gray-800 bg-transparent pl-9 pr-3 py-3 text-sm sm:text-base focus:outline-none"
                 maxLength={1000}
                 aria-label="Ask a question"
               />
               {input.length === 0 && (
-                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs sm:text-sm select-none">
-                  Ask me anything <span ref={caretRef}>▍</span>
+                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm sm:text-base select-none flex items-center gap-2">
+                  <span ref={caretRef}>▍</span>
+                  <span>Ask me anything</span>
                 </span>
               )}
             </div>
