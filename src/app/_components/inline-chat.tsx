@@ -41,6 +41,8 @@ export function InlineChat() {
   const [focusUrls, setFocusUrls] = useState<string[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const caretRef = useRef<HTMLSpanElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -48,13 +50,20 @@ export function InlineChat() {
     }
   }, [messages]);
 
+  // Try to auto-focus on mount; some mobile browsers may ignore for security.
   useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  // Blink caret only when focused and input empty
+  useEffect(() => {
+    if (!isFocused || input.length > 0) return;
     const id = setInterval(() => {
       if (!caretRef.current) return;
       caretRef.current.style.opacity = caretRef.current.style.opacity === "0" ? "1" : "0";
     }, 650);
     return () => clearInterval(id);
-  }, []);
+  }, [isFocused, input]);
 
   const send = async (text: string) => {
     const trimmed = text.trim();
@@ -174,13 +183,17 @@ export function InlineChat() {
           >
             <div className="relative flex-1">
               <input
+                ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 className="w-full rounded-lg border border-gray-200 dark:border-gray-800 bg-transparent pl-9 pr-3 py-3 text-sm sm:text-base focus:outline-none"
                 maxLength={1000}
                 aria-label="Ask a question"
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                autoFocus
               />
-              {input.length === 0 && (
+              {isFocused && input.length === 0 && (
                 <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm sm:text-base select-none flex items-center gap-2">
                   <span ref={caretRef}>▍</span>
                   <span>Ask me anything</span>

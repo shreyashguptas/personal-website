@@ -36,15 +36,6 @@ export default function HomePage() {
               {/* Inline Chat (primary section) */}
               <InlineChat />
 
-              {/* Explore more */}
-              <div className="rounded-xl border border-gray-200 dark:border-gray-800 p-4">
-                <div className="text-sm opacity-80 mb-2">Explore more</div>
-                <div className="flex items-center gap-4 text-sm">
-                  <a className="underline" href="/blog">Blog</a>
-                  <a className="underline" href="/projects">Projects</a>
-                </div>
-              </div>
-
               {/* Minimal navigation & social */}
               <MinimalNavigation />
               <SocialLinks />
@@ -63,15 +54,6 @@ export default function HomePage() {
             <div className="max-w-lg space-y-12">
               {/* Inline Chat (primary section) */}
               <InlineChat />
-
-              {/* Explore more */}
-              <div className="rounded-xl border border-gray-200 dark:border-gray-800 p-4">
-                <div className="text-sm opacity-80 mb-2">Explore more</div>
-                <div className="flex items-center gap-4 text-sm">
-                  <a className="underline" href="/blog">Blog</a>
-                  <a className="underline" href="/projects">Projects</a>
-                </div>
-              </div>
 
               {/* Minimal navigation & social */}
               <MinimalNavigation />

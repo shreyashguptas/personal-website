@@ -26,16 +26,13 @@ This document explains the end‑to‑end AI chat feature: how it’s built, whe
 - `src/app/_components/inline-chat.tsx`  
   The chat UI. Sends user messages to `/api/chat`, streams the server response, renders safe markdown (links, lists, emphasis), and maintains lightweight conversation focus.
 
-- `src/app/page.tsx`  
-  Wires the inline chat into the homepage and adds “Explore more” links.
-
 - `.gitignore`  
   Ignores `src/data/vector-index.json` (generated at build).
 
 ### Environment Variables
 
 - `OPENAI_API_KEY` (required): API key; never quoted in `.env` (use `OPENAI_API_KEY=sk-...`).  
-- `CHAT_MODEL` (optional): defaults to `gpt-5-nano`.  
+- `CHAT_MODEL` (optional): defaults to `gpt-5-nano-2025-08-07` (explicit version avoids fallback).  
 - `CHAT_MODEL_FALLBACK` (optional): defaults to `gpt-4o-mini`.
 - `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` (optional): enable production‑grade rate limiting.
 
