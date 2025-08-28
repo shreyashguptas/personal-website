@@ -9,6 +9,14 @@ export const runtime = 'nodejs';
 const BodySchema = z.object({
   message: z.string().min(1).max(1000),
   focusUrls: z.array(z.string()).optional(),
+  history: z
+    .array(
+      z.object({
+        role: z.enum(["user", "assistant"]),
+        content: z.string().min(1).max(2000),
+      })
+    )
+    .optional(),
 });
 
 function getClientKey(req: NextRequest): string {
@@ -71,6 +79,7 @@ export async function POST(req: NextRequest) {
     }
     const userMessage = parsed.data.message.trim();
     const focusUrls = (parsed.data.focusUrls || []).filter((u) => typeof u === 'string');
+    const history = (parsed.data.history || []).slice(-6); // limit context size
 
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) return new Response("Server Misconfigured", { status: 500 });
@@ -81,7 +90,11 @@ export async function POST(req: NextRequest) {
     const t1 = Date.now();
     let queryEmbedding: number[] = [];
     try {
-      const embed = await openai.embeddings.create({ model: "text-embedding-3-small", input: userMessage });
+      // If follow-up pronoun, enrich embedding input with last user message
+      const lastUser = [...history].reverse().find((h) => h.role === "user");
+      const pronounFollowUp = /\b(it|that|this|the post|the blog)\b/i.test(userMessage);
+      const embedInput = pronounFollowUp && lastUser ? `${lastUser.content}\nFollow-up: ${userMessage}` : userMessage;
+      const embed = await openai.embeddings.create({ model: "text-embedding-3-small", input: embedInput });
       queryEmbedding = embed.data[0].embedding as unknown as number[];
     } catch {
       // Embedding failure should return a controlled error
@@ -113,7 +126,7 @@ export async function POST(req: NextRequest) {
     const { context, sources } = buildContext(contextDocs, 6000, userMessage);
 
     // Put context and question into a single user message
-    const combinedUser = `Context:\n${context}\n\nRules:\n- When the question asks for the first blog/post, identify the earliest by date in the Context.\n- Include inline links using markdown [Title](URL).\n\nQuestion: ${userMessage}`;
+    const combinedUser = `Context:\n${context}\n\nRules:\n- When the question asks for the first blog/post, identify the earliest by date in the Context.\n- Include inline links using markdown [Title](URL).\n- Use the conversation history to resolve pronouns and follow-ups, but never override or invent facts beyond Context.\n\nQuestion: ${userMessage}`;
 
     // Choose the requested model, fallback if unavailable
     const preferred = process.env.CHAT_MODEL || "gpt-5-nano";
@@ -124,6 +137,7 @@ export async function POST(req: NextRequest) {
         model: preferred,
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
+          ...history.map((h) => ({ role: h.role as "user" | "assistant", content: h.content })),
           { role: "user", content: combinedUser },
         ],
         temperature: 0,
@@ -136,6 +150,7 @@ export async function POST(req: NextRequest) {
         model: fallback,
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
+          ...history.map((h) => ({ role: h.role as "user" | "assistant", content: h.content })),
           { role: "user", content: combinedUser },
         ],
         temperature: 0,

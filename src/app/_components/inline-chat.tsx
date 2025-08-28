@@ -64,10 +64,13 @@ export function InlineChat() {
     setLoading(true);
     setSources([]);
     try {
+      const history = messages
+        .filter((m) => m.role === "user" || m.role === "assistant")
+        .map((m) => ({ role: m.role === "system" ? "user" : m.role, content: m.content }));
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ message: trimmed, focusUrls }),
+        body: JSON.stringify({ message: trimmed, focusUrls, history }),
       });
       if (!res.ok || !res.body) throw new Error("Request failed");
       const reader = res.body.getReader();
