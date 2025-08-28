@@ -17,6 +17,11 @@ body {
   cursor: none;
 }
 
+/* Allow system pointer for clickable elements by temporarily overriding */
+button, a[href], [role="button"], input[type="submit"], input[type="button"], label, select {
+  cursor: pointer;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
