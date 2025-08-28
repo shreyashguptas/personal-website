@@ -12,11 +12,23 @@ export function getRateLimiter(): Ratelimit | null {
     if (ratelimit) return ratelimit;
     const url = process.env.UPSTASH_REDIS_REST_URL;
     const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-    if (!url || !token) return null; // fallback to in-memory in route
+    
+    if (!url || !token) {
+      console.info('[rate-limit] Redis not configured, falling back to local rate limiting');
+      return null; // fallback to in-memory in route
+    }
+    
     const redis = new Redis({ url, token });
-    ratelimit = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(LIMIT, WINDOW) });
+    ratelimit = new Ratelimit({ 
+      redis, 
+      limiter: Ratelimit.slidingWindow(LIMIT, WINDOW),
+      analytics: true, // Enable analytics for monitoring
+    });
+    
+    console.info('[rate-limit] Redis-based rate limiting initialized successfully');
     return ratelimit;
-  } catch {
+  } catch (error) {
+    console.error('[rate-limit] Failed to initialize Redis rate limiter:', error);
     return null;
   }
 }
@@ -28,14 +40,25 @@ export function localRateLimit(key: string): { success: boolean; remaining: numb
   const now = Date.now();
   const windowMs = 5 * 60 * 1000;
   const record = localBuckets.get(key);
+  
   if (!record || record.resetAt < now) {
     localBuckets.set(key, { count: 1, resetAt: now + windowMs });
     return { success: true, remaining: LIMIT - 1, reset: now + windowMs };
   }
+  
   if (record.count >= LIMIT) {
+    // Log rate limit violations for monitoring
+    console.warn(`[rate-limit] Client ${key} exceeded rate limit: ${record.count}/${LIMIT}`);
     return { success: false, remaining: 0, reset: record.resetAt };
   }
+  
   record.count += 1;
+  
+  // Log when approaching rate limit (80% threshold)
+  if (record.count >= LIMIT * 0.8) {
+    console.info(`[rate-limit] Client ${key} approaching rate limit: ${record.count}/${LIMIT}`);
+  }
+  
   return { success: true, remaining: LIMIT - record.count, reset: record.resetAt };
 }
 

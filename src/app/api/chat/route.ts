@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import OpenAI from "openai";
 import { z } from "zod";
 import { getRateLimiter, localRateLimit } from "@/lib/rateLimit";
+import { logSecurityEvent, sanitizeClientKey, isSuspiciousRequest } from "@/lib/security";
 import {
   buildContext,
   lexicalFallback,
@@ -53,8 +54,45 @@ function sameOriginOnly(req: NextRequest): boolean {
 
 export async function POST(req: NextRequest) {
   const t0 = Date.now();
+  
+  // Additional security checks
+  const contentType = req.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
+    const clientKey = getClientKey(req);
+    logSecurityEvent({
+      type: 'invalid_content_type',
+      clientKey: sanitizeClientKey(clientKey),
+      details: `Invalid content-type: ${contentType}`,
+      userAgent: req.headers.get('user-agent') || undefined,
+      ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || undefined,
+    });
+    return new Response("Unsupported Media Type", { status: 415 });
+  }
+
+  // Request size limit (1MB)
+  const contentLength = req.headers.get("content-length");
+  if (contentLength && parseInt(contentLength) > 1024 * 1024) {
+    const clientKey = getClientKey(req);
+    logSecurityEvent({
+      type: 'request_too_large',
+      clientKey: sanitizeClientKey(clientKey),
+      details: `Request too large: ${contentLength} bytes`,
+      userAgent: req.headers.get('user-agent') || undefined,
+      ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || undefined,
+    });
+    return new Response("Request Entity Too Large", { status: 413 });
+  }
+
   try {
     if (!sameOriginOnly(req)) {
+      const clientKey = getClientKey(req);
+      logSecurityEvent({
+        type: 'cross_origin',
+        clientKey: sanitizeClientKey(clientKey),
+        details: `Cross-origin request blocked from ${req.headers.get("origin")}`,
+        userAgent: req.headers.get('user-agent') || undefined,
+        ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || undefined,
+      });
       return new Response("Forbidden", { status: 403 });
     }
 
@@ -63,6 +101,13 @@ export async function POST(req: NextRequest) {
     if (limiter) {
       const { success, reset } = await limiter.limit(clientKey);
       if (!success) {
+        logSecurityEvent({
+          type: 'rate_limit',
+          clientKey: sanitizeClientKey(clientKey),
+          details: 'Redis rate limit exceeded',
+          userAgent: req.headers.get('user-agent') || undefined,
+          ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || undefined,
+        });
         return new Response(JSON.stringify({ error: "rate_limited", reset }), {
           status: 429,
           headers: { "content-type": "application/json" },
@@ -71,6 +116,13 @@ export async function POST(req: NextRequest) {
     } else {
       const { success, reset } = localRateLimit(clientKey);
       if (!success) {
+        logSecurityEvent({
+          type: 'rate_limit',
+          clientKey: sanitizeClientKey(clientKey),
+          details: 'Local rate limit exceeded',
+          userAgent: req.headers.get('user-agent') || undefined,
+          ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || undefined,
+        });
         return new Response(JSON.stringify({ error: "rate_limited", reset }), {
           status: 429,
           headers: { "content-type": "application/json" },
@@ -81,6 +133,13 @@ export async function POST(req: NextRequest) {
     const body = await req.json().catch(() => null);
     const parsed = BodySchema.safeParse(body);
     if (!parsed.success) {
+      logSecurityEvent({
+        type: 'validation_failed',
+        clientKey: sanitizeClientKey(clientKey),
+        details: `Validation failed: ${parsed.error.message}`,
+        userAgent: req.headers.get('user-agent') || undefined,
+        ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || undefined,
+      });
       return new Response("Bad Request", { status: 400 });
     }
     const userMessage = parsed.data.message.trim();
@@ -92,7 +151,7 @@ export async function POST(req: NextRequest) {
 
     const openai = new OpenAI({ apiKey });
 
-    // Compute query embedding
+    // Compute query embedding with timeout
     const t1 = Date.now();
     let queryEmbedding: number[] = [];
     try {
@@ -100,10 +159,18 @@ export async function POST(req: NextRequest) {
       const lastUser = [...history].reverse().find((h) => h.role === "user");
       const pronounFollowUp = /\b(it|that|this|the post|the blog)\b/i.test(userMessage);
       const embedInput = pronounFollowUp && lastUser ? `${lastUser.content}\nFollow-up: ${userMessage}` : userMessage;
-      const embed = await openai.embeddings.create({ model: "text-embedding-3-small", input: embedInput });
+      
+      // Add timeout to embedding request (30 seconds)
+      const embedPromise = openai.embeddings.create({ model: "text-embedding-3-small", input: embedInput });
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Embedding timeout')), 30000)
+      );
+      
+      const embed = await Promise.race([embedPromise, timeoutPromise]) as any;
       queryEmbedding = embed.data[0].embedding as unknown as number[];
-    } catch {
+    } catch (error) {
       // Embedding failure should return a controlled error
+      console.error("[chat] embedding failed:", error);
       return new Response("Embedding error", { status: 502 });
     }
     const t2 = Date.now();
@@ -214,7 +281,8 @@ export async function POST(req: NextRequest) {
     const preferred = PROMPT_CONFIG.model;
     console.info("[chat] model selection", { preferred, source: "prompts.ts" });
     try {
-      const response = await openai.chat.completions.create({
+      // Add timeout to chat completion request (60 seconds)
+      const chatPromise = openai.chat.completions.create({
         model: preferred,
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
@@ -225,6 +293,12 @@ export async function POST(req: NextRequest) {
         max_tokens: PROMPT_CONFIG.maxTokens,
         stream: true,
       });
+      
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Chat completion timeout')), 60000)
+      );
+      
+      const response = await Promise.race([chatPromise, timeoutPromise]) as any;
       const encoder = new TextEncoder();
       type StreamChunk = { choices?: Array<{ delta?: { content?: string | null } }> };
       const stream = new ReadableStream<Uint8Array>({
