@@ -192,16 +192,16 @@ export function InlineChat() {
         <div ref={scrollRef} className="space-y-3 flex-1 min-h-0 overflow-y-auto pr-1 sm:pr-2" aria-live="polite">
           {messages.length === 0 && (
             <>
-              <div className="flex items-start gap-2">
-                <Image src="/headshot/headshot.jpg" alt="Shreyash" width={28} height={28} className="rounded-full object-cover" />
+              <div className="flex items-start justify-start">
+                <Image src="/headshot/headshot.jpg" alt="Shreyash" width={28} height={28} className="rounded-full object-cover mr-2 flex-shrink-0 mt-2" />
                 <div className="inline-block rounded-2xl bg-gray-100 text-black dark:bg-gray-900 dark:text-white px-3 py-2 max-w-[80%] text-sm sm:text-base">
                   {`Good ${timeOfDay}${returningVisitor ? "!!" : ""}
                   Ask me anything about my work, projects, or blog posts. 
                   `}
                 </div>
               </div>
-              <div className="flex items-start gap-2">
-                <Image src="/headshot/headshot.jpg" alt="Shreyash" width={24} height={24} className="rounded-full object-cover" />
+              <div className="flex items-start justify-start">
+                <Image src="/headshot/headshot.jpg" alt="Shreyash" width={24} height={24} className="rounded-full object-cover mr-2 flex-shrink-0 mt-2" />
                 <div className="inline-block rounded-2xl bg-gray-100 text-black dark:bg-gray-900 dark:text-white px-3 py-2 max-w-[80%] text-sm sm:text-base">
                 If you're not sure where to start, try a quick question below.
                 </div>
@@ -209,9 +209,9 @@ export function InlineChat() {
             </>
           )}
           {messages.map((m, i) => (
-            <div key={i} className={m.role === "user" ? "flex items-start justify-end" : "flex items-start gap-2"}>
+            <div key={i} className={m.role === "user" ? "flex items-start justify-end" : "flex items-start justify-start"}>
               {m.role !== "user" && (
-                <Image src="/headshot/headshot.jpg" alt="Shreyash" width={24} height={24} className="rounded-full object-cover mt-1" />
+                <Image src="/headshot/headshot.jpg" alt="Shreyash" width={24} height={24} className="rounded-full object-cover mt-2 mr-2 flex-shrink-0" />
               )}
               <div
                 className={

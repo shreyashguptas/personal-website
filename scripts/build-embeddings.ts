@@ -39,6 +39,8 @@ function readMarkdownDirectory(dirPath: string, type: SourceType): RawDoc[] {
   const files = fs.readdirSync(absDir).filter((f) => f.endsWith(".md"));
 
   const docs: RawDoc[] = [];
+  console.log(`[build-embeddings] Processing ${type}s from ${dirPath}:`);
+  
   for (const file of files) {
     const fullPath = path.join(absDir, file);
     const raw = fs.readFileSync(fullPath, "utf8");
@@ -48,13 +50,28 @@ function readMarkdownDirectory(dirPath: string, type: SourceType): RawDoc[] {
     const title = String((fmRecord?.title as string | undefined) || slug);
     const dateRaw = fmRecord?.date as string | undefined;
     let date: string | undefined = undefined;
+    
     if (dateRaw) {
       const d = new Date(dateRaw);
-      if (!isNaN(d.getTime())) date = d.toISOString();
+      if (!isNaN(d.getTime())) {
+        date = d.toISOString();
+        console.log(`  ✓ ${slug}: ${dateRaw} -> ${date}`);
+      } else {
+        console.log(`  ✗ ${slug}: Invalid date "${dateRaw}"`);
+      }
+    } else {
+      console.log(`  ✗ ${slug}: No date found`);
     }
     const url = type === "post" ? `/posts/${slug}` : type === "project" ? `/projects#${slug}` : `/resume`;
     const content = String(parsed.content || "");
-    const normalized = normalizeMarkdown(content);
+    // For projects with no content, use the description as content
+    let normalized: string;
+    if (type === "project" && content.trim().length === 0) {
+      const description = String((fmRecord?.description as string | undefined) || "");
+      normalized = description.trim();
+    } else {
+      normalized = normalizeMarkdown(content);
+    }
 
     // Keep only a reasonable amount per source to control index size
     const limited = normalized.slice(0, PROMPT_CONFIG.embeddings.maxContentLength);
@@ -144,35 +161,5 @@ async function main() {
   const posts = readMarkdownDirectory("_posts", "post");
   const projects = readMarkdownDirectory("_projects", "project");
   const resume = readMarkdownDirectory("_resume", "resume");
-  const all = [...posts, ...projects, ...resume];
 
-  console.info(`Embedding ${all.length} chunks...`);
-
-  const embedded: EmbeddedChunk[] = [];
-  const model = PROMPT_CONFIG.embeddings.model;
-
-  // Batch in small groups for reliability
-  const batchSize = PROMPT_CONFIG.embeddings.batchSize;
-  for (let i = 0; i < all.length; i += batchSize) {
-    const batch = all.slice(i, i + batchSize);
-    const input = batch.map((d) => d.text);
-    const res = await openai.embeddings.create({ model, input });
-    res.data.forEach((item, idx: number) => {
-      const embedding = Array.isArray((item as { embedding: unknown }).embedding)
-        ? ((item as { embedding: number[] }).embedding)
-        : [];
-      embedded.push({ ...batch[idx], embedding });
-    });
-    console.info(`Embedded ${Math.min(i + batchSize, all.length)} / ${all.length}`);
-  }
-
-  fs.writeFileSync(outPath, JSON.stringify(embedded), "utf8");
-  console.info(`Wrote index to ${outPath}`);
-}
-
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
-
-
+  console.log(`\n[build-embeddings] Summary:`

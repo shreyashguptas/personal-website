@@ -110,6 +110,18 @@ export async function POST(req: NextRequest) {
 
     // Retrieve
     const index = loadIndex();
+    
+    // Debug: Log index contents for projects
+    const projectsInIndex = index.filter(d => d.type === "project");
+    const projectsWithDates = projectsInIndex.filter(d => d.date);
+    console.log(`[chat] Index loaded: ${index.length} total docs, ${projectsInIndex.length} projects, ${projectsWithDates.length} projects with dates`);
+    if (projectsWithDates.length > 0) {
+      console.log(`[chat] Projects with dates in index:`);
+      projectsWithDates.forEach(p => {
+        console.log(`  ${p.date}: ${p.title}`);
+      });
+    }
+    
     const focusDocs = index.filter((d) => focusUrls.includes(d.url));
     const isPronounFollowUp = /\b(it|that|this|the post|the blog)\b/i.test(userMessage);
     let retrieved = [] as typeof index;
@@ -155,9 +167,13 @@ export async function POST(req: NextRequest) {
         contextDocs = [resumeInfo, ...contextDocs.filter((d) => d.id !== resumeInfo.id)].slice(0, 5);
       }
     } else if (asksLatestProject) {
+      console.log(`[chat] User asked for latest project: "${userMessage}"`);
       const latestProj = getLatestProject(index);
       if (latestProj) {
+        console.log(`[chat] Latest project found: ${latestProj.title} (${latestProj.date})`);
         contextDocs = [latestProj, ...contextDocs.filter((d) => d.slug !== latestProj.slug)].slice(0, 5);
+      } else {
+        console.log(`[chat] No latest project found in index`);
       }
     } else if (asksLatestPost) {
       const latestP = getLatestPost(index);

@@ -174,6 +174,9 @@ export function getLatestPost(index: RetrievedDoc[]): RetrievedDoc | null {
 export function getLatestProject(index: RetrievedDoc[]): RetrievedDoc | null {
   const projects = index.filter((d) => d.type === "project" && d.date);
   if (projects.length === 0) return null;
+  
+  console.log(`[getLatestProject] Found ${projects.length} projects with dates`);
+  
   // Group by slug to pick one representative chunk per project
   const slugToDocs = new Map<string, RetrievedDoc[]>();
   for (const d of projects) {
@@ -181,13 +184,27 @@ export function getLatestProject(index: RetrievedDoc[]): RetrievedDoc | null {
     list.push(d);
     slugToDocs.set(d.slug, list);
   }
+  
+  console.log(`[getLatestProject] Grouped into ${slugToDocs.size} unique projects`);
+  
   const representatives: RetrievedDoc[] = [];
   for (const [, docs] of slugToDocs) {
     const rep = selectRepresentativeChunk(docs);
     representatives.push(rep);
   }
+  
+  // Sort by date descending (latest first)
   representatives.sort((a, b) => new Date(b.date as string).getTime() - new Date(a.date as string).getTime());
-  return representatives[0] || null;
+  
+  console.log(`[getLatestProject] Sorted projects by date:`);
+  representatives.forEach((p, i) => {
+    console.log(`  ${i + 1}. ${p.date}: ${p.title}`);
+  });
+  
+  const latest = representatives[0] || null;
+  console.log(`[getLatestProject] Selected latest: ${latest?.title} (${latest?.date})`);
+  
+  return latest;
 }
 
 export function getResumeInfo(index: RetrievedDoc[]): RetrievedDoc | null {
