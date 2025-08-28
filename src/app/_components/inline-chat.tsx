@@ -128,6 +128,7 @@ export function InlineChat() {
     if (!trimmed || loading) return;
     setMessages((m) => [...m, { role: "user", content: trimmed }]);
     setInput("");
+    setSuggestions([]); // Clear suggestions when any message is sent
     setLoading(true);
     setSources([]);
     try {
@@ -234,22 +235,24 @@ export function InlineChat() {
 
         {/* Input */}
         <div className="mt-4">
-          {/* Suggestion prompts above input */}
-          <div className="flex flex-col items-end gap-2 mb-3">
-            {suggestions.map((s) => (
-              <button
-                key={s}
-                className="text-left text-sm sm:text-base rounded-2xl border border-dashed border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-950 transition self-end max-w-[80%]"
-                onClick={() => {
-                  console.info("[inline-chat] suggestion_click", { suggestion: s });
-                  setSuggestions((prev) => prev.filter((t) => t !== s));
-                  send(s);
-                }}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
+          {/* Suggestion prompts above input - only show when no messages */}
+          {messages.length === 0 && (
+            <div className="flex flex-col items-end gap-2 mb-3">
+              {suggestions.map((s) => (
+                <button
+                  key={s}
+                  className="text-left text-sm sm:text-base rounded-2xl border border-dashed border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-950 transition self-end max-w-[80%]"
+                  onClick={() => {
+                    console.info("[inline-chat] suggestion_click", { suggestion: s });
+                    setSuggestions([]);
+                    send(s);
+                  }}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          )}
           <form
             onSubmit={(e) => {
               e.preventDefault();
