@@ -187,19 +187,26 @@ export function InlineChat() {
 
   return (
     <section aria-labelledby="inline-chat-heading" className="w-full">
-      <div className="mx-auto w-full rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/60 dark:bg-black/40 backdrop-blur p-5 sm:p-8 shadow-sm flex flex-col min-h-[55svh] md:min-h-[60svh] max-h-[85svh]">
-        <div className="mb-3 flex items-center justify-between">
-        </div>
+      <div className="w-full rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/60 dark:bg-black/40 backdrop-blur p-5 sm:p-6 md:p-7 shadow-sm flex flex-col h-[clamp(420px,72svh,860px)]">
 
         {/* Messages */}
         <div ref={scrollRef} className="space-y-3 flex-1 min-h-0 overflow-y-auto pr-1 sm:pr-2" aria-live="polite">
           {messages.length === 0 && (
-            <div className="flex items-start gap-2">
-              <Image src="/headshot/headshot.jpg" alt="Shreyash" width={28} height={28} className="rounded-full object-cover" />
-              <div className="inline-block rounded-2xl bg-gray-100 text-black dark:bg-gray-900 dark:text-white px-3 py-2 max-w-[80%] text-sm sm:text-base">
-                {`Hey, good ${timeOfDay}${returningVisitor ? ", welcome back" : ""} — I’m Shreyash. Ask me anything about my work, projects, or blog posts. If you’re not sure where to start, try a quick question below or take a shortcut.`}
+            <>
+              <div className="flex items-start gap-2">
+                <Image src="/headshot/headshot.jpg" alt="Shreyash" width={28} height={28} className="rounded-full object-cover" />
+                <div className="inline-block rounded-2xl bg-gray-100 text-black dark:bg-gray-900 dark:text-white px-3 py-2 max-w-[80%] text-sm sm:text-base">
+                  {`Hey, Good ${timeOfDay}${returningVisitor ? "!!" : ""}
+                   Ask me anything about my work, projects, or blog posts.`}
+                </div>
               </div>
-            </div>
+              <div className="flex items-start gap-2">
+                <Image src="/headshot/headshot.jpg" alt="Shreyash" width={28} height={28} className="rounded-full object-cover" />
+                <div className="inline-block rounded-2xl bg-gray-100 text-black dark:bg-gray-900 dark:text-white px-3 py-2 max-w-[80%] text-sm sm:text-base">
+                  {`If you’re not sure where to start, try a quick question.`}
+                </div>
+              </div>
+            </>
           )}
           {messages.map((m, i) => (
             <div key={i} className={m.role === "user" ? "flex items-start justify-end" : "flex items-start gap-2"}>
@@ -228,11 +235,11 @@ export function InlineChat() {
         {/* Input */}
         <div className="mt-4">
           {/* Suggestion prompts above input */}
-          <div className="flex flex-col items-end gap-2 mb-3">
+          <div className="flex flex-wrap items-start justify-start gap-2 mb-3">
             {suggestions.map((s) => (
               <button
                 key={s}
-                className="text-left text-sm sm:text-base rounded-2xl border border-dashed border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-950 transition self-end max-w-[80%]"
+                className="text-left text-sm sm:text-base rounded-2xl border border-dashed border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-950 transition self-auto max-w-full whitespace-normal break-words"
                 onClick={() => {
                   console.info("[inline-chat] suggestion_click", { suggestion: s });
                   setSuggestions((prev) => prev.filter((t) => t !== s));

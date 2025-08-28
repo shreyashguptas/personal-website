@@ -80,12 +80,15 @@ export default function RootLayout({
         <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
       </head>
       <body
-        className={cn(inter.className, "bg-white text-black dark:bg-black dark:text-white transition-colors duration-200")}
+        className={cn(
+          inter.className,
+          "bg-white text-black dark:bg-black dark:text-white transition-colors duration-200 min-h-screen flex flex-col"
+        )}
       >
         <CustomCursor />
         <ThemeSwitcher />
         <SiteNavigation />
-        <div>{children}</div>
+        <main className="flex-1">{children}</main>
         <SiteFooter />
         <Analytics />
         <SpeedInsights />

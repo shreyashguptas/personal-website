@@ -6,7 +6,7 @@ export default function HomePage() {
   // Removed content listings to focus on a clean chat-first landing
 
   return (
-    <main className="relative min-h-screen">
+    <main className="relative">
       <Container>
         <div className="mt-10 desktop:grid desktop:grid-cols-[minmax(320px,520px)_1fr] desktop:gap-8">
           {/* Left column: image and name, left-aligned */}
