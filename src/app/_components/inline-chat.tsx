@@ -195,14 +195,14 @@ export function InlineChat() {
             <>
               <div className="flex items-start gap-2">
                 <Image src="/headshot/headshot.jpg" alt="Shreyash" width={28} height={28} className="rounded-full object-cover" />
-                <div className="inline-block rounded-2xl bg-gray-100 text-black dark:bg-gray-900 dark:text-white px-3 py-2 max-w-[80%] text-sm sm:text-base">
+                <div className="inline-block rounded-2xl bg-gray-100 text-black border border-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 px-3 py-2 max-w-[80%] text-sm sm:text-base">
                   {`Hey, Good ${timeOfDay}${returningVisitor ? "!!" : ""}
                    Ask me anything about my work, projects, or blog posts.`}
                 </div>
               </div>
               <div className="flex items-start gap-2">
                 <Image src="/headshot/headshot.jpg" alt="Shreyash" width={28} height={28} className="rounded-full object-cover" />
-                <div className="inline-block rounded-2xl bg-gray-100 text-black dark:bg-gray-900 dark:text-white px-3 py-2 max-w-[80%] text-sm sm:text-base">
+                <div className="inline-block rounded-2xl bg-gray-100 text-black border border-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 px-3 py-2 max-w-[80%] text-sm sm:text-base">
                   {`If you’re not sure where to start, try a quick question.`}
                 </div>
               </div>
@@ -216,8 +216,8 @@ export function InlineChat() {
               <div
                 className={
                   m.role === "user"
-                    ? "inline-block rounded-2xl bg-gray-900 text-white dark:bg-gray-100 dark:text-black px-3 py-2 max-w-[80%] text-sm sm:text-base"
-                    : "inline-block rounded-2xl bg-gray-100 text-black dark:bg-gray-900 dark:text-white px-3 py-2 max-w-[80%] text-sm sm:text-base"
+                    ? "inline-block rounded-2xl bg-gray-900 text-white border border-gray-800 dark:bg-gray-200 dark:text-black dark:border-gray-300 px-3 py-2 max-w-[80%] text-sm sm:text-base"
+                    : "inline-block rounded-2xl bg-gray-100 text-black border border-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 px-3 py-2 max-w-[80%] text-sm sm:text-base"
                 }
                 dangerouslySetInnerHTML={
                   m.role === "assistant"
