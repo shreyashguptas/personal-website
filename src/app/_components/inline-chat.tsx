@@ -173,7 +173,6 @@ export function InlineChat() {
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask me about my projects, posts, or background..."
                 className="w-full rounded-lg border border-gray-200 dark:border-gray-800 bg-transparent pl-9 pr-3 py-3 text-sm sm:text-base focus:outline-none"
                 maxLength={1000}
                 aria-label="Ask a question"
