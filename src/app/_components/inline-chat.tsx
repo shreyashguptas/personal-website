@@ -42,10 +42,10 @@ function buildSuggestions(period: TimeOfDay, returningVisitor: boolean): string[
 }
 
 function renderMarkdown(md: string) {
-  // Very small, safe markdown renderer: links, bold/italic, lists, paragraphs
+  // Safe, minimal markdown renderer with clean spacing for paragraphs and lists
   // 1) Escape HTML
   const escaped = md.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-  // 2) Links [text](url) -> <a>
+  // 2) Inline: links, bold, italic
   const withLinks = escaped.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_m, text, url) => {
     try {
       const u = new URL(url, typeof window !== "undefined" ? window.location.origin : "http://localhost");
@@ -54,15 +54,33 @@ function renderMarkdown(md: string) {
       return text;
     }
   });
-  // 3) Bold **text** and Italic *text*
   const withBold = withLinks.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
   const withItal = withBold.replace(/\*([^*]+)\*/g, "<em>$1</em>");
-  // 4) Lists: - item
-  const withLists = withItal.replace(/(?:^|\n)-\s+([^\n]+)/g, (m, item) => `\n<li>${item}</li>`);
-  const wrappedLists = withLists.replace(/(?:<li>[^<]+<\/li>\n?)+/g, (m) => `<ul class="list-disc pl-5">${m}</ul>`);
-  // 5) Newlines -> paragraphs
-  const parts = wrappedLists.split(/\n\n+/).map((p) => `<p>${p.replace(/\n/g, "<br/>")}</p>`);
-  return parts.join("");
+
+  // 3) Blocks: split on blank lines and render lists/paragraphs
+  const blocks = withItal.trim().split(/\n{2,}/);
+  const htmlParts: string[] = [];
+
+  for (const rawBlock of blocks) {
+    const block = rawBlock.trim();
+    if (!block) continue;
+    const lines = block.split(/\n/);
+    const isBulletList = lines.every((ln) => /^[-*]\s+/.test(ln.trim()));
+
+    if (isBulletList) {
+      const items = lines
+        .map((ln) => ln.trim().replace(/^[-*]\s+/, ""))
+        .map((content) => `<li>${content}</li>`) // no <br/> inside list items
+        .join("");
+      htmlParts.push(`<ul class="list-disc pl-5 my-2 space-y-1">${items}</ul>`);
+    } else {
+      // Paragraph: collapse single newlines to spaces for tighter flow
+      const text = block.replace(/\n+/g, " ").trim();
+      if (text) htmlParts.push(`<p class="mb-2 last:mb-0 leading-relaxed">${text}</p>`);
+    }
+  }
+
+  return htmlParts.join("");
 }
 
 export function InlineChat() {
