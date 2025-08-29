@@ -148,13 +148,33 @@ export function InlineChat() {
       });
       if (!res.ok) {
         let errorMessage = "Request failed";
+        let userFriendlyMessage = "Sorry, something went wrong.";
         try {
           const errorData = await res.json();
           errorMessage = errorData.message || errorData.error || errorMessage;
+
+          // Handle rate limiting with custom message
+          if (errorData.error === "rate_limited" && errorData.message) {
+            userFriendlyMessage = errorData.message;
+          } else if (errorMessage.includes("rate_limited") || errorMessage.includes("Too many requests")) {
+            userFriendlyMessage = "I'm receiving too many requests right now. Please wait a moment and try again.";
+          } else if (errorMessage.includes("embedding") || errorMessage.includes("process")) {
+            userFriendlyMessage = "I'm having trouble understanding your question. Please try rephrasing it.";
+          } else if (errorMessage.includes("unavailable")) {
+            userFriendlyMessage = "The service is temporarily unavailable. Please try again in a few minutes.";
+          }
         } catch {
           // If we can't parse the error response, use the status text
           errorMessage = res.statusText || errorMessage;
         }
+
+        // If we have a user-friendly message from the API, use it instead of throwing
+        if (userFriendlyMessage !== "Sorry, something went wrong.") {
+          setMessages((m) => [...m, { role: "assistant", content: userFriendlyMessage }]);
+          setLoading(false);
+          return;
+        }
+
         throw new Error(errorMessage);
       }
 

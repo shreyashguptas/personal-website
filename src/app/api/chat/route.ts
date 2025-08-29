@@ -152,7 +152,24 @@ export async function POST(req: NextRequest) {
           userAgent: req.headers.get('user-agent') || undefined,
           ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || undefined,
         });
-        return new Response(JSON.stringify({ error: "rate_limited", reset }), {
+
+        // Get latest blog post for friendly message
+        let latestPostUrl = "/blog"; // fallback
+        try {
+          const index = loadIndex();
+          const latestPost = getLatestPost(index);
+          if (latestPost) {
+            latestPostUrl = latestPost.url;
+          }
+        } catch (error) {
+          console.warn('[chat] Failed to get latest post for rate limit message:', error);
+        }
+
+        return new Response(JSON.stringify({
+          error: "rate_limited",
+          message: `You've asked me a bunch of questions! I've temporarily rate limited you to prevent spam. You can ask me more questions soon. In the meantime, check out my latest blog post: [${latestPostUrl}](${latestPostUrl})`,
+          reset
+        }), {
           status: 429,
           headers: { "content-type": "application/json" },
         });
@@ -167,7 +184,24 @@ export async function POST(req: NextRequest) {
           userAgent: req.headers.get('user-agent') || undefined,
           ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || undefined,
         });
-        return new Response(JSON.stringify({ error: "rate_limited", reset }), {
+
+        // Get latest blog post for friendly message
+        let latestPostUrl = "/blog"; // fallback
+        try {
+          const index = loadIndex();
+          const latestPost = getLatestPost(index);
+          if (latestPost) {
+            latestPostUrl = latestPost.url;
+          }
+        } catch (error) {
+          console.warn('[chat] Failed to get latest post for rate limit message:', error);
+        }
+
+        return new Response(JSON.stringify({
+          error: "rate_limited",
+          message: `You've asked me a bunch of questions! I've temporarily rate limited you to prevent spam. You can ask me more questions soon. In the meantime, check out my latest blog post: [${latestPostUrl}](${latestPostUrl})`,
+          reset
+        }), {
           status: 429,
           headers: { "content-type": "application/json" },
         });
@@ -444,9 +478,21 @@ export async function POST(req: NextRequest) {
 
       // Handle specific OpenAI error codes
       if (status === 429) {
+        // Get latest blog post for friendly message
+        let latestPostUrl = "/blog"; // fallback
+        try {
+          const index = loadIndex();
+          const latestPost = getLatestPost(index);
+          if (latestPost) {
+            latestPostUrl = latestPost.url;
+          }
+        } catch (error) {
+          console.warn('[chat] Failed to get latest post for rate limit message:', error);
+        }
+
         errorResponse = {
           error: "rate_limited",
-          message: "Too many requests. Please wait a moment and try again."
+          message: `You've asked me a bunch of questions! I've temporarily rate limited you to prevent spam. You can ask me more questions soon. In the meantime, check out my latest blog post: [${latestPostUrl}](${latestPostUrl})`
         };
       } else if (status === 401) {
         errorResponse = {

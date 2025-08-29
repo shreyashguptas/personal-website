@@ -1,8 +1,8 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
-// 10 requests per 5 minutes per unique client key
-const WINDOW = "5 m";
+// 10 requests per 2 minutes per unique client key
+const WINDOW = "2 m";
 const LIMIT = 10;
 
 let ratelimit: Ratelimit | null = null;
@@ -38,7 +38,7 @@ const localBuckets = new Map<string, { count: number; resetAt: number }>();
 
 export function localRateLimit(key: string): { success: boolean; remaining: number; reset: number } {
   const now = Date.now();
-  const windowMs = 5 * 60 * 1000;
+  const windowMs = 2 * 60 * 1000;
   const record = localBuckets.get(key);
   
   if (!record || record.resetAt < now) {
