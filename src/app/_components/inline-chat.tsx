@@ -146,7 +146,19 @@ export function InlineChat() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ message: trimmed, focusUrls, history }),
       });
-      if (!res.ok || !res.body) throw new Error("Request failed");
+      if (!res.ok) {
+        let errorMessage = "Request failed";
+        try {
+          const errorData = await res.json();
+          errorMessage = errorData.message || errorData.error || errorMessage;
+        } catch {
+          // If we can't parse the error response, use the status text
+          errorMessage = res.statusText || errorMessage;
+        }
+        throw new Error(errorMessage);
+      }
+
+      if (!res.body) throw new Error("No response body");
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let assistantText = "";
@@ -182,8 +194,20 @@ export function InlineChat() {
           return [...m, { role: "assistant", content: assistantText }];
         });
       }
-    } catch {
-      setMessages((m) => [...m, { role: "assistant", content: "Sorry, something went wrong." }]);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+      console.error("[inline-chat] Chat error:", errorMessage);
+
+      let userFriendlyMessage = "Sorry, something went wrong.";
+      if (errorMessage.includes("rate_limited") || errorMessage.includes("Too many requests")) {
+        userFriendlyMessage = "I'm receiving too many requests right now. Please wait a moment and try again.";
+      } else if (errorMessage.includes("embedding") || errorMessage.includes("process")) {
+        userFriendlyMessage = "I'm having trouble understanding your question. Please try rephrasing it.";
+      } else if (errorMessage.includes("unavailable")) {
+        userFriendlyMessage = "The service is temporarily unavailable. Please try again in a few minutes.";
+      }
+
+      setMessages((m) => [...m, { role: "assistant", content: userFriendlyMessage }]);
     } finally {
       setLoading(false);
     }
@@ -249,6 +273,11 @@ export function InlineChat() {
                   key={s}
                   className="text-left text-sm sm:text-base rounded-2xl border border-dashed border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-950 transition self-end max-w-[80%]"
                   onClick={() => {
+                    // Validate suggestion before sending
+                    if (typeof s !== 'string' || s.length === 0 || s.length > 1000) {
+                      console.warn("[inline-chat] Invalid suggestion clicked");
+                      return;
+                    }
                     console.info("[inline-chat] suggestion_click", { suggestion: s });
                     setSuggestions([]);
                     send(s);
@@ -274,17 +303,36 @@ export function InlineChat() {
             className="flex items-center gap-2"
           >
             <div className="relative flex-1">
-              <input
-                ref={inputRef}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 dark:border-gray-800 bg-transparent pl-4 pr-3 py-3 text-sm sm:text-base focus:outline-none placeholder:text-gray-400"
-                data-cursor-intent="text"
-                placeholder="Ask me anything about me, my projects, or posts"
-                maxLength={1000}
-                aria-label="Ask a question"
-                autoFocus
-              />
+                          <input
+              ref={inputRef}
+              value={input}
+              onChange={(e) => {
+                const value = e.target.value;
+                // Sanitize input - remove potentially dangerous characters
+                const sanitized = value.replace(/[<>'"&]/g, '');
+                if (sanitized !== value) {
+                  console.warn('[chat] Potentially dangerous characters removed from input');
+                }
+                setInput(sanitized);
+              }}
+              onKeyDown={(e) => {
+                // Prevent common attack vectors
+                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                  e.preventDefault();
+                  console.warn('[chat] Multi-line input attempt blocked');
+                  return;
+                }
+              }}
+              className="w-full rounded-lg border border-gray-200 dark:border-gray-800 bg-transparent pl-4 pr-3 py-3 text-sm sm:text-base focus:outline-none placeholder:text-gray-400"
+              data-cursor-intent="text"
+              placeholder="Ask me anything about me, my projects, or posts"
+              maxLength={1000}
+              minLength={1}
+              required
+              aria-label="Ask a question"
+              autoFocus
+              pattern=".*\S.*"
+            />
               
             </div>
             <button

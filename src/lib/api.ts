@@ -8,14 +8,48 @@ import { join } from "path";
 const postsDirectory = join(process.cwd(), "_posts");
 const projectsDirectory = join(process.cwd(), "_projects");
 
+// Cache for file system operations to improve performance
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+}
+
+const postsCache = new Map<string, CacheEntry<Post>>();
+const projectsCache = new Map<string, CacheEntry<Project>>();
+const slugsCache = new Map<string, CacheEntry<string[]>>();
+const CACHE_TTL = 30 * 1000; // 30 seconds for file-based cache
+
 export function getPostSlugs() {
-  return fs.readdirSync(postsDirectory);
+  const cacheKey = 'posts';
+  const cached = slugsCache.get(cacheKey);
+
+  if (cached && (Date.now() - cached.timestamp) < CACHE_TTL) {
+    return cached.data;
+  }
+
+  try {
+    const slugs = fs.readdirSync(postsDirectory);
+    slugsCache.set(cacheKey, { data: slugs, timestamp: Date.now() });
+    return slugs;
+  } catch (error) {
+    console.error('[api] Error reading posts directory:', error);
+    return [];
+  }
 }
 
 export function getPostBySlug(slug: string) {
   const realSlug = slug.replace(/\.md$/, "");
+  const cacheKey = `post:${realSlug}`;
+  const cached = postsCache.get(cacheKey);
+
+  if (cached && (Date.now() - cached.timestamp) < CACHE_TTL) {
+    return cached.data;
+  }
+
   const fullPath = join(postsDirectory, `${realSlug}.md`);
-  const fileContents = fs.readFileSync(fullPath, "utf8");
+
+  try {
+    const fileContents = fs.readFileSync(fullPath, "utf8");
   const { data, content } = matter(fileContents);
 
   // Determine cover image with front matter override and content fallback
@@ -63,45 +97,86 @@ export function getPostBySlug(slug: string) {
       .trim();
     return text.slice(0, 180);
   })();
-  const resolvedExcerpt = frontmatterExcerpt.length > 0 ? frontmatterExcerpt : derivedExcerpt;
-  // No verbose console output during dev or build
+    const resolvedExcerpt = frontmatterExcerpt.length > 0 ? frontmatterExcerpt : derivedExcerpt;
+    // No verbose console output during dev or build
 
-  return {
-    ...(data as object),
-    slug: realSlug,
-    content,
-    excerpt: resolvedExcerpt,
-    // Ensure precedence: computed resolvedCoverImage takes priority over any raw data.coverImage
-    coverImage: resolvedCoverImage || undefined,
-  } as Post;
+    const post = {
+      ...(data as object),
+      slug: realSlug,
+      content,
+      excerpt: resolvedExcerpt,
+      // Ensure precedence: computed resolvedCoverImage takes priority over any raw data.coverImage
+      coverImage: resolvedCoverImage || undefined,
+    } as Post;
+
+    // Cache the result
+    postsCache.set(cacheKey, { data: post, timestamp: Date.now() });
+    return post;
+  } catch (error) {
+    console.error(`[api] Error reading post "${realSlug}":`, error);
+    return null;
+  }
 }
 
 export function getAllPosts(): Post[] {
   const slugs = getPostSlugs();
   const posts = slugs
     .map((slug) => getPostBySlug(slug))
+    .filter((post): post is Post => post !== null) // Filter out null values
     // sort posts by date in descending order
     .sort((post1, post2) => (post1.date > post2.date ? -1 : 1));
   return posts;
 }
 
 export function getProjectSlugs() {
-  return fs.readdirSync(projectsDirectory);
+  const cacheKey = 'projects';
+  const cached = slugsCache.get(cacheKey);
+
+  if (cached && (Date.now() - cached.timestamp) < CACHE_TTL) {
+    return cached.data;
+  }
+
+  try {
+    const slugs = fs.readdirSync(projectsDirectory);
+    slugsCache.set(cacheKey, { data: slugs, timestamp: Date.now() });
+    return slugs;
+  } catch (error) {
+    console.error('[api] Error reading projects directory:', error);
+    return [];
+  }
 }
 
 export function getProjectBySlug(slug: string) {
   const realSlug = slug.replace(/\.md$/, "");
-  const fullPath = join(projectsDirectory, `${realSlug}.md`);
-  const fileContents = fs.readFileSync(fullPath, "utf8");
-  const { data, content } = matter(fileContents);
+  const cacheKey = `project:${realSlug}`;
+  const cached = projectsCache.get(cacheKey);
 
-  return { ...data, slug: realSlug, content } as Project;
+  if (cached && (Date.now() - cached.timestamp) < CACHE_TTL) {
+    return cached.data;
+  }
+
+  const fullPath = join(projectsDirectory, `${realSlug}.md`);
+
+  try {
+    const fileContents = fs.readFileSync(fullPath, "utf8");
+    const { data, content } = matter(fileContents);
+
+    const project = { ...data, slug: realSlug, content } as Project;
+
+    // Cache the result
+    projectsCache.set(cacheKey, { data: project, timestamp: Date.now() });
+    return project;
+  } catch (error) {
+    console.error(`[api] Error reading project "${realSlug}":`, error);
+    return null;
+  }
 }
 
 export function getAllProjects(): Project[] {
   const slugs = getProjectSlugs();
   const projects = slugs
     .map((slug) => getProjectBySlug(slug))
+    .filter((project): project is Project => project !== null) // Filter out null values
     // sort projects by date in descending order
     .sort((project1, project2) => (project1.date > project2.date ? -1 : 1));
   return projects;

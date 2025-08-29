@@ -34,15 +34,45 @@ process.on('SIGTERM', () => {
 });
 
 const BodySchema = z.object({
-  message: z.string().min(1).max(PROMPT_CONFIG.chat.maxUserMessageLength),
-  focusUrls: z.array(z.string()).optional(),
+  message: z.string()
+    .min(1, "Message cannot be empty")
+    .max(PROMPT_CONFIG.chat.maxUserMessageLength, `Message too long (max ${PROMPT_CONFIG.chat.maxUserMessageLength} characters)`)
+    .refine((msg) => msg.trim().length > 0, "Message cannot be only whitespace")
+    .refine((msg) => msg.length <= 10000, "Message too long") // Additional safety limit
+    .refine((msg) => !/<script/i.test(msg), "Script tags not allowed")
+    .refine((msg) => !/<iframe/i.test(msg), "Iframe tags not allowed")
+    .refine((msg) => !/javascript:/i.test(msg), "JavaScript URLs not allowed"),
+  focusUrls: z.array(
+    z.string()
+      .refine((url) => {
+        // Allow absolute URLs (http/https) or relative URLs starting with /
+        if (url.startsWith('http://') || url.startsWith('https://')) {
+          try {
+            new URL(url);
+            return true;
+          } catch {
+            return false;
+          }
+        } else if (url.startsWith('/')) {
+          return true;
+        }
+        return false;
+      }, "URL must be absolute (http/https) or relative to site (starting with /)")
+      .refine((url) => !url.includes('..'), "Directory traversal not allowed")
+  ).max(10, "Too many focus URLs").optional(),
   history: z
     .array(
       z.object({
         role: z.enum(["user", "assistant"]),
-        content: z.string().min(1).max(PROMPT_CONFIG.chat.maxAssistantMessageLength),
+        content: z.string()
+          .min(1, "Content cannot be empty")
+          .max(PROMPT_CONFIG.chat.maxAssistantMessageLength, `Content too long (max ${PROMPT_CONFIG.chat.maxAssistantMessageLength} characters)`)
+          .refine((content) => content.trim().length > 0, "Content cannot be only whitespace")
+          .refine((content) => !/<script/i.test(content), "Script tags not allowed")
+          .refine((content) => !/<iframe/i.test(content), "Iframe tags not allowed"),
       })
     )
+    .max(PROMPT_CONFIG.chat.maxHistoryLength, `History too long (max ${PROMPT_CONFIG.chat.maxHistoryLength} messages)`)
     .optional(),
 });
 
@@ -147,21 +177,42 @@ export async function POST(req: NextRequest) {
     const body = await req.json().catch(() => null);
     const parsed = BodySchema.safeParse(body);
     if (!parsed.success) {
+      const errorDetails = parsed.error.errors.map(err =>
+        `${err.path.join('.')}: ${err.message}`
+      ).join(', ');
+
       logSecurityEvent({
         type: 'validation_failed',
         clientKey: sanitizeClientKey(clientKey),
-        details: `Validation failed: ${parsed.error.message}`,
+        details: `Validation failed: ${errorDetails}`,
         userAgent: req.headers.get('user-agent') || undefined,
         ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || undefined,
       });
-      return new Response("Bad Request", { status: 400 });
+
+      return new Response(JSON.stringify({
+        error: "validation_failed",
+        message: "Invalid request data",
+        details: errorDetails
+      }), {
+        status: 400,
+        headers: { "content-type": "application/json" }
+      });
     }
     const userMessage = parsed.data.message.trim();
     const focusUrls = (parsed.data.focusUrls || []).filter((u) => typeof u === 'string');
     const history = (parsed.data.history || []).slice(-PROMPT_CONFIG.chat.maxHistoryLength); // limit context size
 
     const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) return new Response("Server Misconfigured", { status: 500 });
+    if (!apiKey) {
+      console.error('[chat] OPENAI_API_KEY not configured');
+      return new Response(JSON.stringify({
+        error: "server_configuration",
+        message: "Service temporarily unavailable"
+      }), {
+        status: 503,
+        headers: { "content-type": "application/json" }
+      });
+    }
 
     const openai = new OpenAI({ apiKey });
 
@@ -184,13 +235,44 @@ export async function POST(req: NextRequest) {
       queryEmbedding = embed.data[0].embedding as unknown as number[];
     } catch (error) {
       // Embedding failure should return a controlled error
-      console.error("[chat] embedding failed:", error);
-      return new Response("Embedding error", { status: 502 });
+      const errorMessage = error instanceof Error ? error.message : 'Unknown embedding error';
+      console.error("[chat] embedding failed:", { error: errorMessage, userMessage: userMessage.substring(0, 100) });
+
+      return new Response(JSON.stringify({
+        error: "embedding_failed",
+        message: "Unable to process your query. Please try again."
+      }), {
+        status: 502,
+        headers: { "content-type": "application/json" }
+      });
     }
     const t2 = Date.now();
 
-    // Retrieve
-    const index = loadIndex();
+    // Retrieve with error handling
+    let index;
+    try {
+      index = loadIndex();
+      if (!index || index.length === 0) {
+        console.error('[chat] No documents available in index');
+        return new Response(JSON.stringify({
+          error: "no_content",
+          message: "Service is temporarily unavailable. Please try again later."
+        }), {
+          status: 503,
+          headers: { "content-type": "application/json" }
+        });
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown index loading error';
+      console.error('[chat] Failed to load index:', errorMessage);
+      return new Response(JSON.stringify({
+        error: "index_loading_failed",
+        message: "Unable to access content. Please try again."
+      }), {
+        status: 500,
+        headers: { "content-type": "application/json" }
+      });
+    }
     
     // Index loaded successfully
     
@@ -348,11 +430,52 @@ export async function POST(req: NextRequest) {
     } catch (err) {
       const status = (err as { status?: number }).status;
       const message = (err as { message?: string }).message || String(err);
-      console.error("[chat] chat.completions failed", { status, message, preferred });
-      return new Response("Model unavailable", { status: 502 });
+      console.error("[chat] chat.completions failed", {
+        status,
+        message,
+        preferred,
+        userMessage: userMessage.substring(0, 100)
+      });
+
+      let errorResponse = {
+        error: "model_unavailable",
+        message: "AI service is temporarily unavailable. Please try again."
+      };
+
+      // Handle specific OpenAI error codes
+      if (status === 429) {
+        errorResponse = {
+          error: "rate_limited",
+          message: "Too many requests. Please wait a moment and try again."
+        };
+      } else if (status === 401) {
+        errorResponse = {
+          error: "authentication_failed",
+          message: "Service configuration error. Please try again later."
+        };
+      }
+
+      return new Response(JSON.stringify(errorResponse), {
+        status: status || 502,
+        headers: { "content-type": "application/json" }
+      });
     }
     // (Unreachable: returns happen in both success paths above)
-  } catch {
-    return new Response("Internal Error", { status: 500 });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('[chat] Unexpected error:', {
+      error: errorMessage,
+      stack: error instanceof Error ? error.stack : undefined,
+      url: req.url,
+      method: req.method
+    });
+
+    return new Response(JSON.stringify({
+      error: "internal_error",
+      message: "An unexpected error occurred. Please try again."
+    }), {
+      status: 500,
+      headers: { "content-type": "application/json" }
+    });
   }
 }

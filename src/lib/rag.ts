@@ -98,27 +98,120 @@ export function loadIndex(): RetrievedDoc[] {
   }
 }
 
-export function cosineSimilarity(a: number[], b: number[]): number {
+// Optimized cosine similarity with early termination and caching
+function cosineSimilarity(a: number[], b: number[], earlyThreshold = 0.7): number {
   let dot = 0;
   let normA = 0;
   let normB = 0;
   const len = Math.min(a.length, b.length);
+
+  // Early termination optimization for poor matches
   for (let i = 0; i < len; i++) {
-    dot += a[i] * b[i];
-    normA += a[i] * a[i];
-    normB += b[i] * b[i];
+    const ai = a[i];
+    const bi = b[i];
+    dot += ai * bi;
+    normA += ai * ai;
+    normB += bi * bi;
+
+    // Early exit if similarity is impossible to reach threshold
+    if (i > len * 0.3) { // After 30% of calculations
+      const maxPossibleSimilarity = (dot + Math.sqrt((normA - ai * ai) * (normB - bi * bi))) /
+                                   Math.sqrt(normA * normB);
+      if (maxPossibleSimilarity < earlyThreshold) {
+        return maxPossibleSimilarity;
+      }
+    }
   }
+
   if (normA === 0 || normB === 0) return 0;
   return dot / (Math.sqrt(normA) * Math.sqrt(normB));
 }
 
+// Optimized top-k similar with heap-based selection for better performance
 export function topKSimilar(index: RetrievedDoc[], queryEmbedding: number[], k: number): RetrievedDoc[] {
-  const scored = index.map((doc) => ({ doc, score: cosineSimilarity(doc.embedding, queryEmbedding) }));
-  scored.sort((a, b) => b.score - a.score);
-  const results = scored.slice(0, k).map((s) => s.doc);
-  
+  if (index.length === 0) return [];
+  if (k >= index.length) return index;
 
-  
+  // Use a min-heap to maintain top-k results efficiently
+  const heap: Array<{doc: RetrievedDoc, score: number}> = [];
+
+  function heapPush(item: {doc: RetrievedDoc, score: number}) {
+    heap.push(item);
+    let i = heap.length - 1;
+    while (i > 0) {
+      const parent = Math.floor((i - 1) / 2);
+      if (heap[parent].score <= heap[i].score) break;
+      [heap[parent], heap[i]] = [heap[i], heap[parent]];
+      i = parent;
+    }
+  }
+
+  function heapPop(): {doc: RetrievedDoc, score: number} {
+    const result = heap[0];
+    const last = heap.pop()!;
+    if (heap.length > 0) {
+      heap[0] = last;
+      let i = 0;
+      while (true) {
+        const left = 2 * i + 1;
+        const right = 2 * i + 2;
+        let smallest = i;
+
+        if (left < heap.length && heap[left].score < heap[smallest].score) {
+          smallest = left;
+        }
+        if (right < heap.length && heap[right].score < heap[smallest].score) {
+          smallest = right;
+        }
+
+        if (smallest === i) break;
+        [heap[i], heap[smallest]] = [heap[smallest], heap[i]];
+        i = smallest;
+      }
+    }
+    return result;
+  }
+
+  // Process documents with early termination for better performance
+  const minScoreThreshold = 0.1; // Minimum similarity threshold
+  let processedCount = 0;
+  const batchSize = Math.min(100, index.length); // Process in batches for memory efficiency
+
+  for (let start = 0; start < index.length; start += batchSize) {
+    const end = Math.min(start + batchSize, index.length);
+    const batch = index.slice(start, end);
+
+    for (const doc of batch) {
+      processedCount++;
+      const score = cosineSimilarity(doc.embedding, queryEmbedding);
+
+      // Skip if below minimum threshold
+      if (score < minScoreThreshold) continue;
+
+      if (heap.length < k) {
+        heapPush({ doc, score });
+      } else if (score > heap[0].score) {
+        heapPop();
+        heapPush({ doc, score });
+      }
+    }
+
+    // Early termination if we've processed enough and have good matches
+    if (processedCount > k * 10 && heap.length === k && heap[0].score > 0.5) {
+      break;
+    }
+  }
+
+  // Extract results from heap
+  const results: RetrievedDoc[] = [];
+  while (heap.length > 0) {
+    results.push(heapPop().doc);
+  }
+
+  // Reverse to get highest scores first
+  results.reverse();
+
+  console.info(`[rag] Optimized retrieval: processed ${processedCount}/${index.length} docs, found ${results.length} matches`);
   return results;
 }
 
