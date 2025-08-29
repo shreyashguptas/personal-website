@@ -42,50 +42,156 @@ function buildSuggestions(period: TimeOfDay, returningVisitor: boolean): string[
   return unique.slice(0, 4);
 }
 
+// Enhanced URL validation for security
+function validateUrl(url: string): boolean {
+  try {
+    // Prevent dangerous protocols
+    const dangerousProtocols = ['javascript:', 'data:', 'vbscript:', 'file:', 'ftp:'];
+    const lowerUrl = url.toLowerCase();
+
+    for (const protocol of dangerousProtocols) {
+      if (lowerUrl.startsWith(protocol)) {
+        return false;
+      }
+    }
+
+    // Allow relative URLs or absolute HTTP/HTTPS URLs
+    if (url.startsWith('/') || url.startsWith('./') || url.startsWith('../')) {
+      return true;
+    }
+
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      const parsedUrl = new URL(url);
+      // Additional validation for absolute URLs
+      return parsedUrl.hostname.length > 0;
+    }
+
+    return false;
+  } catch {
+    return false;
+  }
+}
+
 function renderMarkdown(md: string) {
-  // Safe markdown renderer with proper XSS protection
-  // 1) Basic HTML escaping
-  const escaped = md.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-  // 2) Inline: links, bold, italic
+  // Enhanced XSS protection with comprehensive escaping
+  // 1) Comprehensive HTML escaping - handle all dangerous characters
+  const escaped = md
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;")
+    .replace(/\//g, "&#x2F;")
+    .replace(/\\/g, "&#x5C;")
+    .replace(/`/g, "&#x60;")
+    .replace(/=/g, "&#x3D;");
+
+  // 2) Enhanced link processing with strict validation
   const withLinks = escaped.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_m, text, url) => {
+    // Validate URL for security
+    if (!validateUrl(url)) {
+      console.warn('[markdown] Invalid or dangerous URL blocked:', url);
+      return text; // Return text only, no link
+    }
+
     try {
-      const u = new URL(url, typeof window !== "undefined" ? window.location.origin : "http://localhost");
-      return `<a href="${u.pathname}${u.search}${u.hash}" class="underline" target="_blank" rel="noopener noreferrer">${text}</a>`;
-    } catch {
+      let safeUrl: string;
+      if (url.startsWith('http://') || url.startsWith('https://')) {
+        // For absolute URLs, validate and use as-is
+        const parsedUrl = new URL(url);
+        safeUrl = parsedUrl.toString();
+      } else {
+        // For relative URLs, resolve against current origin
+        const baseUrl = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
+        const resolvedUrl = new URL(url, baseUrl);
+        safeUrl = resolvedUrl.pathname + resolvedUrl.search + resolvedUrl.hash;
+      }
+
+      // Escape text content to prevent XSS
+      const safeText = text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#x27;");
+
+      return `<a href="${safeUrl}" class="underline" target="_blank" rel="noopener noreferrer">${safeText}</a>`;
+    } catch (error) {
+      console.warn('[markdown] URL processing error:', error);
       return text;
     }
   });
-  const withBold = withLinks.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-  const withItal = withBold.replace(/\*([^*]+)\*/g, "<em>$1</em>");
 
-  // 3) Blocks: split on blank lines and render lists/paragraphs
+  // 3) Safe bold and italic processing
+  const withBold = withLinks.replace(/\*\*([^*]+)\*\*/g, (_m, content) => {
+    // Escape content inside formatting
+    const safeContent = content
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+    return `<strong>${safeContent}</strong>`;
+  });
+
+  const withItal = withBold.replace(/\*([^*]+)\*/g, (_m, content) => {
+    // Escape content inside formatting
+    const safeContent = content
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+    return `<em>${safeContent}</em>`;
+  });
+
+  // 4) Enhanced block processing with XSS protection
   const blocks = withItal.trim().split(/\n{2,}/);
   const htmlParts: string[] = [];
 
   for (const rawBlock of blocks) {
     const block = rawBlock.trim();
     if (!block) continue;
+
     const lines = block.split(/\n/);
     const isBulletList = lines.every((ln) => /^[-*]\s+/.test(ln.trim()));
 
     if (isBulletList) {
       const items = lines
         .map((ln) => ln.trim().replace(/^[-*]\s+/, ""))
-        .map((content) => `<li>${content}</li>`) // no <br/> inside list items
+        .map((content) => {
+          // Escape list item content
+          const safeContent = content
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+          return `<li>${safeContent}</li>`;
+        })
         .join("");
       htmlParts.push(`<ul class="list-disc pl-5 my-2 space-y-1">${items}</ul>`);
     } else {
       // Paragraph: collapse single newlines to spaces for tighter flow
       const text = block.replace(/\n+/g, " ").trim();
-      if (text) htmlParts.push(`<p class="mb-2 last:mb-0 leading-relaxed">${text}</p>`);
+      if (text) {
+        // Additional escaping for paragraph content
+        const safeText = text
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+        htmlParts.push(`<p class="mb-2 last:mb-0 leading-relaxed">${safeText}</p>`);
+      }
     }
   }
 
   const rawHtml = htmlParts.join("");
-  // Sanitize the HTML using DOMPurify to prevent XSS
+
+  // Enhanced DOMPurify configuration for maximum security
   return DOMPurify.sanitize(rawHtml, {
     ALLOWED_TAGS: ['p', 'strong', 'em', 'a', 'ul', 'li'],
-    ALLOWED_ATTR: ['href', 'target', 'rel', 'class']
+    ALLOWED_ATTR: ['href', 'target', 'rel', 'class'],
+    ALLOW_DATA_ATTR: false,
+    ALLOW_UNKNOWN_PROTOCOLS: false,
+    SANITIZE_DOM: true,
+    KEEP_CONTENT: true,
+    IN_PLACE: false,
+    FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed', 'form', 'input', 'meta', 'link'],
+    FORBID_ATTR: ['onclick', 'onload', 'onerror', 'onmouseover', 'onmouseout', 'onkeydown', 'onkeyup', 'onkeypress']
   });
 }
 
@@ -328,18 +434,72 @@ export function InlineChat() {
               value={input}
               onChange={(e) => {
                 const value = e.target.value;
-                // Sanitize input - remove potentially dangerous characters
-                const sanitized = value.replace(/[<>'"&]/g, '');
-                if (sanitized !== value) {
-                  console.warn('[chat] Potentially dangerous characters removed from input');
+
+                // Comprehensive input sanitization for security
+                let sanitized = value;
+
+                // Remove dangerous HTML/script injection characters
+                sanitized = sanitized.replace(/[<>'"&]/g, '');
+
+                // Remove dangerous protocol handlers
+                sanitized = sanitized.replace(/javascript:/gi, '');
+                sanitized = sanitized.replace(/data:/gi, '');
+                sanitized = sanitized.replace(/vbscript:/gi, '');
+                sanitized = sanitized.replace(/file:/gi, '');
+                sanitized = sanitized.replace(/ftp:/gi, '');
+
+                // Remove potentially dangerous characters that could be used in injections
+                sanitized = sanitized.replace(/`/g, '');
+                sanitized = sanitized.replace(/\\/g, '');
+                sanitized = sanitized.replace(/\0/g, ''); // Null bytes
+
+                // Remove control characters except for common whitespace
+                // Use character code filtering to avoid ESLint regex issues
+                sanitized = sanitized.split('').filter(char => {
+                  const code = char.charCodeAt(0);
+                  // Allow common whitespace (space, tab, line feed, carriage return)
+                  if (code === 32 || code === 9 || code === 10 || code === 13) {
+                    return true;
+                  }
+                  // Remove control characters (0-31 except whitespace, and DEL at 127)
+                  return code >= 32 && code !== 127;
+                }).join('');
+
+                // Trim excessive whitespace
+                sanitized = sanitized.trim();
+
+                // Prevent extremely long inputs (additional frontend validation)
+                if (sanitized.length > 1000) {
+                  sanitized = sanitized.substring(0, 1000);
                 }
+
+                // Log if sanitization occurred
+                if (sanitized !== value) {
+                  console.warn('[chat] Input sanitized - potentially dangerous content removed');
+                  console.warn('[chat] Original length:', value.length, 'Sanitized length:', sanitized.length);
+                }
+
                 setInput(sanitized);
               }}
               onKeyDown={(e) => {
-                // Prevent common attack vectors
-                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                // Enhanced protection against keyboard-based attacks
+                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey || e.shiftKey)) {
                   e.preventDefault();
                   console.warn('[chat] Multi-line input attempt blocked');
+                  return;
+                }
+
+                // Prevent potentially dangerous key combinations
+                const dangerousKeys = ['F12', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11'];
+                if (dangerousKeys.includes(e.key)) {
+                  // Allow normal function key usage but log it
+                  console.info('[chat] Function key pressed:', e.key);
+                  return;
+                }
+
+                // Prevent paste of dangerous content (handled in onChange)
+                if (e.ctrlKey && e.key === 'v') {
+                  // Allow normal paste but content will be sanitized in onChange
                   return;
                 }
               }}

@@ -39,7 +39,7 @@ function readMarkdownDirectory(dirPath: string, type: SourceType): RawDoc[] {
   const files = fs.readdirSync(absDir).filter((f) => f.endsWith(".md"));
 
   const docs: RawDoc[] = [];
-  console.log(`[build-embeddings] Processing ${type}s from ${dirPath}:`);
+  console.info(`[build-embeddings] Processing ${type}s from ${dirPath}:`);
   
   for (const file of files) {
     const fullPath = path.join(absDir, file);
@@ -55,12 +55,12 @@ function readMarkdownDirectory(dirPath: string, type: SourceType): RawDoc[] {
       const d = new Date(dateRaw);
       if (!isNaN(d.getTime())) {
         date = d.toISOString();
-        console.log(`  ✓ ${slug}: ${dateRaw} -> ${date}`);
+        console.info(`  ✓ ${slug}: ${dateRaw} -> ${date}`);
       } else {
-        console.log(`  ✗ ${slug}: Invalid date "${dateRaw}"`);
+        console.info(`  ✗ ${slug}: Invalid date "${dateRaw}"`);
       }
     } else {
-      console.log(`  ✗ ${slug}: No date found`);
+      console.info(`  ✗ ${slug}: No date found`);
     }
     const url = type === "post" ? `/posts/${slug}` : type === "project" ? `/projects#${slug}` : `/resume`;
     const content = String(parsed.content || "");
@@ -162,17 +162,17 @@ async function main() {
   const projects = readMarkdownDirectory("_projects", "project");
   const resume = readMarkdownDirectory("_resume", "resume");
 
-  console.log(`\n[build-embeddings] Summary:`);
-  console.log(`  Posts: ${posts.length}`);
-  console.log(`  Projects: ${projects.length}`);
-  console.log(`  Resume: ${resume.length}`);
-  
+  console.info(`\n[build-embeddings] Summary:`);
+  console.info(`  Posts: ${posts.length}`);
+  console.info(`  Projects: ${projects.length}`);
+  console.info(`  Resume: ${resume.length}`);
+
   // Log projects with dates for verification
   if (projects.length > 0) {
-    console.log(`\n[build-embeddings] Projects with dates:`);
+    console.info(`\n[build-embeddings] Projects with dates:`);
     const projectsWithDates = projects.filter(p => p.date).sort((a, b) => new Date(b.date!).getTime() - new Date(a.date!).getTime());
     projectsWithDates.forEach(p => {
-      console.log(`  ${p.date}: ${p.title}`);
+      console.info(`  ${p.date}: ${p.title}`);
     });
   }
 

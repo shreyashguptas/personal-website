@@ -4,7 +4,9 @@ This is a modern personal website and blog built with Next.js 15, featuring opti
 
 ## 🚀 Features
 
-- **Next.js 15.3.5** with App Router and React 19
+- **Next.js 15.5.0** with App Router and React 19.1.0
+- **AI-Powered Chat Interface**: Interactive Q&A system using RAG (Retrieval-Augmented Generation)
+- **Vector Search**: Semantic search across blog posts, projects, and resume content
 - **Fully optimized images** with automatic WebP/AVIF conversion
 - **Dark/Light theme** with system preference detection
 - **Static generation** for excellent performance
@@ -12,6 +14,7 @@ This is a modern personal website and blog built with Next.js 15, featuring opti
 - **TypeScript** for type safety
 - **Tailwind CSS** for styling
 - **Responsive design** with mobile-first approach
+- **Enterprise-grade security** with XSS protection and rate limiting
 
 ## 📁 Project Structure
 
@@ -76,13 +79,40 @@ The website features comprehensive image optimization:
 
 ## 🛠️ Tech Stack
 
-- **Framework**: Next.js 15.3.5
-- **Runtime**: React 19.1.0
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **Content**: Markdown with front matter
-- **Deployment**: Vercel
+### Core Framework
+- **Framework**: Next.js 15.5.0 with App Router
+- **Runtime**: React 19.1.0 with concurrent features
+- **Language**: TypeScript 5.5.2 with strict type checking
+- **Build Tool**: Turbopack for optimized development
+
+### AI & Search
+- **AI Provider**: OpenAI GPT-4o-mini and text-embedding-3-small
+- **Vector Search**: Custom RAG implementation with cosine similarity
+- **Content Processing**: Markdown parsing with front matter support
+- **Caching**: In-memory vector index with file watching
+
+### Security & Validation
+- **Input Validation**: Zod schemas with security filtering
+- **XSS Protection**: DOMPurify with custom URL validation
+- **Rate Limiting**: Upstash Redis with local fallback
+- **Authentication**: API key management (server-side only)
+
+### UI & Styling
+- **Styling**: Tailwind CSS 3.4.17 with custom design system
+- **Icons**: Lucide React for consistent iconography
+- **Theme**: Dark/light mode with system preference detection
+- **Accessibility**: ARIA labels and keyboard navigation
+
+### Content & Media
+- **Content**: Markdown with front matter (Gray Matter)
+- **Images**: Next.js Image component with WebP/AVIF optimization
+- **Rich Text**: Custom markdown processor with security features
+
+### Infrastructure
+- **Deployment**: Vercel with edge functions
 - **Analytics**: Vercel Web Analytics & Speed Insights
+- **Database**: File-based with JSON serialization
+- **Caching**: Memory-based with TTL expiration
 
 ## 📝 Content Management
 
@@ -107,15 +137,19 @@ Notes:
 
 ### Scripts
 - `npm run dev` - Start development server with Turbopack
-- `npm run build` - Build for production
+- `npm run build` - Build for production (includes vector index generation)
+- `npm run build:index` - Generate/update vector embeddings from content
+- `npm run prebuild` - Automatically run before build (embedding generation)
 - `npm start` - Start production server
-- `npx next lint` - Run ESLint checks
+- `npm run lint` - Run ESLint checks
 
 ### Key Components
+- **InlineChat**: AI-powered Q&A interface with real-time streaming
 - **ThemeSwitcher**: Automatic dark/light mode with system preference
 - **SiteNavigation**: Main navigation with responsive design
 - **Image Components**: Optimized image rendering across the site
 - **Analytics**: Integrated Vercel analytics and speed monitoring
+- **Security Layer**: Multi-tier input validation and XSS protection
 
 ## 🌐 Deployment
 

@@ -1,39 +1,113 @@
-## AI Chat (“Ask about me”) – Architecture, Ops, and How to Modify
+## AI Chat ("Ask about me") – Architecture, Security, and Operations
 
-This document explains the end‑to‑end AI chat feature: how it’s built, where to edit it, what data is indexed, and how to tune/operate it safely.
+This document explains the end-to-end AI chat feature: how it's built, where to edit it, what data is indexed, security measures, and how to tune/operate it safely.
 
 ### Overview
 
-- Inline chat section on the homepage that answers questions about Shreyash using only content on this site (posts + projects).  
-- Retrieval‑augmented generation (RAG) built at compile time; index is packaged with the server.  
-- Server API handles rate limiting, input validation, retrieval, prompting, and streaming; client never sees API keys.  
-- Guardrails prevent prompt injection and out‑of‑scope answers.
+- **Core Functionality**: Inline chat section on the homepage that answers questions about Shreyash using only content on this site (posts + projects + resume).
+- **Architecture**: Retrieval-augmented generation (RAG) built at compile time; vector index is packaged with the server for optimal performance.
+- **Security Model**: Multi-layered security with comprehensive input validation, XSS protection, rate limiting, and same-origin enforcement.
+- **Response Flow**: Server API handles rate limiting, input validation, retrieval, prompting, and streaming; client never sees API keys.
+- **Safety Features**: Multiple guardrails prevent prompt injection, XSS attacks, and out-of-scope answers with structured error handling.
 
 ### Key Files and Responsibilities
 
-- `scripts/build-embeddings.ts`  
-  Build‑time indexer. Reads `_posts` and `_projects`, normalizes and chunks text, enriches with metadata, generates embeddings, and writes `src/data/vector-index.json`.
+#### Core Components
 
-- `src/lib/rag.ts`  
-  RAG utilities: load vector index, cosine similarity, top‑K retrieval, lexical fallback, earliest‑by‑date selection for “first blog/post” questions, and context construction.
+- **`scripts/build-embeddings.ts`**
+  Build-time indexer that processes content from `_posts`, `_projects`, and `_resume` directories.
+  - Normalizes and chunks markdown content
+  - Generates embeddings using OpenAI's `text-embedding-3-small` model
+  - Creates vector index stored in `src/data/vector-index.json`
+  - Handles metadata extraction (dates, technologies, project URLs)
 
-- `src/lib/rateLimit.ts`  
-  10 requests per 5 minutes per IP+UA via Upstash Redis if configured; local in‑memory fallback for dev.
+- **`src/lib/rag.ts`**
+  Retrieval-Augmented Generation utilities:
+  - Vector index loading with caching and file watching
+  - Optimized cosine similarity calculations with early termination
+  - Top-K retrieval with heap-based selection for performance
+  - Lexical fallback for keyword-based matching
+  - Intent detection (latest projects/posts, earliest content, technology queries)
+  - Context building with configurable size limits
+  - Memory-efficient caching with TTL and size limits
 
-- `src/app/api/chat/route.ts`  
-  Secure chat API. Validates input, enforces same‑origin, applies rate limit, computes query embeddings, retrieves context, calls OpenAI, and streams the response.
+- **`src/lib/rateLimit.ts`**
+  Multi-tier rate limiting system:
+  - **Production**: Upstash Redis with sliding window (10 requests per 2 minutes)
+  - **Development**: Local in-memory fallback with same limits
+  - Client identification via IP + User-Agent combination
+  - Automatic fallback handling and error recovery
+  - Rate limit violation logging and monitoring
 
-- `src/app/_components/inline-chat.tsx`  
-  The chat UI. Sends user messages to `/api/chat`, streams the server response, renders safe markdown (links, lists, emphasis), and maintains lightweight conversation focus.
+- **`src/lib/security.ts`**
+  Security monitoring and logging:
+  - Structured security event logging
+  - Client key sanitization for privacy
+  - Suspicious request detection
+  - Security event types: rate_limit, cross_origin, validation_failed, etc.
 
-- `.gitignore`  
-  Ignores `src/data/vector-index.json` (generated at build).
+- **`src/lib/prompts.ts`**
+  Centralized prompt configuration:
+  - System prompt with grounding rules and response guidelines
+  - Model selection (currently `gpt-4o-mini`)
+  - Configurable parameters (temperature, max tokens, context sizes)
+  - Retrieval settings (results count, context size per query type)
+
+#### API Layer
+
+- **`src/app/api/chat/route.ts`**
+  Main chat API endpoint with comprehensive security:
+  - **Input Validation**: Zod schemas with length limits and content filtering
+  - **Security Checks**: Same-origin enforcement, content-type validation, size limits
+  - **Rate Limiting**: Integrated with Redis/local rate limiter
+  - **Embedding Generation**: Query embedding with timeout protection (30s)
+  - **Retrieval Logic**: Intelligent document selection based on query intent
+  - **Streaming Response**: Real-time token streaming with source attribution
+  - **Error Handling**: Structured error responses with user-friendly messages
+
+#### Frontend Components
+
+- **`src/app/_components/inline-chat.tsx`**
+  Secure client-side chat interface:
+  - **Input Sanitization**: Multi-layer XSS protection and injection prevention
+  - **Markdown Rendering**: Safe HTML generation with DOMPurify and custom validation
+  - **URL Validation**: Strict URL filtering preventing dangerous protocols
+  - **Real-time Streaming**: Token-by-token response rendering
+  - **Conversation Management**: History tracking and focus URL persistence
+  - **Security Features**: Control character filtering, protocol handler blocking
+  - **User Experience**: Auto-focus, keyboard shortcuts, loading states
+
+#### Configuration
+
+- **`.gitignore`**
+  Excludes sensitive files: `src/data/vector-index.json`, `.env` files
+- **`next.config.js`**
+  Build configuration with prebuild embedding generation
+- **`package.json`**
+  Scripts for development, building, and embedding generation
 
 ### Environment Variables
 
-- `OPENAI_API_KEY` (required): API key; never quoted in `.env` (use `OPENAI_API_KEY=sk-...`).  
-- `CHAT_MODEL` (optional): defaults to `gpt-4o-mini`
-- `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` (optional): enable production‑grade rate limiting.
+#### Required Variables
+- **`OPENAI_API_KEY`** (required): OpenAI API key for embeddings and chat completion. Never quote in `.env` file.
+  - Format: `OPENAI_API_KEY=sk-...`
+  - Used for: `text-embedding-3-small` (embeddings) and `gpt-4o-mini` (chat completion)
+
+#### Optional Variables
+- **`UPSTASH_REDIS_REST_URL`** & **`UPSTASH_REDIS_REST_TOKEN`**: Enable production-grade Redis rate limiting
+  - If not provided, falls back to local in-memory rate limiting
+  - Recommended for production deployments
+  - Enables sliding window rate limiting across multiple server instances
+
+#### Build-time Variables
+- **`NEXT_PUBLIC_SITE_URL`**: Optional site URL override (defaults to production/development URLs)
+  - Format: `https://yourdomain.com` (no trailing slash)
+  - Affects URL generation in responses and sitemap
+
+#### Security Considerations
+- All environment variables are validated at startup
+- API keys never exposed to client-side code
+- Rate limiting works independently of environment configuration
 
 ### Build and Run
 
@@ -47,21 +121,75 @@ npm run dev           # or: npm run build && npm start
 
 If `OPENAI_API_KEY` is not set, an empty index is written to allow local builds (answers will be limited).
 
-### Data Ingestion: What the Index Contains
+### Data Ingestion: Content Processing Pipeline
 
-From `_posts/*.md` (front matter + content):
-- `title`, `date` (parsed to ISO), `excerpt` (front matter), full normalized text.
+#### Content Sources
+The system processes content from three directories:
 
-From `_projects/*.md`:
-- `title`, `date` (ISO), `description` (summary), `technologies` (array), optional `projectUrl`, full normalized text.
+**`_posts/*.md`** (Blog Posts):
+- Front matter fields: `title`, `date`, `excerpt`, `author`
+- Content processing: Full markdown content with metadata extraction
+- Date parsing: ISO format conversion with validation
+- URL generation: `/posts/{slug}` format
 
-Index format (per chunk):
-- `{ id, type, title, slug, url, text, date?, summary?, technologies?, projectUrl?, embedding }`
+**`_projects/*.md`** (Projects):
+- Front matter fields: `title`, `date`, `description`, `technologies[]`, `projectUrl` (optional)
+- Content processing: Project descriptions and technical details
+- Technology tagging: Array of technologies for enhanced retrieval
+- URL generation: `/projects#{slug}` format (anchors to project sections)
 
-Chunking & normalization:
-- Code blocks and images removed; markdown links are preserved as text during embedding.  
-- First chunk of each doc is prefixed with a metadata header to prime retrieval for time/title/tech queries:
-  - `Type`, `Title`, `Date`, `Summary`, `Technologies`, `ProjectURL`.
+**`_resume/*.md`** (Resume):
+- Front matter fields: `lastUpdated` (optional)
+- Content processing: Professional experience, skills, education
+- URL generation: `/resume` (single page)
+
+#### Vector Index Structure
+Each document is chunked and embedded with the following structure:
+
+```typescript
+interface RetrievedDoc {
+  id: string;              // Unique identifier: "{type}:{slug}:{chunkIndex}"
+  type: "post" | "project" | "resume";
+  title: string;           // Document title
+  slug: string;            // URL slug
+  url: string;             // Full URL path
+  text: string;            // Chunked and normalized content
+  embedding: number[];     // 1536-dimensional vector (text-embedding-3-small)
+  date?: string;           // ISO date string
+  lastUpdated?: string;    // Resume update timestamp
+  summary?: string;        // Excerpt or description
+  technologies?: string[]; // Technology tags (projects only)
+  projectUrl?: string;     // External project URL (projects only)
+}
+```
+
+#### Text Processing & Chunking
+
+**Normalization Pipeline:**
+1. **Markdown Cleaning**: Remove code blocks, images, and complex formatting
+2. **Link Preservation**: Convert `[text](url)` to `text` for embedding
+3. **Content Chunking**: Split into 1200-character chunks with 200-character overlap
+4. **Metadata Enrichment**: First chunk prefixed with structured metadata
+
+**Metadata Header Format** (added to first chunk):
+```
+Type: {post|project|resume}
+Title: {title}
+Date: {ISO_date}
+Summary: {excerpt|description}
+Technologies: {tech1, tech2, ...}  // projects only
+ProjectURL: {external_url}        // projects only
+LastUpdated: {timestamp}          // resume only
+
+{content_chunk}
+```
+
+**Embedding Configuration:**
+- Model: `text-embedding-3-small` (1536 dimensions)
+- Batch size: 64 chunks per API call
+- Chunk size: 1200 characters
+- Overlap: 200 characters
+- Max content length: 16,000 characters per source
 
 Regenerate the index after adding/editing posts or projects:
 
@@ -69,42 +197,136 @@ Regenerate the index after adding/editing posts or projects:
 npm run build:index
 ```
 
-### Retrieval and Prompting Flow (Server)
+### Request Processing Flow (Server)
 
-1. Validate input with Zod: `{ message: string, focusUrls?: string[] }`.
-2. Same‑origin check: rejects cross‑site requests.
-3. Rate limit: 10 req / 5 min per IP+UA.
-4. Embed the user message (`text-embedding-3-small`).
-5. Retrieve:
-   - If `focusUrls` are provided and the follow‑up uses pronouns (e.g., “it/that/this/the post”), prioritize those docs.
-   - Else do `topKSimilar` by cosine similarity; if empty, fallback to `lexicalFallback` (keyword matches).
-   - If the question asks for “first/earliest blog/post,” inject the earliest post by date.
-6. Build context from top docs (caps total characters), capturing `title/url/date` and excerpt text.
-7. Prompt:
-   - System: context‑only rule; refuse speculation; list formatting guidance.
-   - User: `Context + Rules + Question`, with an explicit rule to add inline markdown links `[Title](URL)`.
-8. Stream the assistant text. At the end, append the source links in a control marker: `[[SOURCES]]<json>[[/SOURCES]]`.
+#### Phase 1: Security & Validation
+1. **Content-Type Validation**: Ensures `application/json` content type
+2. **Request Size Check**: 1MB maximum request size limit
+3. **Same-Origin Verification**: Validates request origin matches host header
+4. **Input Schema Validation**: Comprehensive Zod validation with security filters
+5. **Rate Limiting**: Sliding window rate limit (10 requests per 2 minutes per client)
 
-Response headers (useful for diagnostics): `x-latency-ms`, `x-embed-ms`, `x-retrieve-ms`, `x-model-used`, `x-index-size`, `x-retrieved`.
+#### Phase 2: Embedding & Retrieval
+6. **Query Embedding**: Generate vector embedding with 30-second timeout
+   - Model: `text-embedding-3-small`
+   - Pronoun-aware enrichment for follow-up questions
+   - Fallback handling for embedding failures
 
-### Frontend Behavior
+7. **Intelligent Document Retrieval**:
+   - **Pronoun Detection**: Identifies follow-up questions ("it", "that", "this", "the post")
+   - **Focus URL Priority**: Uses provided `focusUrls` for contextual continuity
+   - **Intent Recognition**: Detects specific query types:
+     - Latest projects/posts: `/latest\s+(project|thing|work)/i`
+     - Technology queries: Enhanced retrieval for tech-specific questions
+     - Earliest content: `/first\s+|earliest\s+/i`
+     - Content type filtering: Projects-only, posts-only, or resume queries
+     - Previous item requests: Chronological navigation
+   - **Vector Search**: Cosine similarity with optimized heap-based selection
+   - **Lexical Fallback**: Keyword matching when vector search yields no results
+   - **Context Assembly**: Up to 5 most relevant documents with deduplication
 
-- The inline chat sends `{ message, focusUrls }` to the API.
-- It streams tokens, renders safe markdown (links, bold/italic, lists), and updates a local `focusUrls` state from the appended `[[SOURCES]]` JSON so follow‑ups like “what was it about?” stick to the same document(s).
-- Two suggestion chips appear when the thread is empty; tapping a chip sends it immediately.
-- Blinking caret appears at the start of the input’s ghost text and disappears once typing begins.
+#### Phase 3: Context Building & Response Generation
+8. **Context Construction**:
+   - Technology queries: Larger context (5000 chars) for comprehensive coverage
+   - Standard queries: Optimized context (3500 chars)
+   - Metadata integration: Title, date, technologies, project URLs
+   - Source attribution tracking
 
-To customize UI copy:
-- Suggestions: edit `SUGGESTIONS` in `src/app/_components/inline-chat.tsx`.
-- Heading & placeholder: same file.
-- Section location: `src/app/page.tsx`.
+9. **Prompt Engineering**:
+   - **System Prompt**: Grounding rules, response guidelines, security constraints
+   - **User Prompt**: Structured format with context, rules, and question
+   - **Response Constraints**: Context-only answers, markdown formatting, link requirements
+
+10. **Streaming Response**:
+    - Real-time token streaming via ReadableStream
+    - Source attribution via `[[SOURCES]]` JSON markers
+    - Timeout protection (60 seconds)
+    - Error handling with graceful degradation
+
+#### Response Headers (Diagnostics)
+- `x-latency-ms`: Total request processing time
+- `x-embed-ms`: Embedding generation time
+- `x-retrieve-ms`: Document retrieval time
+- `x-model-used`: AI model identifier (`gpt-4o-mini`)
+- `x-index-size`: Total documents in vector index
+- `x-retrieved`: Number of documents retrieved for context
+
+### Frontend Behavior & Security
+
+#### User Interface Features
+- **Smart Suggestions**: Context-aware suggestion prompts based on time of day and visitor status
+- **Real-time Streaming**: Token-by-token response rendering with loading indicators
+- **Conversation Continuity**: Maintains focus URLs for contextual follow-up questions
+- **Auto-focus**: Intelligent input focusing with keyboard navigation
+- **Responsive Design**: Mobile-optimized chat interface
+
+#### Security Implementation
+- **Multi-layer Input Sanitization**:
+  - HTML entity encoding for dangerous characters
+  - Protocol handler blocking (javascript:, data:, vbscript:, etc.)
+  - Control character filtering with Unicode-safe implementation
+  - Length validation and excessive whitespace removal
+
+- **Safe Markdown Rendering**:
+  - Custom `validateUrl()` function preventing dangerous protocols
+  - Comprehensive HTML escaping for all text content
+  - DOMPurify integration with strict tag/attribute whitelisting
+  - XSS protection for links, formatting, and list items
+
+- **Client-side Validation**:
+  - Real-time input filtering preventing injection attempts
+  - Keyboard event monitoring for security threats
+  - Content validation before API submission
+
+#### Customization Options
+- **UI Text**: Edit suggestion prompts, placeholders, and messages in `src/app/_components/inline-chat.tsx`
+- **Security Rules**: Modify URL validation patterns and sanitization rules
+- **Styling**: Tailwind CSS classes for theme customization
+- **Component Location**: Main chat interface in `src/app/page.tsx`
 
 ### Security & Guardrails
 
-- API key never leaves the server; no client imports of OpenAI.
-- Same‑origin enforcement, Zod input validation, and strict system prompt.
-- Context‑only answers; unknowns are explicitly allowed (“I don’t know”).
-- Rate limiting via Upstash (recommended for production) or local fallback for dev.
+#### Multi-Layer Security Architecture
+
+**Server-Side Security:**
+- **API Key Protection**: OpenAI keys never exposed to client-side code
+- **Same-Origin Enforcement**: Cross-origin request validation and blocking
+- **Input Validation**: Comprehensive Zod schemas with security filtering
+- **Rate Limiting**: Sliding window limits (10 requests/2 minutes per client)
+- **Request Size Limits**: 1MB maximum request size protection
+- **Content-Type Validation**: Strict JSON-only acceptance
+- **Security Event Logging**: Structured monitoring of security violations
+
+**Content Security:**
+- **Context-Only Responses**: AI responses strictly limited to indexed content
+- **Prompt Injection Protection**: System prompt with override prevention
+- **URL Validation**: Strict filtering of dangerous protocols and paths
+- **Directory Traversal Prevention**: Path validation and sanitization
+
+**Client-Side Security:**
+- **Input Sanitization**: Multi-layer XSS prevention and injection blocking
+- **HTML Entity Encoding**: Comprehensive character escaping
+- **Protocol Handler Blocking**: Prevention of javascript:, data:, vbscript: URLs
+- **Control Character Filtering**: Unicode-safe removal of dangerous characters
+- **DOMPurify Integration**: Strict HTML sanitization with tag/attribute whitelisting
+
+**Operational Security:**
+- **Error Handling**: Structured error responses without information leakage
+- **Timeout Protection**: Request timeouts for embedding (30s) and chat completion (60s)
+- **Caching Security**: TTL-based cache invalidation and memory limits
+- **File System Security**: Safe path handling and access validation
+
+#### Security Monitoring
+- **Rate Limit Violations**: Logged with client identification
+- **Validation Failures**: Detailed error tracking and client key sanitization
+- **Cross-Origin Attempts**: Blocked requests with security event logging
+- **Suspicious Patterns**: Bot detection and automated request monitoring
+
+#### Compliance Features
+- **Data Minimization**: Only necessary data processing and storage
+- **Privacy Protection**: Client key sanitization in logs
+- **Content Grounding**: Responses limited to site content only
+- **Audit Trail**: Comprehensive security event logging
 
 ### How to Change the Prompt
 
@@ -120,45 +342,136 @@ To customize UI copy:
 
 ### Troubleshooting
 
-- “I don’t know.” frequently:
-  - Ensure `OPENAI_API_KEY` is set when building the index; rerun `npm run build:index`.
-  - Confirm `src/data/vector-index.json` is non‑empty and the server can read it.
-  - Check `x-index-size` and `x-retrieved` headers.
+#### Common Issues
 
-- 429 rate limited:
-  - You’ve exceeded 10 requests in 5 minutes; wait or configure Upstash and tune limits.
+**"I don't know" responses:**
+- **Empty Vector Index**: Run `npm run build:index` to regenerate embeddings
+- **Missing API Key**: Ensure `OPENAI_API_KEY` is set during build process
+- **Index File Issues**: Verify `src/data/vector-index.json` exists and is readable
+- **Diagnostics**: Check response headers (`x-index-size`, `x-retrieved`) for debugging
 
-- 403 Forbidden:
-  - Likely failed same‑origin check; ensure the Origin host matches the Host header (use the site domain in the frontend).
+**Rate Limiting (429 errors):**
+- **Local Rate Limit**: Wait 2 minutes for reset (10 requests per 2-minute window)
+- **Redis Configuration**: Verify `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`
+- **Client Identification**: Rate limits apply per IP+User-Agent combination
 
-- 500 or 502:
-  - Check server logs for embedding/model errors.  
-  - Verify model names: `CHAT_MODEL`, `CHAT_MODEL_FALLBACK`.
+**Cross-Origin Errors (403 Forbidden):**
+- **Development**: Ensure requests come from `http://localhost:3000`
+- **Production**: Verify requests originate from your deployed domain
+- **CORS Headers**: Check that Origin header matches Host header
 
-### Curl Test Examples
+**Server Errors (500/502):**
+- **API Key Issues**: Verify `OPENAI_API_KEY` is valid and has sufficient credits
+- **Model Availability**: Check OpenAI service status for `gpt-4o-mini` and `text-embedding-3-small`
+- **Timeout Issues**: Embedding requests timeout after 30s, chat completion after 60s
+- **Memory Issues**: Vector index loading may fail if system memory is constrained
+
+#### Performance Issues
+
+**Slow Responses:**
+- **Large Index**: Check `x-index-size` header; optimize content if > 1000 chunks
+- **Complex Queries**: Technology queries retrieve more results (up to 10 vs 5)
+- **Embedding Time**: Check `x-embed-ms` header; > 5s may indicate API issues
+
+**High Memory Usage:**
+- **Cache Issues**: Vector index cached with 5-minute TTL and 50MB limit
+- **Large Content**: Individual documents limited to 16,000 characters
+- **Chunk Overlap**: 200-character overlap between chunks for context continuity
+
+### Testing & Development
+
+#### API Testing Examples
 
 ```bash
-# Ask a question
-curl -s -X POST http://localhost:3000/api/chat \
-  -H 'content-type: application/json' \
-  --data '{"message":"What projects has Shreyash built?"}'
+# Basic question about projects
+curl -X POST http://localhost:3000/api/chat \
+  -H 'Content-Type: application/json' \
+  -d '{"message":"What machine learning projects has Shreyash worked on?"}'
 
-# Force a follow-up that sticks to prior sources
-curl -s -X POST http://localhost:3000/api/chat \
-  -H 'content-type: application/json' \
-  --data '{"message":"What was it about?","focusUrls":["/posts/the-power-of-iteration-lessons-from-kindergartners-and-building-websites"]}'
+# Technology-specific query (retrieves more results)
+curl -X POST http://localhost:3000/api/chat \
+  -H 'Content-Type: application/json' \
+  -d '{"message":"Tell me about React projects"}'
+
+# Follow-up question with context
+curl -X POST http://localhost:3000/api/chat \
+  -H 'Content-Type: application/json' \
+  -d '{"message":"What was it about?","focusUrls":["/projects#captcha-recognition-using-crnn"]}'
+
+# Latest content query
+curl -X POST http://localhost:3000/api/chat \
+  -H 'Content-Type: application/json' \
+  -d '{"message":"What is the latest project you worked on?"}'
+
+# Resume/career information
+curl -X POST http://localhost:3000/api/chat \
+  -H 'Content-Type: application/json' \
+  -d '{"message":"Tell me about your work experience"}'
 ```
 
-### Deployment Notes
+#### Response Headers for Debugging
 
-- `src/data/vector-index.json` is ignored by git and generated during CI/CD. Ensure `OPENAI_API_KEY` is present at build time.
-- Keep `export const runtime = 'nodejs'` in the API route since the server reads from the filesystem.
-- Use HTTPS in production so the same‑origin check aligns with your deployed domain.
+```bash
+curl -v -X POST http://localhost:3000/api/chat \
+  -H 'Content-Type: application/json' \
+  -d '{"message":"Hello"}' 2>&1 | grep "x-"
+```
 
-### Future Enhancements (Optional)
+Expected headers:
+```
+x-latency-ms: 1250
+x-embed-ms: 450
+x-retrieve-ms: 150
+x-model-used: gpt-4o-mini
+x-index-size: 125
+x-retrieved: 5
+```
 
-- Move index to a managed vector DB (pgvector/Pinecone/Turso) for frequent content updates.  
-- Add multi‑turn server‑side memory keyed by a conversation id.  
-- Deep links/anchors for specific project cards on `/projects` to improve link targets.
+### Deployment & Production
+
+#### Build Configuration
+- **Prebuild Process**: `npm run build:index` generates vector embeddings before main build
+- **Runtime Requirement**: `export const runtime = 'nodejs'` required for file system access
+- **Index Storage**: `src/data/vector-index.json` excluded from git (generated at build time)
+
+#### Environment Setup
+```bash
+# Required
+OPENAI_API_KEY=sk-...
+
+# Optional (recommended for production)
+UPSTASH_REDIS_REST_URL=https://...
+UPSTASH_REDIS_REST_TOKEN=...
+
+# Optional (for custom domain)
+NEXT_PUBLIC_SITE_URL=https://yourdomain.com
+```
+
+#### Production Security
+- **HTTPS Enforcement**: Required for proper same-origin validation
+- **Domain Verification**: Ensure requests originate from your deployed domain
+- **Rate Limiting**: Configure Redis for production-scale rate limiting
+- **Monitoring**: Implement logging for security events and performance metrics
+
+#### Performance Optimization
+- **Index Size**: Monitor `x-index-size` header; optimize content for < 1000 chunks
+- **Memory Usage**: Vector cache limited to 50MB with 5-minute TTL
+- **Request Timeouts**: 30s for embeddings, 60s for chat completion
+- **Batch Processing**: Embeddings processed in batches of 64 for efficiency
+
+### Architecture Evolution
+
+#### Current Limitations
+- **File-based Index**: Requires rebuild for content updates
+- **Memory Constraints**: 50MB cache limit may not scale indefinitely
+- **Single-turn Focus**: Limited conversation continuity across sessions
+
+#### Future Enhancements
+- **Vector Database**: Migrate to pgvector/Pinecone for dynamic content updates
+- **Conversation Memory**: Server-side session management for multi-turn conversations
+- **Index Optimization**: Incremental updates instead of full rebuilds
+- **Advanced Retrieval**: Hybrid search combining vector and keyword methods
+- **Analytics Integration**: Usage tracking and performance monitoring
+- **Content Moderation**: Additional safety filters for user-generated content
 
 
