@@ -4,8 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import DOMPurify from "dompurify";
 
-type Message = { role: "system" | "user" | "assistant"; content: string };
+// Constants
+const MAX_MESSAGE_LENGTH = 1000;
+const BUFFER_DISPLAY_THRESHOLD = 20;
+const MAX_BUFFER_DISPLAY_LENGTH = 15;
 
+// Types
+type Message = { role: "system" | "user" | "assistant"; content: string };
 type TimeOfDay = "Morning" | "Afternoon" | "Evening";
 
 function getTimeOfDay(date: Date = new Date()): TimeOfDay {
@@ -73,78 +78,49 @@ function validateUrl(url: string): boolean {
 }
 
 function renderMarkdown(md: string) {
-  // Enhanced XSS protection with comprehensive escaping
-  // 1) Comprehensive HTML escaping - handle all dangerous characters
-  const escaped = md
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#x27;")
-    .replace(/\//g, "&#x2F;")
-    .replace(/\\/g, "&#x5C;")
-    .replace(/`/g, "&#x60;")
-    .replace(/=/g, "&#x3D;");
+  // Shared sanitize configuration
+  const allowConfig = {
+    ALLOWED_TAGS: ['p', 'strong', 'em', 'a', 'ul', 'li'],
+    ALLOWED_ATTR: ['href', 'target', 'rel', 'class'],
+    ALLOW_DATA_ATTR: false,
+    ALLOW_UNKNOWN_PROTOCOLS: false,
+    SANITIZE_DOM: true,
+    KEEP_CONTENT: true,
+    IN_PLACE: false,
+  };
 
-  // 2) Enhanced link processing with strict validation
-  const withLinks = escaped.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_m, text, url) => {
-    // Validate URL for security
-    if (!validateUrl(url)) {
-      console.warn('[markdown] Invalid or dangerous URL blocked:', url);
-      return text; // Return text only, no link
+  // 1) Decode HTML entities (so &lt;a&gt; becomes <a>)
+  let content = md;
+  try {
+    if (typeof window !== 'undefined') {
+      const ta = document.createElement('textarea');
+      ta.innerHTML = content;
+      content = ta.value;
     }
+  } catch {}
 
+  // 2) Convert markdown [text](url) to anchors (with validation)
+  content = content.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_m, text, url) => {
+    if (!validateUrl(url)) return text;
     try {
       let safeUrl: string;
       if (url.startsWith('http://') || url.startsWith('https://')) {
-        // For absolute URLs, validate and use as-is
-        const parsedUrl = new URL(url);
-        safeUrl = parsedUrl.toString();
+        safeUrl = new URL(url).toString();
       } else {
-        // For relative URLs, resolve against current origin
-        const baseUrl = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
-        const resolvedUrl = new URL(url, baseUrl);
-        safeUrl = resolvedUrl.pathname + resolvedUrl.search + resolvedUrl.hash;
+        const base = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
+        const resolved = new URL(url, base);
+        safeUrl = resolved.pathname + resolved.search + resolved.hash;
       }
-
-      // Escape text content to prevent XSS
-      const safeText = text
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#x27;");
-
-      return `<a href="${safeUrl}" class="underline" target="_blank" rel="noopener noreferrer">${safeText}</a>`;
-    } catch (error) {
-      console.warn('[markdown] URL processing error:', error);
+      const safeText = String(text).replace(/"/g, '&quot;');
+      return `<a href="${safeUrl}" class="underline hover:no-underline" target="_blank" rel="noopener noreferrer">${safeText}</a>`;
+    } catch {
       return text;
     }
   });
 
-  // 3) Safe bold and italic processing
-  const withBold = withLinks.replace(/\*\*([^*]+)\*\*/g, (_m, content) => {
-    // Escape content inside formatting
-    const safeContent = content
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
-    return `<strong>${safeContent}</strong>`;
-  });
-
-  const withItal = withBold.replace(/\*([^*]+)\*/g, (_m, content) => {
-    // Escape content inside formatting
-    const safeContent = content
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
-    return `<em>${safeContent}</em>`;
-  });
-
-  // 4) Enhanced block processing with XSS protection
-  const blocks = withItal.trim().split(/\n{2,}/);
+  // 3) Block wrapping without re-escaping (DOMPurify will sanitize)
+  const blocks = content.trim().split(/\n{2,}/);
   const htmlParts: string[] = [];
-
   for (const rawBlock of blocks) {
     const block = rawBlock.trim();
     if (!block) continue;
@@ -154,52 +130,25 @@ function renderMarkdown(md: string) {
 
     if (isBulletList) {
       const items = lines
-        .map((ln) => ln.trim().replace(/^[-*]\s+/, ""))
-        .map((content) => {
-          // Escape list item content
-          const safeContent = content
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;");
-          return `<li>${safeContent}</li>`;
-        })
-        .join("");
+        .map((ln) => ln.trim().replace(/^[-*]\s+/, ''))
+        .map((item) => `<li>${item}</li>`) // allow links inside list items
+        .join('');
       htmlParts.push(`<ul class="list-disc pl-5 my-2 space-y-1">${items}</ul>`);
     } else {
-      // Paragraph: collapse single newlines to spaces for tighter flow
-      const text = block.replace(/\n+/g, " ").trim();
-      if (text) {
-        // Additional escaping for paragraph content
-        const safeText = text
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;");
-        htmlParts.push(`<p class="mb-2 last:mb-0 leading-relaxed">${safeText}</p>`);
-      }
+      const text = block.replace(/\n+/g, ' ').trim();
+      if (text) htmlParts.push(`<p class="mb-2 last:mb-0 leading-relaxed">${text}</p>`);
     }
   }
 
-  const rawHtml = htmlParts.join("");
-
-  // Enhanced DOMPurify configuration for maximum security
-  return DOMPurify.sanitize(rawHtml, {
-    ALLOWED_TAGS: ['p', 'strong', 'em', 'a', 'ul', 'li'],
-    ALLOWED_ATTR: ['href', 'target', 'rel', 'class'],
-    ALLOW_DATA_ATTR: false,
-    ALLOW_UNKNOWN_PROTOCOLS: false,
-    SANITIZE_DOM: true,
-    KEEP_CONTENT: true,
-    IN_PLACE: false,
-    FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed', 'form', 'input', 'meta', 'link'],
-    FORBID_ATTR: ['onclick', 'onload', 'onerror', 'onmouseover', 'onmouseout', 'onkeydown', 'onkeyup', 'onkeypress']
-  });
+  const rawHtml = htmlParts.join('');
+  return DOMPurify.sanitize(rawHtml, allowConfig);
 }
 
 export function InlineChat() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [, setSources] = useState<{ title: string; url: string }[]>([]);
+
   const [focusUrls, setFocusUrls] = useState<string[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -242,7 +191,6 @@ export function InlineChat() {
     setInput("");
     setSuggestions([]); // Clear suggestions when any message is sent
     setLoading(true);
-    setSources([]);
     try {
       const history = messages
         .filter((m) => m.role === "user" || m.role === "assistant")
@@ -287,12 +235,15 @@ export function InlineChat() {
       if (!res.body) throw new Error("No response body");
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
-      let assistantText = "";
+      let assistantText = "";      let buffer = ""; // Buffer to accumulate chunks before displaying
+
       while (true) {
         const { value, done } = await reader.read();
         if (done) break;
         const chunk = decoder.decode(value);
         const markerStart = chunk.indexOf("[[SOURCES]]");
+
+        let textToProcess = "";
         if (markerStart >= 0) {
           const jsonStart = markerStart + "[[SOURCES]]".length;
           const markerEnd = chunk.indexOf("[[/SOURCES]]", jsonStart);
@@ -300,7 +251,6 @@ export function InlineChat() {
             const jsonPayload = chunk.slice(jsonStart, markerEnd);
             try {
               const parsed = JSON.parse(jsonPayload) as Array<{ title: string; url: string }>;
-              setSources(parsed);
               const urls: string[] = Array.isArray(parsed) ? parsed.map((s) => s.url).filter(Boolean) : [];
               if (urls.length > 0) setFocusUrls(urls);
             } catch (err) {
@@ -308,10 +258,61 @@ export function InlineChat() {
               console.warn("[inline-chat] invalid sources payload", { err });
             }
           }
-          assistantText += chunk.slice(0, markerStart);
+          textToProcess = chunk.slice(0, markerStart);
         } else {
-          assistantText += chunk;
+          textToProcess = chunk;
         }
+
+        // Add the text to our buffer
+        buffer += textToProcess;
+
+        // Only display text when we have a complete word or sentence boundary
+        // Look for word boundaries (spaces, punctuation) to avoid cutting words
+        const lastSpaceIndex = buffer.lastIndexOf(' ');
+        const lastPeriodIndex = buffer.lastIndexOf('.');
+        const lastQuestionIndex = buffer.lastIndexOf('?');
+        const lastExclamationIndex = buffer.lastIndexOf('!');
+        const lastNewlineIndex = buffer.lastIndexOf('\n');
+
+        // Find the rightmost boundary
+        const boundaries = [lastSpaceIndex, lastPeriodIndex, lastQuestionIndex, lastExclamationIndex, lastNewlineIndex]
+          .filter(idx => idx >= 0);
+
+        let shouldDisplay = false;
+        let displayUpTo = -1;
+
+        if (boundaries.length > 0) {
+          // If we have boundaries, display up to the rightmost one
+          displayUpTo = Math.max(...boundaries);
+          shouldDisplay = true;
+        } else if (buffer.length > BUFFER_DISPLAY_THRESHOLD) {
+          // If no boundaries but buffer is getting long, display up to last complete word
+          // Look for the last space within the first N characters to avoid cutting words
+          const lastSpaceInFirstN = buffer.lastIndexOf(' ', MAX_BUFFER_DISPLAY_LENGTH);
+          if (lastSpaceInFirstN > 0) {
+            displayUpTo = lastSpaceInFirstN;
+            shouldDisplay = true;
+          }
+        }
+
+        if (shouldDisplay) {
+          const textToDisplay = buffer.slice(0, displayUpTo + 1);
+          assistantText += textToDisplay;
+          buffer = buffer.slice(displayUpTo + 1);
+
+          setMessages((m) => {
+            const last = m[m.length - 1];
+            if (last?.role === "assistant") {
+              return [...m.slice(0, -1), { role: "assistant", content: assistantText }];
+            }
+            return [...m, { role: "assistant", content: assistantText }];
+          });
+        }
+      }
+
+      // Display any remaining buffered text at the end
+      if (buffer.length > 0) {
+        assistantText += buffer;
         setMessages((m) => {
           const last = m[m.length - 1];
           if (last?.role === "assistant") {
@@ -400,7 +401,7 @@ export function InlineChat() {
                   className="text-left text-sm sm:text-base rounded-2xl border border-dashed border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-950 transition self-end max-w-[80%]"
                   onClick={() => {
                     // Validate suggestion before sending
-                    if (typeof s !== 'string' || s.length === 0 || s.length > 1000) {
+                    if (typeof s !== 'string' || s.length === 0 || s.length > MAX_MESSAGE_LENGTH) {
                       console.warn("[inline-chat] Invalid suggestion clicked");
                       return;
                     }
@@ -435,78 +436,37 @@ export function InlineChat() {
               onChange={(e) => {
                 const value = e.target.value;
 
-                // Comprehensive input sanitization for security
-                let sanitized = value;
+                // Basic security sanitization
+                let sanitized = value
+                  // Remove dangerous HTML characters and protocol handlers
+                  .replace(/[<>'"&]/g, '')
+                  .replace(/javascript:/gi, '')
+                  .replace(/data:/gi, '')
+                  .replace(/vbscript:/gi, '')
+                  .replace(/file:/gi, '')
+                  .replace(/ftp:/gi, '')
+                  // Remove potentially dangerous characters
+                  .replace(/[`\\]/g, '')
+                  .replace(/\0/g, ''); // Null bytes
 
-                // Remove dangerous HTML/script injection characters
-                sanitized = sanitized.replace(/[<>'"&]/g, '');
-
-                // Remove dangerous protocol handlers
-                sanitized = sanitized.replace(/javascript:/gi, '');
-                sanitized = sanitized.replace(/data:/gi, '');
-                sanitized = sanitized.replace(/vbscript:/gi, '');
-                sanitized = sanitized.replace(/file:/gi, '');
-                sanitized = sanitized.replace(/ftp:/gi, '');
-
-                // Remove potentially dangerous characters that could be used in injections
-                sanitized = sanitized.replace(/`/g, '');
-                sanitized = sanitized.replace(/\\/g, '');
-                sanitized = sanitized.replace(/\0/g, ''); // Null bytes
-
-                // Remove control characters except for common whitespace
-                // Use character code filtering to avoid ESLint regex issues
-                sanitized = sanitized.split('').filter(char => {
-                  const code = char.charCodeAt(0);
-                  // Allow common whitespace (space, tab, line feed, carriage return)
-                  if (code === 32 || code === 9 || code === 10 || code === 13) {
-                    return true;
-                  }
-                  // Remove control characters (0-31 except whitespace, and DEL at 127)
-                  return code >= 32 && code !== 127;
-                }).join('');
-
-                // Trim excessive whitespace
-                sanitized = sanitized.trim();
-
-                // Prevent extremely long inputs (additional frontend validation)
-                if (sanitized.length > 1000) {
-                  sanitized = sanitized.substring(0, 1000);
-                }
-
-                // Log if sanitization occurred
-                if (sanitized !== value) {
-                  console.warn('[chat] Input sanitized - potentially dangerous content removed');
-                  console.warn('[chat] Original length:', value.length, 'Sanitized length:', sanitized.length);
+                // Length limit
+                if (sanitized.length > MAX_MESSAGE_LENGTH) {
+                  sanitized = sanitized.substring(0, MAX_MESSAGE_LENGTH);
                 }
 
                 setInput(sanitized);
               }}
               onKeyDown={(e) => {
-                // Enhanced protection against keyboard-based attacks
+                // Allow normal typing - only prevent problematic combinations
                 if (e.key === 'Enter' && (e.ctrlKey || e.metaKey || e.shiftKey)) {
                   e.preventDefault();
-                  console.warn('[chat] Multi-line input attempt blocked');
-                  return;
-                }
-
-                // Prevent potentially dangerous key combinations
-                const dangerousKeys = ['F12', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11'];
-                if (dangerousKeys.includes(e.key)) {
-                  // Allow normal function key usage but log it
-                  console.info('[chat] Function key pressed:', e.key);
-                  return;
-                }
-
-                // Prevent paste of dangerous content (handled in onChange)
-                if (e.ctrlKey && e.key === 'v') {
-                  // Allow normal paste but content will be sanitized in onChange
                   return;
                 }
               }}
               className="w-full rounded-lg border border-gray-200 dark:border-gray-800 bg-transparent pl-4 pr-3 py-3 text-sm sm:text-base focus:outline-none placeholder:text-gray-400"
               data-cursor-intent="text"
               placeholder="Ask me anything about me, my projects, or posts"
-              maxLength={1000}
+              maxLength={MAX_MESSAGE_LENGTH}
               minLength={1}
               required
               aria-label="Ask a question"
