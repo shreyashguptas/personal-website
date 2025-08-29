@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import DOMPurify from "dompurify";
 
 type Message = { role: "system" | "user" | "assistant"; content: string };
 
@@ -42,14 +43,14 @@ function buildSuggestions(period: TimeOfDay, returningVisitor: boolean): string[
 }
 
 function renderMarkdown(md: string) {
-  // Safe, minimal markdown renderer with clean spacing for paragraphs and lists
-  // 1) Escape HTML
+  // Safe markdown renderer with proper XSS protection
+  // 1) Basic HTML escaping
   const escaped = md.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   // 2) Inline: links, bold, italic
   const withLinks = escaped.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_m, text, url) => {
     try {
       const u = new URL(url, typeof window !== "undefined" ? window.location.origin : "http://localhost");
-      return `<a href="${u.pathname}${u.search}${u.hash}" class="underline">${text}</a>`;
+      return `<a href="${u.pathname}${u.search}${u.hash}" class="underline" target="_blank" rel="noopener noreferrer">${text}</a>`;
     } catch {
       return text;
     }
@@ -80,7 +81,12 @@ function renderMarkdown(md: string) {
     }
   }
 
-  return htmlParts.join("");
+  const rawHtml = htmlParts.join("");
+  // Sanitize the HTML using DOMPurify to prevent XSS
+  return DOMPurify.sanitize(rawHtml, {
+    ALLOWED_TAGS: ['p', 'strong', 'em', 'a', 'ul', 'li'],
+    ALLOWED_ATTR: ['href', 'target', 'rel', 'class']
+  });
 }
 
 export function InlineChat() {

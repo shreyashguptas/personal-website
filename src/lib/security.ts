@@ -31,8 +31,7 @@ export function sanitizeClientKey(key: string): string {
 
 export function isSuspiciousRequest(req: Request): boolean {
   const userAgent = req.headers.get('user-agent') || '';
-  const origin = req.headers.get('origin') || '';
-  
+
   // Check for common bot/attack patterns
   const suspiciousPatterns = [
     /bot/i,
@@ -44,6 +43,6 @@ export function isSuspiciousRequest(req: Request): boolean {
     /python-requests/i,
     /go-http-client/i,
   ];
-  
+
   return suspiciousPatterns.some(pattern => pattern.test(userAgent));
 }

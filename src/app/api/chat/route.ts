@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import OpenAI from "openai";
 import { z } from "zod";
 import { getRateLimiter, localRateLimit } from "@/lib/rateLimit";
-import { logSecurityEvent, sanitizeClientKey, isSuspiciousRequest } from "@/lib/security";
+import { logSecurityEvent, sanitizeClientKey } from "@/lib/security";
 import {
   buildContext,
   lexicalFallback,
@@ -16,8 +16,22 @@ import {
   getResumeInfo,
 } from "@/lib/rag";
 import { SYSTEM_PROMPT, PROMPT_CONFIG } from "@/lib/prompts";
+import { cleanupCache } from "@/lib/rag";
 
 export const runtime = 'nodejs';
+
+// Cleanup cache on process termination
+process.on('SIGINT', () => {
+  console.info('[chat] Received SIGINT, cleaning up cache...');
+  cleanupCache();
+  process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+  console.info('[chat] Received SIGTERM, cleaning up cache...');
+  cleanupCache();
+  process.exit(0);
+});
 
 const BodySchema = z.object({
   message: z.string().min(1).max(PROMPT_CONFIG.chat.maxUserMessageLength),
@@ -166,7 +180,7 @@ export async function POST(req: NextRequest) {
         setTimeout(() => reject(new Error('Embedding timeout')), 30000)
       );
       
-      const embed = await Promise.race([embedPromise, timeoutPromise]) as any;
+      const embed = await Promise.race([embedPromise, timeoutPromise]) as OpenAI.Embeddings.CreateEmbeddingResponse;
       queryEmbedding = embed.data[0].embedding as unknown as number[];
     } catch (error) {
       // Embedding failure should return a controlled error
@@ -298,14 +312,13 @@ export async function POST(req: NextRequest) {
         setTimeout(() => reject(new Error('Chat completion timeout')), 60000)
       );
       
-      const response = await Promise.race([chatPromise, timeoutPromise]) as any;
+      const response = await Promise.race([chatPromise, timeoutPromise]) as unknown as AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>;
       const encoder = new TextEncoder();
-      type StreamChunk = { choices?: Array<{ delta?: { content?: string | null } }> };
       const stream = new ReadableStream<Uint8Array>({
         start(controller) {
           (async () => {
             try {
-              for await (const chunk of (response as AsyncIterable<StreamChunk>)) {
+              for await (const chunk of response) {
                 const choice = chunk.choices?.[0];
                 const delta = choice?.delta?.content ?? "";
                 if (delta) controller.enqueue(encoder.encode(delta));

@@ -15,18 +15,87 @@ export interface RetrievedDoc {
   projectUrl?: string;
 }
 
-let cachedIndex: RetrievedDoc[] | null = null;
+interface CacheEntry {
+  data: RetrievedDoc[];
+  timestamp: number;
+  fileSize: number;
+}
+
+// Cache configuration
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const MAX_MEMORY_USAGE = 50 * 1024 * 1024; // 50MB limit
+let cachedIndex: CacheEntry | null = null;
+let fileWatcher: fs.FSWatcher | null = null;
+
+
+
+function setupFileWatcher(filePath: string): void {
+  if (fileWatcher) return;
+
+  try {
+    fileWatcher = fs.watch(filePath, (eventType) => {
+      if (eventType === 'change') {
+        console.info('[rag] Vector index file changed, invalidating cache');
+        cachedIndex = null;
+      }
+    });
+  } catch (error) {
+    console.warn('[rag] Failed to setup file watcher:', error);
+  }
+}
 
 export function loadIndex(): RetrievedDoc[] {
-  if (cachedIndex) return cachedIndex;
   const p = path.join(process.cwd(), "src", "data", "vector-index.json");
+
+  // Check if file exists
   if (!fs.existsSync(p)) {
-    cachedIndex = [];
-    return cachedIndex;
+    cachedIndex = { data: [], timestamp: Date.now(), fileSize: 0 };
+    return cachedIndex.data;
   }
-  const raw = fs.readFileSync(p, "utf8");
-  cachedIndex = JSON.parse(raw) as RetrievedDoc[];
-  return cachedIndex;
+
+  // Check if we have a valid cache
+  if (cachedIndex) {
+    const now = Date.now();
+    const isExpired = (now - cachedIndex.timestamp) > CACHE_TTL;
+    const currentFileSize = fs.statSync(p).size;
+
+    // Invalidate cache if expired or file size changed
+    if (isExpired || cachedIndex.fileSize !== currentFileSize) {
+      console.info('[rag] Cache invalidated - expired or file changed');
+      cachedIndex = null;
+    } else {
+      return cachedIndex.data;
+    }
+  }
+
+  // Load fresh data
+  try {
+    const raw = fs.readFileSync(p, "utf8");
+    const data = JSON.parse(raw) as RetrievedDoc[];
+    const fileSize = fs.statSync(p).size;
+
+    // Check memory usage before caching
+    const estimatedSize = Buffer.byteLength(raw, 'utf8');
+    if (estimatedSize > MAX_MEMORY_USAGE) {
+      console.warn(`[rag] Vector index too large (${(estimatedSize / 1024 / 1024).toFixed(2)}MB), consider optimization`);
+    }
+
+    cachedIndex = {
+      data,
+      timestamp: Date.now(),
+      fileSize
+    };
+
+    // Setup file watcher for cache invalidation
+    setupFileWatcher(p);
+
+    console.info(`[rag] Loaded vector index: ${data.length} documents, ${(estimatedSize / 1024 / 1024).toFixed(2)}MB`);
+    return data;
+  } catch (error) {
+    console.error('[rag] Failed to load vector index:', error);
+    cachedIndex = { data: [], timestamp: Date.now(), fileSize: 0 };
+    return cachedIndex.data;
+  }
 }
 
 export function cosineSimilarity(a: number[], b: number[]): number {
@@ -230,5 +299,38 @@ export function getPreviousOfSameType(index: RetrievedDoc[], anchor: RetrievedDo
   const anchorTime = new Date(anchor.date as string).getTime();
   const older = reps.find((d) => new Date(d.date as string).getTime() < anchorTime);
   return older || null;
+}
+
+// Cleanup function to properly close file watcher
+export function cleanupCache(): void {
+  if (fileWatcher) {
+    fileWatcher.close();
+    fileWatcher = null;
+    console.info('[rag] Cache cleanup completed');
+  }
+  cachedIndex = null;
+}
+
+// Export cache statistics for monitoring
+export function getCacheStats(): {
+  isCached: boolean;
+  cacheAge?: number;
+  memoryUsage?: number;
+  documentCount?: number;
+} {
+  if (!cachedIndex) {
+    return { isCached: false };
+  }
+
+  const now = Date.now();
+  const jsonString = JSON.stringify(cachedIndex.data);
+  const memoryUsage = Buffer.byteLength(jsonString, 'utf8');
+
+  return {
+    isCached: true,
+    cacheAge: now - cachedIndex.timestamp,
+    memoryUsage,
+    documentCount: cachedIndex.data.length
+  };
 }
 
