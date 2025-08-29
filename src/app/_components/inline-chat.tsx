@@ -97,7 +97,10 @@ function renderMarkdown(md: string) {
       ta.innerHTML = content;
       content = ta.value;
     }
-  } catch {}
+  } catch {
+    // If decoding fails, fall back to original content
+    content = md;
+  }
 
   // 2) Convert markdown [text](url) to anchors (with validation)
   content = content.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_m, text, url) => {
