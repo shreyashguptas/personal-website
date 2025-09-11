@@ -1,9 +1,9 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
-// 10 requests per 2 minutes per unique client key
+// 20 requests per 2 minutes per unique client key (doubled)
 const WINDOW = "2 m";
-const LIMIT = 10;
+const LIMIT = 20;
 
 let ratelimit: Ratelimit | null = null;
 
