@@ -94,7 +94,19 @@ function renderMarkdown(md: string) {
     try {
       let safeUrl: string;
       if (url.startsWith('http://') || url.startsWith('https://')) {
-        safeUrl = new URL(url).toString();
+        const parsed = new URL(url);
+        // Normalize absolute URLs pointing to our own content to site-relative paths
+        const ownHosts = new Set([
+          'shreyashg.com',
+          'www.shreyashg.com',
+          'localhost',
+          'localhost:3000',
+        ]);
+        if (ownHosts.has(parsed.host) || ownHosts.has(parsed.hostname)) {
+          safeUrl = parsed.pathname + parsed.search + parsed.hash;
+        } else {
+          safeUrl = parsed.toString();
+        }
       } else {
         const base = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
         const resolved = new URL(url, base);

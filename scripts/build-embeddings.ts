@@ -1,6 +1,6 @@
 /*
   Build-time embeddings script.
-  - Reads markdown from `_posts` and `_projects`
+  - Reads markdown from `_posts`, `_projects`, and `_resume` (e.g., `about-me.md`)
   - Normalizes and chunks text
   - Generates embeddings using OpenAI `text-embedding-3-small`
   - Writes `src/data/vector-index.json`
@@ -166,6 +166,22 @@ async function main() {
   console.info(`  Posts: ${posts.length}`);
   console.info(`  Projects: ${projects.length}`);
   console.info(`  Resume: ${resume.length}`);
+
+  // Explicitly list resume sources to validate inclusion (e.g., about-me.md)
+  if (resume.length > 0) {
+    const bySlug = new Map<string, RawDoc[]>();
+    for (const r of resume) {
+      const list = bySlug.get(r.slug) || [];
+      list.push(r);
+      bySlug.set(r.slug, list);
+    }
+    console.info(`\n[build-embeddings] Resume sources:`);
+    for (const [slug, docs] of bySlug) {
+      // Prefer the first chunk which contains metadata
+      const first = docs.find(d => d.id.endsWith(":0")) || docs[0];
+      console.info(`  - ${slug} -> title="${first.title}" lastUpdated=${first.lastUpdated ?? "(none)"}`);
+    }
+  }
 
   // Log projects with dates for verification
   if (projects.length > 0) {
