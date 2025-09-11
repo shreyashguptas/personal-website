@@ -33,7 +33,7 @@ Output:
 // You can add more prompt configurations here in the future
 export const PROMPT_CONFIG = {
   maxTokens: 600,
-  temperature: 0,
+  temperature: 0.3,
   model: "gpt-4o-mini", // Single source of truth for model selection
   
   // Search and retrieval settings
