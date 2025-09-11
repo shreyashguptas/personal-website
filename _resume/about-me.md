@@ -33,3 +33,7 @@ This page is a concise, structured profile meant for humans and for the site's A
 - Cycling routes/goals and training notes
 - 3D printing projects and CAD files
 - Home lab architecture diagram and services catalog
+
+## My Contact Information
+- My email address is inbox@shreyashg.com
+- I live in the USA

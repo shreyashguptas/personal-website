@@ -95,16 +95,19 @@ function renderMarkdown(md: string) {
       let safeUrl: string;
       if (url.startsWith('http://') || url.startsWith('https://')) {
         const parsed = new URL(url);
-        // Normalize absolute URLs pointing to our own content to site-relative paths
-        const ownHosts = new Set([
-          'shreyashg.com',
-          'www.shreyashg.com',
-          'localhost',
-          'localhost:3000',
-        ]);
-        if (ownHosts.has(parsed.host) || ownHosts.has(parsed.hostname)) {
+        // Normalize absolute URLs that map to internal paths, regardless of hostname
+        const internalPathMatchers = [
+          /^\/resume(\b|$)/i,
+          /^\/posts\//i,
+          /^\/projects(\b|\/|#)/i,
+          /^\/blog(\b|\/)/i,
+        ];
+        const isInternalPath = internalPathMatchers.some((re) => re.test(parsed.pathname));
+
+        if (isInternalPath) {
           safeUrl = parsed.pathname + parsed.search + parsed.hash;
         } else {
+          // Otherwise, allow external absolute URLs as-is
           safeUrl = parsed.toString();
         }
       } else {
