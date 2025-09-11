@@ -20,27 +20,13 @@ function getTimeOfDay(date: Date = new Date()): TimeOfDay {
   return "Evening";
 }
 
-function buildSuggestions(period: TimeOfDay, returningVisitor: boolean): string[] {
+function buildSuggestions(_period: TimeOfDay, returningVisitor: boolean): string[] {
   const base: string[] = [
     "What was the latest blog you wrote about?",
-    "What's the latest project you've worked on?",
+    "What's the latest project you've worked on?"
   ];
-  const byTime: Record<TimeOfDay, string[]> = {
-    Morning: [
-      "Give me a quick overview to start my day.",
-      "Recommend one recent post to read this Morning.",
-    ],
-    Afternoon: [
-      "What problem are you currently exploring?",
-      "Show me a recent project update.",
-    ],
-    Evening: [
-      "Summarize a project I should explore tonight.",
-      "Recommend a short read from your blog.",
-    ],
-  };
   const returning = returningVisitor ? ["What changed since my last visit?"] : [];
-  const set = [...byTime[period], ...base, ...returning];
+  const set = [...base, ...returning];
   // De-dup while preserving order
   const seen = new Set<string>();
   const unique = set.filter((s) => (seen.has(s) ? false : (seen.add(s), true)));
@@ -468,7 +454,7 @@ export function InlineChat() {
               }}
               className="w-full rounded-lg border border-gray-200 dark:border-gray-800 bg-transparent pl-4 pr-3 py-3 text-sm sm:text-base focus:outline-none placeholder:text-gray-400"
               data-cursor-intent="text"
-              placeholder="Ask me anything about me, my projects, or posts"
+              placeholder="What would you like to know about me?"
               maxLength={MAX_MESSAGE_LENGTH}
               minLength={1}
               required
