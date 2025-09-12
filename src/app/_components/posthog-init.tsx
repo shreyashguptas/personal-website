@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import posthog from "posthog-js";
 import { usePathname } from "next/navigation";
+import { capture, AnalyticsEvent } from "@/lib/analytics";
 
 export function PosthogInit(): null {
   const pathname = usePathname();
@@ -27,12 +28,7 @@ export function PosthogInit(): null {
 
   // Capture page views on route change
   useEffect(() => {
-    try {
-      const ph = (window as unknown as { posthog?: typeof posthog }).posthog;
-      if (ph) ph.capture("$pageview");
-    } catch {
-      // noop analytics
-    }
+    capture(AnalyticsEvent.PageView);
   }, [pathname]);
 
   return null;
