@@ -20,12 +20,12 @@ function getTimeOfDay(date: Date = new Date()): TimeOfDay {
   return "Evening";
 }
 
-function buildSuggestions(_period: TimeOfDay, returningVisitor: boolean): string[] {
+function buildSuggestions(): string[] {
   const base: string[] = [
     "What was the latest blog you wrote about?",
     "What's the latest project you've worked on?"
   ];
-  const returning = returningVisitor ? ["What changed since my last visit?"] : [];
+  const returning: string[] = [];
   const set = [...base, ...returning];
   // De-dup while preserving order
   const seen = new Set<string>();
@@ -93,6 +93,18 @@ function renderMarkdown(md: string) {
     content = md;
   }
 
+  // Helper: apply basic inline markdown formatting (bold/italic) after links are handled
+  function applyInlineFormatting(input: string): string {
+    let out = input;
+    // Bold: **text** or __text__
+    out = out.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    out = out.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+    // Italic: *text* or _text_ (avoid bold which we already processed)
+    out = out.replace(/(^|[^*])\*([^*]+)\*(?!\*)/g, '$1<em>$2</em>');
+    out = out.replace(/(^|[^_])_([^_]+)_(?!_)/g, '$1<em>$2</em>');
+    return out;
+  }
+
   // 2) Convert markdown [text](url) to anchors (with validation)
   content = content.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_m, text, url) => {
     if (!validateUrl(url)) return text;
@@ -130,6 +142,9 @@ function renderMarkdown(md: string) {
     }
   });
 
+  // 2b) Apply inline formatting such as bold/italic after links are converted
+  content = applyInlineFormatting(content);
+
   // 3) Block wrapping without re-escaping (DOMPurify will sanitize)
   const blocks = content.trim().split(/\n{2,}/);
   const htmlParts: string[] = [];
@@ -143,11 +158,11 @@ function renderMarkdown(md: string) {
     if (isBulletList) {
       const items = lines
         .map((ln) => ln.trim().replace(/^[-*]\s+/, ''))
-        .map((item) => `<li>${item}</li>`) // allow links inside list items
+        .map((item) => `<li>${applyInlineFormatting(item)}</li>`) // allow inline formatting and links inside list items
         .join('');
       htmlParts.push(`<ul class="list-disc pl-5 my-2 space-y-1">${items}</ul>`);
     } else {
-      const text = block.replace(/\n+/g, ' ').trim();
+      const text = applyInlineFormatting(block.replace(/\n+/g, ' ').trim());
       if (text) htmlParts.push(`<p class="mb-2 last:mb-0 leading-relaxed">${text}</p>`);
     }
   }
@@ -191,7 +206,7 @@ export function InlineChat() {
       // best-effort only
     }
     setReturningVisitor(isReturning);
-    const built = buildSuggestions(period, isReturning);
+    const built = buildSuggestions();
     setSuggestions(built);
     console.info("[inline-chat] greeting_context", { period, returningVisitor: isReturning, suggestions: built });
   }, []);

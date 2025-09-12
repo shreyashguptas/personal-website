@@ -10,8 +10,19 @@ export function CustomCursor() {
   const [isDark, setIsDark] = useState(false);
   const [cursorMode, setCursorMode] = useState<CursorMode>("dot");
   const [isPointerArea, setIsPointerArea] = useState(false);
+  const [shouldRender, setShouldRender] = useState(true);
 
   useEffect(() => {
+    // Decide whether to render custom cursor:
+    // - Render when there is ANY fine pointer available (mouse/trackpad), including hybrid touch laptops/tablets
+    // - Do not render when only coarse pointers exist (touch-only phones)
+    try {
+      const hasFine = window.matchMedia && window.matchMedia('(any-pointer: fine)').matches;
+      setShouldRender(!!hasFine);
+    } catch {
+      setShouldRender(true); // safe default
+    }
+
     const updatePosition = (e: MouseEvent) => {
       setPosition({ x: e.clientX, y: e.clientY });
       setIsVisible(true);
@@ -50,18 +61,24 @@ export function CustomCursor() {
       attributeFilter: ['class']
     });
 
-    document.addEventListener("mousemove", updatePosition);
-    document.addEventListener("mouseenter", handleMouseEnter);
-    document.addEventListener("mouseleave", handleMouseLeave);
+    if (shouldRender) {
+      document.addEventListener("mousemove", updatePosition);
+      document.addEventListener("mouseenter", handleMouseEnter);
+      document.addEventListener("mouseleave", handleMouseLeave);
+    }
 
     return () => {
-      document.removeEventListener("mousemove", updatePosition);
-      document.removeEventListener("mouseenter", handleMouseEnter);
-      document.removeEventListener("mouseleave", handleMouseLeave);
+      if (shouldRender) {
+        document.removeEventListener("mousemove", updatePosition);
+        document.removeEventListener("mouseenter", handleMouseEnter);
+        document.removeEventListener("mouseleave", handleMouseLeave);
+      }
       observer.disconnect();
     };
-  }, []);
+  }, [shouldRender]);
 
+  // Don't render on touch-only devices
+  if (!shouldRender) return null;
   // Hide custom cursor entirely when hovering clickable areas to show system pointer
   if (!isVisible || isPointerArea) return null;
 

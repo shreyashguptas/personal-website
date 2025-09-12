@@ -2,24 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom cursor styles */
-body {
-  cursor: none;
+/* Custom cursor styles - only hide system cursor when a fine pointer exists */
+@media (any-pointer: fine) {
+  body { cursor: none; }
+  #__next { cursor: none; }
+  * { cursor: none; }
 }
 
-/* Ensure the custom cursor is visible */
-#__next {
-  cursor: none;
-}
-
-/* Hide system cursor globally; our CustomCursor handles modes */
-* {
-  cursor: none;
-}
-
-/* Allow system pointer for clickable elements by temporarily overriding */
-button, a[href], [role="button"], input[type="submit"], input[type="button"], label, select {
-  cursor: pointer;
+/* On coarse-only (touch) pointers, keep normal behavior */
+@media (any-pointer: coarse) {
+  button, a[href], [role="button"], input[type="submit"], input[type="button"], label, select {
+    cursor: pointer;
+  }
 }
 
 @layer base {
