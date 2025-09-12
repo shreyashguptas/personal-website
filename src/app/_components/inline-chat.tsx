@@ -1,6 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { PostHog } from 'posthog-js';
+const getPosthog = (): PostHog | undefined => {
+  try {
+    return (window as unknown as { posthog?: PostHog }).posthog;
+  } catch {
+    return undefined;
+  }
+};
 import Image from "next/image";
 import DOMPurify from "dompurify";
 
@@ -214,6 +222,7 @@ export function InlineChat() {
   const send = async (text: string) => {
     const trimmed = text.trim();
     if (!trimmed || loading) return;
+    try { getPosthog()?.capture('chat_message_sent', { length: trimmed.length }); } catch { /* no-op */ void 0; }
     setMessages((m) => [...m, { role: "user", content: trimmed }]);
     setInput("");
     setSuggestions([]); // Clear suggestions when any message is sent
@@ -228,6 +237,7 @@ export function InlineChat() {
         body: JSON.stringify({ message: trimmed, focusUrls, history }),
       });
       if (!res.ok) {
+        try { getPosthog()?.capture('chat_response_error', { status: res.status }); } catch { /* no-op */ void 0; }
         let errorMessage = "Request failed";
         let userFriendlyMessage = "Sorry, something went wrong.";
         try {
@@ -261,6 +271,7 @@ export function InlineChat() {
 
       if (!res.body) throw new Error("No response body");
       const reader = res.body.getReader();
+      try { getPosthog()?.capture('chat_response_stream_start'); } catch { /* no-op */ void 0; }
       const decoder = new TextDecoder();
       let assistantText = "";      let buffer = ""; // Buffer to accumulate chunks before displaying
 
@@ -348,7 +359,9 @@ export function InlineChat() {
           return [...m, { role: "assistant", content: assistantText }];
         });
       }
+      try { getPosthog()?.capture('chat_response_stream_complete', { length: assistantText.length }); } catch { /* no-op */ void 0; }
     } catch (error) {
+      try { getPosthog()?.capture('chat_client_error'); } catch { /* no-op */ void 0; }
       const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
       console.error("[inline-chat] Chat error:", errorMessage);
 

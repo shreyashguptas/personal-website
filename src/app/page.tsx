@@ -4,7 +4,6 @@ import { InlineChat } from "@/app/_components/inline-chat";
 
 export default function HomePage() {
   // Removed content listings to focus on a clean chat-first landing
-
   return (
     <main className="relative">
       <Container>

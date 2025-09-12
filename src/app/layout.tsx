@@ -9,6 +9,7 @@ import { CustomCursor } from "./_components/custom-cursor";
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { SiteFooter } from "./_components/footer";
+import { PosthogInit } from './_components/posthog-init';
 
 import "./globals.css";
 
@@ -85,6 +86,7 @@ export default function RootLayout({
           "bg-white text-black dark:bg-black dark:text-white transition-colors duration-200 min-h-screen flex flex-col"
         )}
       >
+        <PosthogInit />
         <CustomCursor />
         <ThemeSwitcher />
         <SiteNavigation />
