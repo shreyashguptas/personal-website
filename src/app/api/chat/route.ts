@@ -17,6 +17,7 @@ import {
 } from "@/lib/rag";
 import { SYSTEM_PROMPT, PROMPT_CONFIG } from "@/lib/prompts";
 import { cleanupCache } from "@/lib/rag";
+import { captureAiGeneration } from "@/lib/analytics-server";
 
 export const runtime = 'nodejs';
 
@@ -487,6 +488,21 @@ export async function POST(req: NextRequest) {
             } catch {
               controller.error(new Error("stream_error"));
             } finally {
+              const genEnd = Date.now();
+              // Server-side LLM analytics capture
+              try {
+                await captureAiGeneration({
+                  model: preferred,
+                  latencyMs: genEnd - t1,
+                  inputMessages: [
+                    ...history.map(h => ({ role: h.role, content: h.content })),
+                    { role: 'user', content: combinedUser }
+                  ],
+                  outputChoices: [],
+                });
+              } catch {
+                // ignore analytics errors
+              }
               const footer = `\n\n[[SOURCES]]${JSON.stringify(sources)}[[/SOURCES]]`;
               controller.enqueue(encoder.encode(footer));
               controller.close();

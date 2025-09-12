@@ -12,6 +12,7 @@ import matter from "gray-matter";
 import OpenAI from "openai";
 import 'dotenv/config';
 import { PROMPT_CONFIG } from "../src/lib/prompts";
+import { captureAiEmbedding, flushPosthog } from "../src/lib/analytics-server";
 
 type SourceType = "post" | "project" | "resume";
 
@@ -204,7 +205,15 @@ async function main() {
   for (let i = 0; i < all.length; i += batchSize) {
     const batch = all.slice(i, i + batchSize);
     const input = batch.map((d) => d.text);
+    const embStart = Date.now();
     const res = await openai.embeddings.create({ model, input });
+    const embEnd = Date.now();
+    try {
+      await captureAiEmbedding({ model, latencyMs: embEnd - embStart, input: input.slice(0, 1) });
+    } catch {
+      // no-op analytics
+      void 0;
+    }
     res.data.forEach((item, idx: number) => {
       const embedding = Array.isArray((item as { embedding: unknown }).embedding)
         ? ((item as { embedding: number[] }).embedding)
@@ -216,6 +225,10 @@ async function main() {
 
   fs.writeFileSync(outPath, JSON.stringify(embedded), "utf8");
   console.info(`Wrote index to ${outPath}`);
+  try { await flushPosthog(); } catch {
+    // no-op
+    void 0;
+  }
 }
 
 main().catch((err) => {
