@@ -37,13 +37,18 @@ function buildSuggestions(_period: TimeOfDay, returningVisitor: boolean): string
 function validateUrl(url: string): boolean {
   try {
     // Prevent dangerous protocols
-    const dangerousProtocols = ['javascript:', 'data:', 'vbscript:', 'file:', 'ftp:'];
+    const dangerousProtocols = ['javascript:', 'vbscript:', 'file:', 'ftp:'];
     const lowerUrl = url.toLowerCase();
 
     for (const protocol of dangerousProtocols) {
       if (lowerUrl.startsWith(protocol)) {
         return false;
       }
+    }
+
+    // Allow mailto and tel
+    if (lowerUrl.startsWith('mailto:') || lowerUrl.startsWith('tel:')) {
+      return true;
     }
 
     // Allow relative URLs or absolute HTTP/HTTPS URLs
@@ -93,7 +98,10 @@ function renderMarkdown(md: string) {
     if (!validateUrl(url)) return text;
     try {
       let safeUrl: string;
-      if (url.startsWith('http://') || url.startsWith('https://')) {
+      const lower = url.toLowerCase();
+      if (lower.startsWith('mailto:') || lower.startsWith('tel:')) {
+        safeUrl = url;
+      } else if (url.startsWith('http://') || url.startsWith('https://')) {
         const parsed = new URL(url);
         // Normalize absolute URLs that map to internal paths, regardless of hostname
         const internalPathMatchers = [

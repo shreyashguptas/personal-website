@@ -153,21 +153,32 @@ export async function POST(req: NextRequest) {
           ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || undefined,
         });
 
-        // Get latest blog post for friendly message
+        // Get latest blog post and contact email for friendly message
         let latestPostUrl = "/blog"; // fallback
+        let contactEmail: string | undefined;
         try {
           const index = loadIndex();
           const latestPost = getLatestPost(index);
           if (latestPost) {
             latestPostUrl = latestPost.url;
           }
+          const resumeDocs = index.filter((d) => d.type === "resume");
+          const combined = resumeDocs.map((d) => d.text).join("\n\n");
+          const match = combined.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+          if (match) contactEmail = match[0];
         } catch (error) {
           console.warn('[chat] Failed to get latest post for rate limit message:', error);
         }
 
+        const emailLine = contactEmail
+          ? `Oh, it seems like you'd like to know a lot more about me—feel free to email me at [${contactEmail}](mailto:${contactEmail}).\n\n`
+          : "Oh, it seems like you'd like to know a lot more about me—please reach out via email if you see it on my resume.\n\n";
+
+        const message = `${emailLine}You can also browse while you wait: [Latest Post](${latestPostUrl}) • [Resume](/resume)`;
+
         return new Response(JSON.stringify({
           error: "rate_limited",
-          message: `You've asked me a bunch of questions! I've temporarily rate limited you to prevent spam. You can ask me more questions soon. In the meantime, check out my latest blog post: [${latestPostUrl}](${latestPostUrl})`,
+          message,
           reset
         }), {
           status: 429,
@@ -185,21 +196,32 @@ export async function POST(req: NextRequest) {
           ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || undefined,
         });
 
-        // Get latest blog post for friendly message
+        // Get latest blog post and contact email for friendly message
         let latestPostUrl = "/blog"; // fallback
+        let contactEmail: string | undefined;
         try {
           const index = loadIndex();
           const latestPost = getLatestPost(index);
           if (latestPost) {
             latestPostUrl = latestPost.url;
           }
+          const resumeDocs = index.filter((d) => d.type === "resume");
+          const combined = resumeDocs.map((d) => d.text).join("\n\n");
+          const match = combined.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+          if (match) contactEmail = match[0];
         } catch (error) {
           console.warn('[chat] Failed to get latest post for rate limit message:', error);
         }
 
+        const emailLine = contactEmail
+          ? `Oh, it seems like you'd like to know a lot more about me—feel free to email me at [${contactEmail}](mailto:${contactEmail}).\n\n`
+          : "Oh, it seems like you'd like to know a lot more about me—please reach out via email if you see it on my resume.\n\n";
+
+        const message = `${emailLine}You can also browse while you wait: [Latest Post](${latestPostUrl}) • [Resume](/resume)`;
+
         return new Response(JSON.stringify({
           error: "rate_limited",
-          message: `You've asked me a bunch of questions! I've temporarily rate limited you to prevent spam. You can ask me more questions soon. In the meantime, check out my latest blog post: [${latestPostUrl}](${latestPostUrl})`,
+          message,
           reset
         }), {
           status: 429,
