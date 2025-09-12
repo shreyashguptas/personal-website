@@ -37,7 +37,7 @@ export async function captureAiGeneration(props: {
   const ph = getPosthogServer();
   if (!ph) return;
   try {
-    ph.capture({
+    await ph.captureImmediate({
       distinctId: props.distinctId || 'anonymous',
       event: '$ai_generation',
       properties: {
@@ -67,7 +67,7 @@ export async function captureAiEmbedding(props: {
   const ph = getPosthogServer();
   if (!ph) return;
   try {
-    ph.capture({
+    await ph.captureImmediate({
       distinctId: props.distinctId || 'anonymous',
       event: '$ai_embedding',
       properties: {

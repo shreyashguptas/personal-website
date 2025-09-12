@@ -20,9 +20,11 @@ export function PosthogInit(): null {
           person_profiles: "identified_only",
         });
         (window as unknown as { posthog?: typeof posthog }).posthog = posthog;
+        try { window.dispatchEvent(new Event('posthog:ready')); } catch { void 0; }
       }
     } catch {
       // noop analytics
+      void 0;
     }
   }, []);
 

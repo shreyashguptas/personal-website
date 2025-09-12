@@ -23,14 +23,43 @@ function getPosthog(): { capture: (event: string, props?: AnalyticsProperties) =
   }
 }
 
+// Buffer events until PostHog is ready
+const buffer: Array<{ event: string; properties?: AnalyticsProperties }> = [];
+let readyListenerAttached = false;
+
+function flushBuffer(): void {
+  const ph = getPosthog();
+  if (!ph || buffer.length === 0) return;
+  try {
+    for (const item of buffer.splice(0)) {
+      ph.capture(item.event, item.properties);
+    }
+  } catch {
+    // ignore
+  }
+}
+
 export function capture(event: AnalyticsEvent | string, properties?: AnalyticsProperties): void {
   const ph = getPosthog();
-  if (!ph) return;
-  try {
-    ph.capture(String(event), properties);
-  } catch {
-    // no-op
-    void 0;
+  if (ph) {
+    try {
+      ph.capture(String(event), properties);
+    } catch {
+      // ignore
+    }
+    return;
+  }
+  // Not ready: buffer and listen for readiness
+  buffer.push({ event: String(event), properties });
+  if (typeof window !== 'undefined' && !readyListenerAttached) {
+    readyListenerAttached = true;
+    try {
+      window.addEventListener('posthog:ready', flushBuffer, { once: false });
+      // Also try flush after a short delay in case init already happened
+      setTimeout(flushBuffer, 1000);
+    } catch {
+      // ignore
+    }
   }
 }
 
