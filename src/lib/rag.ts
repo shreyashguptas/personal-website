@@ -316,9 +316,16 @@ export function filterByType(index: RetrievedDoc[], type: "post" | "project" | "
 export function getLatestPost(index: RetrievedDoc[]): RetrievedDoc | null {
   const posts = index.filter((d) => d.type === "post" && d.date);
   if (posts.length === 0) return null;
+  // Exclude future-dated items relative to current time (UTC)
+  const nowTime = Date.now();
+  const nonFuture = posts.filter((d) => {
+    const t = new Date(d.date as string).getTime();
+    return !isNaN(t) && t <= nowTime;
+  });
+  if (nonFuture.length === 0) return null;
   // Group by slug to pick one representative chunk per post
   const slugToDocs = new Map<string, RetrievedDoc[]>();
-  for (const d of posts) {
+  for (const d of nonFuture) {
     const list = slugToDocs.get(d.slug) || [];
     list.push(d);
     slugToDocs.set(d.slug, list);
@@ -336,10 +343,17 @@ export function getLatestPost(index: RetrievedDoc[]): RetrievedDoc | null {
 export function getLatestProject(index: RetrievedDoc[]): RetrievedDoc | null {
   const projects = index.filter((d) => d.type === "project" && d.date);
   if (projects.length === 0) return null;
+  // Exclude future-dated items relative to current time (UTC)
+  const nowTime = Date.now();
+  const nonFuture = projects.filter((d) => {
+    const t = new Date(d.date as string).getTime();
+    return !isNaN(t) && t <= nowTime;
+  });
+  if (nonFuture.length === 0) return null;
   
   // Group by slug to pick one representative chunk per project
   const slugToDocs = new Map<string, RetrievedDoc[]>();
-  for (const d of projects) {
+  for (const d of nonFuture) {
     const list = slugToDocs.get(d.slug) || [];
     list.push(d);
     slugToDocs.set(d.slug, list);

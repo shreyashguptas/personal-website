@@ -351,6 +351,9 @@ export async function POST(req: NextRequest) {
     // Intent detection: latest project, latest post, or restrict by type
     const asksLatestProject = /latest\s+(project|thing\s+you\s+built|work(ed)?\s+on)/i.test(userMessage);
     const asksLatestPost = /latest\s+(blog|post|article|write\w*)/i.test(userMessage);
+    // Additional synonyms to catch natural language like "last thing you wrote"
+    const asksLastProject = /\b(last|most\s+recent)\s+(project|thing\s+you\s+built|work(ed)?\s+on)\b/i.test(userMessage);
+    const asksLastPost = /\b(last|most\s+recent)\s+(blog|post|article|thing\s+you\s+wrote|write\w*)\b/i.test(userMessage);
     const asksProjectsOnly = /\b(project|projects)\b/i.test(userMessage) && !/\b(post|blog|article|write)/i.test(userMessage);
     const asksPostsOnly = /\b(post|blog|article|write)/i.test(userMessage) && !/\b(project|projects)\b/i.test(userMessage);
     const asksPrevious = /(previous|before\s+that|prior|earlier\s+than\s+that)/i.test(userMessage);
@@ -369,6 +372,7 @@ export async function POST(req: NextRequest) {
       if (anchor) {
         const prev = getPreviousOfSameType(index, anchor);
         if (prev) {
+          try { console.info("[chat] override_selected", { reason: "previous_of_same_type", anchor: { type: anchor.type, slug: anchor.slug, date: anchor.date }, selected: { type: prev.type, slug: prev.slug, date: prev.date } }); } catch {}
           contextDocs = [prev, ...contextDocs.filter((d) => d.slug !== prev.slug)].slice(0, 5);
         }
       }
@@ -376,16 +380,19 @@ export async function POST(req: NextRequest) {
       // Prioritize resume information for work experience queries
       const resumeInfo = getResumeInfo(index);
       if (resumeInfo) {
+        try { console.info("[chat] override_selected", { reason: asksContact ? "contact_resume_priority" : "resume_priority", selected: { type: resumeInfo.type, slug: resumeInfo.slug } }); } catch {}
         contextDocs = [resumeInfo, ...contextDocs.filter((d) => d.id !== resumeInfo.id)].slice(0, 5);
       }
-    } else if (asksLatestProject) {
+    } else if (asksLatestProject || asksLastProject) {
       const latestProj = getLatestProject(index);
       if (latestProj) {
+        try { console.info("[chat] override_selected", { reason: asksLatestProject ? "latest_project" : "last_project", selected: { type: latestProj.type, slug: latestProj.slug, date: latestProj.date } }); } catch {}
         contextDocs = [latestProj, ...contextDocs.filter((d) => d.slug !== latestProj.slug)].slice(0, 5);
       }
-    } else if (asksLatestPost) {
+    } else if (asksLatestPost || asksLastPost) {
       const latestP = getLatestPost(index);
       if (latestP) {
+        try { console.info("[chat] override_selected", { reason: asksLatestPost ? "latest_post" : "last_post", selected: { type: latestP.type, slug: latestP.slug, date: latestP.date } }); } catch {}
         contextDocs = [latestP, ...contextDocs.filter((d) => d.slug !== latestP.slug)].slice(0, 5);
       }
     } else if (asksProjectsOnly) {
@@ -396,12 +403,16 @@ export async function POST(req: NextRequest) {
       if (onlyPosts.length > 0) contextDocs = onlyPosts;
     }
     if (earliest) {
+      try { console.info("[chat] override_selected", { reason: "earliest_post", selected: { type: earliest.type, slug: earliest.slug, date: earliest.date } }); } catch {}
       contextDocs = [earliest, ...contextDocs.filter((d) => d.id !== earliest.id)].slice(0, 5);
     }
     // For technology queries, use larger context to fit more projects
     const isTechQuery = /\b(pytorch|tensorflow|react|next\.js|python|machine learning|ml|ai|nlp|data analysis)\b/i.test(userMessage.toLowerCase());
     const contextSize = isTechQuery ? PROMPT_CONFIG.search.techQueryContextSize : PROMPT_CONFIG.search.defaultContextSize;
     const { context, sources } = buildContext(contextDocs, contextSize, userMessage);
+    // Provide current UTC time so the model can interpret relative time
+    const nowIso = new Date().toISOString();
+    try { console.info("[chat] time_context", { nowIso }); } catch {}
     // Lightweight diagnostics
     try {
       const diag = {
@@ -411,6 +422,8 @@ export async function POST(req: NextRequest) {
         intent: {
           asksLatestProject,
           asksLatestPost,
+          asksLastProject,
+          asksLastPost,
           asksProjectsOnly,
           asksPostsOnly,
           asksPrevious: Boolean(asksPrevious),
@@ -423,6 +436,7 @@ export async function POST(req: NextRequest) {
           return acc;
         }, {}),
         topSlugs: contextDocs.map((d) => `${d.type}:${d.slug}`),
+        nowIso,
       };
       console.info("[chat] retrieval_diag", diag);
     } catch {
@@ -450,8 +464,8 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Put context and question into a single user message
-    const combinedUser = `Context:\n${context}\n\nRules:\n- When the question asks for the first blog/post, identify the earliest by date in the Context.\n- When asked for the latest project or post, use the most recent by date.\n- When asked for the previous item ("before that"), select the chronologically previous item of the same type.\n- When asked about work experience, employment, skills, or education, prioritize resume information.\n- Prefer projects when the user asks about what I built or worked on.\n- Include inline links using markdown [Title](URL).\n- Use the conversation history to resolve pronouns and follow-ups, but never override or invent facts beyond Context.\n${contactRule ? contactRule + "\n" : ""}\nQuestion: ${userMessage}`;
+    // Put current time, context and question into a single user message
+    const combinedUser = `Now: ${nowIso} (UTC)\n\nContext:\n${context}\n\nRules:\n- When the question asks for the first blog/post, identify the earliest by date in the Context.\n- When asked for the latest project or post, use the most recent by date.\n- When interpreting relative time terms (today/this week/last month/yesterday), use the Now timestamp above.\n- When asked for the previous item ("before that"), select the chronologically previous item of the same type.\n- When asked about work experience, employment, skills, or education, prioritize resume information.\n- Prefer projects when the user asks about what I built or worked on.\n- Include inline links using markdown [Title](URL).\n- Use the conversation history to resolve pronouns and follow-ups, but never override or invent facts beyond Context.\n${contactRule ? contactRule + "\n" : ""}\nQuestion: ${userMessage}`;
 
     // Use model from prompts configuration
     const preferred = PROMPT_CONFIG.model;
