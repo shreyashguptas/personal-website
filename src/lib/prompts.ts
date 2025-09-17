@@ -74,8 +74,10 @@ export const PROMPT_CONFIG = {
   embeddings: {
     model: "text-embedding-3-small",
     batchSize: 64,
-    chunkSize: 1200,
-    chunkOverlap: 200,
-    maxContentLength: 16000, // Maximum content length per source
+    chunkSize: 2500, // Increased from 1200 - better context preservation
+    chunkOverlap: 400, // Increased overlap for better continuity
+    maxContentLength: 24000, // Increased from 16K - capture more content
+    preserveStructure: true, // New: preserve markdown structure
+    semanticChunking: true, // New: chunk by paragraphs when possible
   }
 };

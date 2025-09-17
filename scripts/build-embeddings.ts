@@ -100,7 +100,21 @@ function readMarkdownDirectory(dirPath: string, type: SourceType): RawDoc[] {
 
     const chunks = chunkText(limited, PROMPT_CONFIG.embeddings.chunkSize, PROMPT_CONFIG.embeddings.chunkOverlap);
     chunks.forEach((text, idx) => {
-      const textWithMeta = idx === 0 ? `${metaLines}\n\n${text}` : text;
+      // CRITICAL FIX: Add metadata to ALL chunks, not just the first one
+      // This prevents content type confusion in RAG retrieval
+      const chunkMetaLines = [
+        `Type: ${type}`,
+        `Title: ${title}`,
+        `ChunkIndex: ${idx}`,
+        date ? `Date: ${date}` : undefined,
+        summary ? `Summary: ${summary}` : undefined,
+        technologies && technologies.length ? `Technologies: ${technologies.join(", ")}` : undefined,
+        projectUrl ? `ProjectURL: ${projectUrl}` : undefined,
+        lastUpdated ? `LastUpdated: ${lastUpdated}` : undefined,
+      ].filter(Boolean).join("\n");
+      
+      const textWithMeta = `${chunkMetaLines}\n\n${text}`;
+      
       docs.push({
         id: `${type}:${slug}:${idx}`,
         type,
@@ -120,29 +134,127 @@ function readMarkdownDirectory(dirPath: string, type: SourceType): RawDoc[] {
 }
 
 function normalizeMarkdown(md: string): string {
-  return md
-    // Remove code blocks
-    .replace(/```[\s\S]*?```/g, " ")
-    // Remove images ![alt](url)
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
-    // Remove links [text](url) -> text
-    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
-    // Strip markdown tokens
-    .replace(/[>#*_`~-]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+  if (PROMPT_CONFIG.embeddings.preserveStructure) {
+    return md
+      // Convert headers to plain text with structure indicators
+      .replace(/^### (.+)$/gm, "SECTION: $1\n")
+      .replace(/^## (.+)$/gm, "CHAPTER: $1\n")
+      .replace(/^# (.+)$/gm, "TITLE: $1\n")
+      // Preserve list structure
+      .replace(/^\* (.+)$/gm, "• $1")
+      .replace(/^- (.+)$/gm, "• $1")
+      .replace(/^\d+\. (.+)$/gm, "($1)")
+      // Remove images but preserve alt text
+      .replace(/!\[([^\]]*)\]\([^)]*\)/g, "IMAGE: $1")
+      // Remove links but preserve text
+      .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+      // Remove code blocks but preserve placeholder
+      .replace(/```[\s\S]*?```/g, " [CODE_BLOCK] ")
+      // Clean up inline code
+      .replace(/`([^`]+)`/g, "$1")
+      // Remove remaining markdown tokens while preserving emphasis indicators
+      .replace(/\*\*([^*]+)\*\*/g, "IMPORTANT: $1")
+      .replace(/\*([^*]+)\*/g, "$1")
+      // Clean up extra whitespace
+      .replace(/\s+/g, " ")
+      .trim();
+  } else {
+    // Original aggressive normalization
+    return md
+      .replace(/```[\s\S]*?```/g, " ")
+      .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
+      .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+      .replace(/[>#*_`~-]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
 }
 
 function chunkText(text: string, chunkSize: number, overlap: number): string[] {
   const chunks: string[] = [];
-  let start = 0;
-  while (start < text.length) {
-    const end = Math.min(start + chunkSize, text.length);
-    chunks.push(text.slice(start, end));
-    if (end === text.length) break;
-    start = end - overlap;
-    if (start < 0) start = 0;
+  
+  if (PROMPT_CONFIG.embeddings.semanticChunking) {
+    // Split by paragraphs first, then chunk semantically
+    const paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 0);
+    
+    let currentChunk = "";
+    
+    for (const paragraph of paragraphs) {
+      const trimmedParagraph = paragraph.trim();
+      
+      // If adding this paragraph would exceed chunk size
+      if (currentChunk.length + trimmedParagraph.length + 2 > chunkSize) {
+        // Save current chunk if it has content
+        if (currentChunk.trim().length > 0) {
+          chunks.push(currentChunk.trim());
+        }
+        
+        // Handle very long paragraphs that exceed chunk size
+        if (trimmedParagraph.length > chunkSize) {
+          // Split long paragraph by sentences
+          const sentences = trimmedParagraph.split(/(?<=[.!?])\s+/);
+          let sentenceChunk = "";
+          
+          for (const sentence of sentences) {
+            if (sentenceChunk.length + sentence.length + 1 > chunkSize) {
+              if (sentenceChunk.trim().length > 0) {
+                chunks.push(sentenceChunk.trim());
+              }
+              sentenceChunk = sentence;
+            } else {
+              sentenceChunk += (sentenceChunk.length > 0 ? " " : "") + sentence;
+            }
+          }
+          
+          if (sentenceChunk.trim().length > 0) {
+            currentChunk = sentenceChunk;
+          } else {
+            currentChunk = "";
+          }
+        } else {
+          currentChunk = trimmedParagraph;
+        }
+      } else {
+        currentChunk += (currentChunk.length > 0 ? "\n\n" : "") + trimmedParagraph;
+      }
+    }
+    
+    // Add final chunk
+    if (currentChunk.trim().length > 0) {
+      chunks.push(currentChunk.trim());
+    }
+  } else {
+    // Original character-based chunking
+    let start = 0;
+    while (start < text.length) {
+      const end = Math.min(start + chunkSize, text.length);
+      chunks.push(text.slice(start, end));
+      if (end === text.length) break;
+      start = end - overlap;
+      if (start < 0) start = 0;
+    }
   }
+  
+  // Apply overlap for semantic chunks
+  if (PROMPT_CONFIG.embeddings.semanticChunking && chunks.length > 1) {
+    const overlapChunks: string[] = [];
+    
+    for (let i = 0; i < chunks.length; i++) {
+      let chunkWithOverlap = chunks[i];
+      
+      // Add overlap from previous chunk
+      if (i > 0) {
+        const prevChunk = chunks[i - 1];
+        const overlapText = prevChunk.slice(-overlap);
+        chunkWithOverlap = overlapText + "\n\n" + chunkWithOverlap;
+      }
+      
+      overlapChunks.push(chunkWithOverlap);
+    }
+    
+    return overlapChunks;
+  }
+  
   return chunks;
 }
 
@@ -195,7 +307,15 @@ async function main() {
 
   const all = [...posts, ...projects, ...resume];
 
-  console.info(`Embedding ${all.length} chunks...`);
+  console.info(`\n[build-embeddings] Enhanced Vectorization Settings:`);
+  console.info(`  Chunk Size: ${PROMPT_CONFIG.embeddings.chunkSize} (was 1200)`);
+  console.info(`  Chunk Overlap: ${PROMPT_CONFIG.embeddings.chunkOverlap} (was 200)`);
+  console.info(`  Max Content Length: ${PROMPT_CONFIG.embeddings.maxContentLength} (was 16000)`);
+  console.info(`  Structure Preservation: ${PROMPT_CONFIG.embeddings.preserveStructure ? 'ON' : 'OFF'}`);
+  console.info(`  Semantic Chunking: ${PROMPT_CONFIG.embeddings.semanticChunking ? 'ON' : 'OFF'}`);
+  console.info(`  Metadata in All Chunks: ENABLED (prevents content type confusion)`);
+
+  console.info(`\nEmbedding ${all.length} chunks...`);
 
   const embedded: EmbeddedChunk[] = [];
   const model = PROMPT_CONFIG.embeddings.model;

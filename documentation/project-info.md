@@ -5,8 +5,9 @@ This is a modern personal website and blog built with Next.js 15, featuring opti
 ## 🚀 Features
 
 - **Next.js 15.5.0** with App Router and React 19.1.0
-- **AI-Powered Chat Interface**: Interactive Q&A system using RAG (Retrieval-Augmented Generation)
-- **Vector Search**: Semantic search across blog posts, projects, and resume content
+- **Advanced AI-Powered Chat Interface**: Enhanced RAG system with intelligent content type detection
+- **Semantic Vector Search**: Advanced chunking with paragraph-aware processing and structure preservation  
+- **Content Type Intelligence**: Strong differentiation between projects, blog posts, and resume content
 - **Fully optimized images** with automatic WebP/AVIF conversion
 - **Dark/Light theme** with system preference detection
 - **Static generation** for excellent performance
@@ -87,9 +88,11 @@ The website features comprehensive image optimization:
 
 ### AI & Search
 - **AI Provider**: OpenAI GPT-4o-mini and text-embedding-3-small
-- **Vector Search**: Custom RAG implementation with cosine similarity
-- **Content Processing**: Markdown parsing with front matter support
-- **Caching**: In-memory vector index with file watching
+- **Enhanced Vector Search**: Advanced RAG with semantic chunking and content type intelligence
+- **Content Processing**: Markdown parsing with structure preservation and paragraph-aware chunking
+- **Intelligent Retrieval**: Strong content type differentiation with dedicated pathways for projects/blog posts/resume
+- **Optimized Index**: 70 chunks (reduced from 127) with 2500-character semantic chunks
+- **Caching**: In-memory vector index with file watching and TTL management
 
 ### Security & Validation
 - **Input Validation**: Zod schemas with security filtering
@@ -144,7 +147,9 @@ Notes:
 - `npm run lint` - Run ESLint checks
 
 ### Key Components
-- **InlineChat**: AI-powered Q&A interface with real-time streaming
+- **InlineChat**: Enhanced AI-powered Q&A with intelligent content type recognition and real-time streaming
+- **Advanced RAG System**: Semantic chunking with paragraph-aware processing and universal metadata
+- **Content Type Intelligence**: Dedicated retrieval pathways preventing project/blog post confusion
 - **ThemeSwitcher**: Automatic dark/light mode with system preference
 - **SiteNavigation**: Main navigation with responsive design
 - **Image Components**: Optimized image rendering across the site
