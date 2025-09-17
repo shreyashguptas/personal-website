@@ -33,10 +33,19 @@ export async function captureAiGeneration(props: {
   outputTokens?: number;
   totalCostUsd?: number;
   tools?: string[];
+  userAgent?: string;
+  clientIp?: string;
+  conversationLength?: number;
+  userMessageLength?: number;
 }): Promise<void> {
   const ph = getPosthogServer();
   if (!ph) return;
   try {
+    // Analyze the user's question for intent
+    const userMessage = props.inputMessages?.find(m => m.role === 'user')?.content || '';
+    const questionType = analyzeQuestionType(userMessage);
+    const hasCodeTerms = /\b(code|programming|python|javascript|react|api|function|class|import|export)\b/i.test(userMessage);
+    
     await ph.captureImmediate({
       distinctId: props.distinctId || 'anonymous',
       event: '$ai_generation',
@@ -50,11 +59,32 @@ export async function captureAiGeneration(props: {
         $ai_total_cost_usd: props.totalCostUsd,
         $ai_tools: props.tools,
         $ai_trace_id: props.traceId,
+        // Enhanced properties
+        user_agent: props.userAgent,
+        client_ip: props.clientIp,
+        conversation_length: props.conversationLength,
+        user_message_length: props.userMessageLength,
+        question_type: questionType,
+        has_code_terms: hasCodeTerms,
+        response_latency_bucket: props.latencyMs < 1000 ? 'fast' : props.latencyMs < 3000 ? 'medium' : 'slow'
       },
     });
   } catch {
     // ignore
   }
+}
+
+function analyzeQuestionType(message: string): string {
+  const msg = message.toLowerCase();
+  if (/\b(latest|recent|newest|last)\b.*\b(project|work|built)\b/i.test(msg)) return 'latest_project';
+  if (/\b(latest|recent|newest|last)\b.*\b(blog|post|article|wrote)\b/i.test(msg)) return 'latest_post';
+  if (/\b(email|contact|reach|how to contact)\b/i.test(msg)) return 'contact';
+  if (/\b(resume|cv|experience|work history|background)\b/i.test(msg)) return 'resume';
+  if (/\b(project|projects)\b/i.test(msg)) return 'projects';
+  if (/\b(blog|post|posts|article|wrote|writing)\b/i.test(msg)) return 'blog';
+  if (/\b(skill|skills|technology|tech|programming|language)\b/i.test(msg)) return 'skills';
+  if (/\?/i.test(msg)) return 'question';
+  return 'general';
 }
 
 export async function captureAiEmbedding(props: {

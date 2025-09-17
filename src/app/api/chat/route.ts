@@ -372,7 +372,7 @@ export async function POST(req: NextRequest) {
       if (anchor) {
         const prev = getPreviousOfSameType(index, anchor);
         if (prev) {
-          try { console.info("[chat] override_selected", { reason: "previous_of_same_type", anchor: { type: anchor.type, slug: anchor.slug, date: anchor.date }, selected: { type: prev.type, slug: prev.slug, date: prev.date } }); } catch {}
+          try { console.info("[chat] override_selected", { reason: "previous_of_same_type", anchor: { type: anchor.type, slug: anchor.slug, date: anchor.date }, selected: { type: prev.type, slug: prev.slug, date: prev.date } }); } catch { void 0; }
           contextDocs = [prev, ...contextDocs.filter((d) => d.slug !== prev.slug)].slice(0, 5);
         }
       }
@@ -380,19 +380,19 @@ export async function POST(req: NextRequest) {
       // Prioritize resume information for work experience queries
       const resumeInfo = getResumeInfo(index);
       if (resumeInfo) {
-        try { console.info("[chat] override_selected", { reason: asksContact ? "contact_resume_priority" : "resume_priority", selected: { type: resumeInfo.type, slug: resumeInfo.slug } }); } catch {}
+        try { console.info("[chat] override_selected", { reason: asksContact ? "contact_resume_priority" : "resume_priority", selected: { type: resumeInfo.type, slug: resumeInfo.slug } }); } catch { void 0; }
         contextDocs = [resumeInfo, ...contextDocs.filter((d) => d.id !== resumeInfo.id)].slice(0, 5);
       }
     } else if (asksLatestProject || asksLastProject) {
       const latestProj = getLatestProject(index);
       if (latestProj) {
-        try { console.info("[chat] override_selected", { reason: asksLatestProject ? "latest_project" : "last_project", selected: { type: latestProj.type, slug: latestProj.slug, date: latestProj.date } }); } catch {}
+        try { console.info("[chat] override_selected", { reason: asksLatestProject ? "latest_project" : "last_project", selected: { type: latestProj.type, slug: latestProj.slug, date: latestProj.date } }); } catch { void 0; }
         contextDocs = [latestProj, ...contextDocs.filter((d) => d.slug !== latestProj.slug)].slice(0, 5);
       }
     } else if (asksLatestPost || asksLastPost) {
       const latestP = getLatestPost(index);
       if (latestP) {
-        try { console.info("[chat] override_selected", { reason: asksLatestPost ? "latest_post" : "last_post", selected: { type: latestP.type, slug: latestP.slug, date: latestP.date } }); } catch {}
+        try { console.info("[chat] override_selected", { reason: asksLatestPost ? "latest_post" : "last_post", selected: { type: latestP.type, slug: latestP.slug, date: latestP.date } }); } catch { void 0; }
         contextDocs = [latestP, ...contextDocs.filter((d) => d.slug !== latestP.slug)].slice(0, 5);
       }
     } else if (asksProjectsOnly) {
@@ -403,7 +403,7 @@ export async function POST(req: NextRequest) {
       if (onlyPosts.length > 0) contextDocs = onlyPosts;
     }
     if (earliest) {
-      try { console.info("[chat] override_selected", { reason: "earliest_post", selected: { type: earliest.type, slug: earliest.slug, date: earliest.date } }); } catch {}
+      try { console.info("[chat] override_selected", { reason: "earliest_post", selected: { type: earliest.type, slug: earliest.slug, date: earliest.date } }); } catch { void 0; }
       contextDocs = [earliest, ...contextDocs.filter((d) => d.id !== earliest.id)].slice(0, 5);
     }
     // For technology queries, use larger context to fit more projects
@@ -412,7 +412,7 @@ export async function POST(req: NextRequest) {
     const { context, sources } = buildContext(contextDocs, contextSize, userMessage);
     // Provide current UTC time so the model can interpret relative time
     const nowIso = new Date().toISOString();
-    try { console.info("[chat] time_context", { nowIso }); } catch {}
+    try { console.info("[chat] time_context", { nowIso }); } catch { void 0; }
     // Lightweight diagnostics
     try {
       const diag = {
@@ -441,6 +441,7 @@ export async function POST(req: NextRequest) {
       console.info("[chat] retrieval_diag", diag);
     } catch {
       // best-effort diagnostics only
+      void 0;
     }
 
     // If contact intent, try to extract an email string from resume/about-me context to nudge the model
@@ -461,6 +462,7 @@ export async function POST(req: NextRequest) {
         }
       } catch {
         contactRule = `- If the user asks for my email, share it if present in Context.`;
+        void 0;
       }
     }
 
@@ -505,17 +507,24 @@ export async function POST(req: NextRequest) {
               const genEnd = Date.now();
               // Server-side LLM analytics capture
               try {
+                const clientKey = getClientKey(req);
                 await captureAiGeneration({
                   model: preferred,
                   latencyMs: genEnd - t1,
                   inputMessages: [
                     ...history.map(h => ({ role: h.role, content: h.content })),
-                    { role: 'user', content: combinedUser }
+                    { role: 'user', content: userMessage } // Use original user message, not combined
                   ],
                   outputChoices: [],
+                  userAgent: req.headers.get('user-agent') || undefined,
+                  clientIp: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || undefined,
+                  conversationLength: history.length + 1,
+                  userMessageLength: userMessage.length,
+                  distinctId: clientKey // Use client key as distinct ID for now
                 });
               } catch {
                 // ignore analytics errors
+                void 0;
               }
               const footer = `\n\n[[SOURCES]]${JSON.stringify(sources)}[[/SOURCES]]`;
               controller.enqueue(encoder.encode(footer));

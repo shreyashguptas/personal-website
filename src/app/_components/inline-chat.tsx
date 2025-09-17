@@ -138,7 +138,7 @@ function renderMarkdown(md: string) {
         safeUrl = resolved.pathname + resolved.search + resolved.hash;
       }
       const safeText = String(text).replace(/"/g, '&quot;');
-      return `<a href="${safeUrl}" class="underline hover:no-underline" target="_blank" rel="noopener noreferrer">${safeText}</a>`;
+      return `<a href="${safeUrl}" class="underline hover:no-underline" target="_blank" rel="noopener noreferrer" data-chat-source="${encodeURIComponent(safeUrl)}">${safeText}</a>`;
     } catch {
       return text;
     }
@@ -196,6 +196,29 @@ export function InlineChat() {
     inputRef.current?.focus();
   }, []);
 
+  // Track clicks on chat source links
+  useEffect(() => {
+    const handleSourceClick = (event: Event) => {
+      const target = event.target as HTMLElement;
+      if (target.tagName === 'A' && target.hasAttribute('data-chat-source')) {
+        const sourceUrl = decodeURIComponent(target.getAttribute('data-chat-source') || '');
+        const linkText = target.textContent || '';
+        capture(AnalyticsEvent.ChatSourceClick, { 
+          source_url: sourceUrl,
+          link_text: linkText,
+          message_count: messages.length
+        });
+      }
+    };
+
+    // Add event listener to the scroll container that contains the messages
+    const scrollContainer = scrollRef.current;
+    if (scrollContainer) {
+      scrollContainer.addEventListener('click', handleSourceClick);
+      return () => scrollContainer.removeEventListener('click', handleSourceClick);
+    }
+  }, [messages.length]);
+
   // Compute greeting context and build suggestion list
   useEffect(() => {
     const period = getTimeOfDay();
@@ -216,7 +239,16 @@ export function InlineChat() {
   const send = async (text: string) => {
     const trimmed = text.trim();
     if (!trimmed || loading) return;
-    capture(AnalyticsEvent.ChatMessageSent, { length: trimmed.length });
+    capture(AnalyticsEvent.ChatMessageSent, { 
+      message_length: trimmed.length,
+      character_count: trimmed.length,
+      word_count: trimmed.split(/\s+/).length,
+      returning_visitor: returningVisitor,
+      time_of_day: timeOfDay,
+      conversation_length: messages.length,
+      has_focus_urls: focusUrls.length > 0,
+      focus_url_count: focusUrls.length
+    });
     setMessages((m) => [...m, { role: "user", content: trimmed }]);
     setInput("");
     setSuggestions([]); // Clear suggestions when any message is sent
@@ -231,7 +263,13 @@ export function InlineChat() {
         body: JSON.stringify({ message: trimmed, focusUrls, history }),
       });
       if (!res.ok) {
-        capture(AnalyticsEvent.ChatResponseError, { status: res.status });
+        capture(AnalyticsEvent.ChatResponseError, { 
+          status: res.status,
+          status_text: res.statusText,
+          user_message_length: trimmed.length,
+          conversation_length: messages.length + 1,
+          has_focus_urls: focusUrls.length > 0
+        });
         let errorMessage = "Request failed";
         let userFriendlyMessage = "Sorry, something went wrong.";
         try {
@@ -265,7 +303,14 @@ export function InlineChat() {
 
       if (!res.body) throw new Error("No response body");
       const reader = res.body.getReader();
-      capture(AnalyticsEvent.ChatResponseStreamStart);
+      const streamStartTime = Date.now();
+      capture(AnalyticsEvent.ChatResponseStreamStart, {
+        conversation_length: messages.length + 1, // +1 for the user message we just added
+        has_focus_urls: focusUrls.length > 0,
+        focus_url_count: focusUrls.length,
+        user_message_length: trimmed.length,
+        time_to_start: streamStartTime - Date.now() // This will be near 0, but good for consistency
+      });
       const decoder = new TextDecoder();
       let assistantText = "";      let buffer = ""; // Buffer to accumulate chunks before displaying
 
@@ -353,10 +398,30 @@ export function InlineChat() {
           return [...m, { role: "assistant", content: assistantText }];
         });
       }
-      capture(AnalyticsEvent.ChatResponseStreamComplete, { length: assistantText.length });
+      const streamEndTime = Date.now();
+      const responseWordCount = assistantText.split(/\s+/).filter(w => w.length > 0).length;
+      const hasLinks = assistantText.includes('[') && assistantText.includes('](');
+      const hasBulletPoints = assistantText.includes('- ') || assistantText.includes('* ');
+      
+      capture(AnalyticsEvent.ChatResponseStreamComplete, { 
+        response_length: assistantText.length,
+        response_word_count: responseWordCount,
+        response_time_ms: streamEndTime - streamStartTime,
+        has_markdown_links: hasLinks,
+        has_bullet_points: hasBulletPoints,
+        conversation_length: messages.length + 2, // +1 for user message, +1 for assistant response
+        sources_provided: focusUrls.length > 0,
+        source_count: focusUrls.length
+      });
     } catch (error) {
-      capture(AnalyticsEvent.ChatClientError);
       const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+      capture(AnalyticsEvent.ChatClientError, {
+        error_message: errorMessage,
+        error_type: error instanceof Error ? error.name : 'unknown',
+        user_message_length: trimmed.length,
+        conversation_length: messages.length + 1,
+        has_focus_urls: focusUrls.length > 0
+      });
       console.error("[inline-chat] Chat error:", errorMessage);
 
       let userFriendlyMessage = "Sorry, something went wrong.";

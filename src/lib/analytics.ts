@@ -39,18 +39,41 @@ function flushBuffer(): void {
   }
 }
 
+export function getUserId(): string | null {
+  try {
+    return localStorage.getItem('sg_user_id');
+  } catch {
+    return null;
+  }
+}
+
 export function capture(event: AnalyticsEvent | string, properties?: AnalyticsProperties): void {
   const ph = getPosthog();
   if (ph) {
     try {
-      ph.capture(String(event), properties);
+      // Enhance all events with common properties
+      const enhancedProperties = {
+        ...properties,
+        timestamp: new Date().toISOString(),
+        user_id: getUserId(),
+        page_url: typeof window !== 'undefined' ? window.location.href : undefined,
+        page_title: typeof document !== 'undefined' ? document.title : undefined,
+      };
+      ph.capture(String(event), enhancedProperties);
     } catch {
       // ignore
     }
     return;
   }
   // Not ready: buffer and listen for readiness
-  buffer.push({ event: String(event), properties });
+  const enhancedProperties = {
+    ...properties,
+    timestamp: new Date().toISOString(),
+    user_id: getUserId(),
+    page_url: typeof window !== 'undefined' ? window.location.href : undefined,
+    page_title: typeof document !== 'undefined' ? document.title : undefined,
+  };
+  buffer.push({ event: String(event), properties: enhancedProperties });
   if (typeof window !== 'undefined' && !readyListenerAttached) {
     readyListenerAttached = true;
     try {
