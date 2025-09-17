@@ -14,7 +14,7 @@ export function MinimalPostPreview({ post }: Props) {
         <div className="h-px bg-gray-200 dark:bg-gray-700 flex-1"></div>
       </div>
       
-      <Link href={`/posts/${post.slug}`} className="block">
+      <Link href={`/posts/${post.slug}`} className="block" data-cursor-intent="hover">
         <div className="space-y-2 py-3 group-hover:translate-x-1 transition-transform duration-200">
           <h3 className="text-lg font-medium leading-snug group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
             {post.title}

@@ -35,7 +35,7 @@ export function CustomCursor() {
         )
       );
       const isClickableTarget = !!target && !!(
-        target.closest('button, a[href], [role="button"], [data-cursor-intent="click"], input[type="submit"], input[type="button"]')
+        target.closest('button, a[href]:not([data-cursor-intent="hover"]), [role="button"], [data-cursor-intent="click"], input[type="submit"], input[type="button"]')
       );
       setIsPointerArea(isClickableTarget);
       setCursorMode(isTypingTarget ? "text" : "dot");

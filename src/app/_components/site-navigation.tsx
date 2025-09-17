@@ -16,17 +16,17 @@ export function SiteNavigation() {
         <NavigationMenuList>
           <NavigationMenuItem>
             <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-              <Link href="/">Home</Link>
+              <Link href="/" data-cursor-intent="hover">Home</Link>
             </NavigationMenuLink>
           </NavigationMenuItem>
           <NavigationMenuItem>
             <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-              <Link href="/blog">Blog</Link>
+              <Link href="/blog" data-cursor-intent="hover">Blog</Link>
             </NavigationMenuLink>
           </NavigationMenuItem>
             <NavigationMenuItem>
             <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-              <Link href="/projects">Project</Link>
+              <Link href="/projects" data-cursor-intent="hover">Project</Link>
             </NavigationMenuLink>
           </NavigationMenuItem>
         </NavigationMenuList>

@@ -28,7 +28,7 @@ const CoverImage = ({ title, src, slug, variant = "default" }: Props) => {
   return (
     <div className="sm:mx-0">
       {slug ? (
-        <Link href={`/posts/${slug}`} aria-label={title}>
+        <Link href={`/posts/${slug}`} aria-label={title} data-cursor-intent="hover">
           {image}
         </Link>
       ) : (

@@ -20,6 +20,7 @@ export function MinimalProjectHighlight({ project }: Props) {
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block group-hover:translate-x-1 transition-transform duration-200"
+            data-cursor-intent="hover"
           >
             <h3 className="text-lg font-medium leading-snug hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
               {project.title}

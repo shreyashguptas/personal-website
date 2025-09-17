@@ -87,16 +87,6 @@ function readMarkdownDirectory(dirPath: string, type: SourceType): RawDoc[] {
     const projectUrl: string | undefined = type === "project" && typeof fm.projectUrl === "string" ? (fm.projectUrl as string) : undefined;
     const lastUpdated: string | undefined = type === "resume" && typeof fm.lastUpdated === "string" ? fm.lastUpdated : undefined;
 
-    // Metadata block to prime retrieval for date/title/tech queries
-    const metaLines = [
-      `Type: ${type}`,
-      `Title: ${title}`,
-      date ? `Date: ${date}` : undefined,
-      summary ? `Summary: ${summary}` : undefined,
-      technologies && technologies.length ? `Technologies: ${technologies.join(", ")}` : undefined,
-      projectUrl ? `ProjectURL: ${projectUrl}` : undefined,
-      lastUpdated ? `LastUpdated: ${lastUpdated}` : undefined,
-    ].filter(Boolean).join("\n");
 
     const chunks = chunkText(limited, PROMPT_CONFIG.embeddings.chunkSize, PROMPT_CONFIG.embeddings.chunkOverlap);
     chunks.forEach((text, idx) => {

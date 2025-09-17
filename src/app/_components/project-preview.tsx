@@ -27,6 +27,7 @@ export function ProjectPreview({ project }: Props) {
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block bg-black dark:bg-white text-white dark:text-black px-6 py-3 rounded-md font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
+            data-cursor-intent="hover"
           >
             View Project
           </Link>

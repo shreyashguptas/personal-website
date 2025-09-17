@@ -6,6 +6,7 @@ export function MinimalNavigation() {
       <Link
         href="/blog"
         className="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors inline-flex items-center gap-1"
+        data-cursor-intent="hover"
       >
         Blog
         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -16,6 +17,7 @@ export function MinimalNavigation() {
       <Link
         href="/projects"
         className="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors inline-flex items-center gap-1"
+        data-cursor-intent="hover"
       >
         Project
         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

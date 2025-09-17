@@ -23,9 +23,9 @@ function getTimeOfDay(date: Date = new Date()): TimeOfDay {
 
 function buildSuggestions(): string[] {
   const base: string[] = [
-    "What's the latest project you've worked on?",
+    "What email can I reach you at?",
     "What was the latest blog you wrote about?",
-    "What email can I reach you at?"
+    "What's the latest project you've worked on?"
   ];
   const returning: string[] = [];
   const set = [...base, ...returning];
