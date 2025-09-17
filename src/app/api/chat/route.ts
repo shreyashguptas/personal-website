@@ -354,8 +354,27 @@ export async function POST(req: NextRequest) {
     // Additional synonyms to catch natural language like "last thing you wrote"
     const asksLastProject = /\b(last|most\s+recent)\s+(project|thing\s+you\s+built|work(ed)?\s+on)\b/i.test(userMessage);
     const asksLastPost = /\b(last|most\s+recent)\s+(blog|post|article|thing\s+you\s+wrote|write\w*)\b/i.test(userMessage);
-    const asksProjectsOnly = /\b(project|projects)\b/i.test(userMessage) && !/\b(post|blog|article|write)/i.test(userMessage);
-    const asksPostsOnly = /\b(post|blog|article|write)/i.test(userMessage) && !/\b(project|projects)\b/i.test(userMessage);
+    
+    // Enhanced project detection - more specific patterns and stronger prioritization
+    const asksProjectsOnly = (
+      // Direct project questions
+      /\b(what\s+(kind\s+of\s+)?(project|projects)|tell\s+me\s+about.*(project|projects)|show\s+me.*(project|projects))/i.test(userMessage) ||
+      // "projects you worked on/built" patterns
+      /(project|projects)\s+(you\s+)?(worked|built|made|created)/i.test(userMessage) ||
+      // Numbered project requests
+      /\b\d+\s+(project|projects)\b/i.test(userMessage) ||
+      // General project inquiry without blog/post mentions
+      (/\b(project|projects)\b/i.test(userMessage) && !/\b(post|blog|article|write|wrote|writing)\b/i.test(userMessage))
+    );
+    
+    const asksPostsOnly = (
+      // Direct blog/post questions
+      /\b(what\s+(kind\s+of\s+)?(blog|post|article)|tell\s+me\s+about.*(blog|post|article)|show\s+me.*(blog|post|article))/i.test(userMessage) ||
+      // "posts you wrote" patterns  
+      /(blog|post|article)\s+(you\s+)?(wrote|written|published|created)/i.test(userMessage) ||
+      // General blog/post inquiry without project mentions
+      (/\b(post|blog|article|write|wrote|writing)\b/i.test(userMessage) && !/\b(project|projects)\b/i.test(userMessage))
+    );
     const asksPrevious = /(previous|before\s+that|prior|earlier\s+than\s+that)/i.test(userMessage);
     const asksResume = /\b(resume|work\s+experience|job|employment|career|background|skills|education)\b/i.test(userMessage);
     const asksContact = /(what(?:'s| is)\s*(your)?\s*email|email\s*address|e-mail|contact\b|reach\s+(you|out)|how\s+can\s+i\s+contact\s+you)/i.test(userMessage);
@@ -396,8 +415,27 @@ export async function POST(req: NextRequest) {
         contextDocs = [latestP, ...contextDocs.filter((d) => d.slug !== latestP.slug)].slice(0, 5);
       }
     } else if (asksProjectsOnly) {
-      const onlyProjects = filterByType(contextDocs, "project");
-      if (onlyProjects.length > 0) contextDocs = onlyProjects;
+      // For project queries, prioritize project content strongly
+      const onlyProjects = filterByType(retrieved, "project");
+      if (onlyProjects.length > 0) {
+        // If we have projects from retrieval, use only those
+        contextDocs = onlyProjects.slice(0, 10); // Allow more projects to be shown
+        console.info("[chat] project_priority_applied", { 
+          reason: "projects_only_intent", 
+          projectCount: onlyProjects.length,
+          originalRetrievalCount: retrieved.length 
+        });
+      } else {
+        // Fallback: get all projects from index if none in retrieved
+        const allProjects = filterByType(index, "project");
+        if (allProjects.length > 0) {
+          contextDocs = allProjects.slice(0, 10);
+          console.info("[chat] project_fallback_applied", { 
+            reason: "no_projects_in_retrieval", 
+            fallbackProjectCount: allProjects.length 
+          });
+        }
+      }
     } else if (asksPostsOnly) {
       const onlyPosts = filterByType(contextDocs, "post");
       if (onlyPosts.length > 0) contextDocs = onlyPosts;

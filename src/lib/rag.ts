@@ -264,6 +264,20 @@ export function lexicalFallback(index: RetrievedDoc[], query: string, k = 3): Re
   // Check if this is a technology query
   const isTechQuery = /\b(pytorch|tensorflow|react|next\.js|python|machine learning|ml|ai|nlp|data analysis)\b/i.test(query.toLowerCase());
   
+  // Check content type intent
+  const isProjectQuery = (
+    /\b(what\s+(kind\s+of\s+)?(project|projects)|tell\s+me\s+about.*(project|projects)|show\s+me.*(project|projects))/i.test(query) ||
+    /(project|projects)\s+(you\s+)?(worked|built|made|created)/i.test(query) ||
+    /\b\d+\s+(project|projects)\b/i.test(query) ||
+    (/\b(project|projects)\b/i.test(query) && !/\b(post|blog|article|write|wrote|writing)\b/i.test(query))
+  );
+  
+  const isPostQuery = (
+    /\b(what\s+(kind\s+of\s+)?(blog|post|article)|tell\s+me\s+about.*(blog|post|article)|show\s+me.*(blog|post|article))/i.test(query) ||
+    /(blog|post|article)\s+(you\s+)?(wrote|written|published|created)/i.test(query) ||
+    (/\b(post|blog|article|write|wrote|writing)\b/i.test(query) && !/\b(project|projects)\b/i.test(query))
+  );
+  
   const scored = index.map((d) => {
     const hay = `${d.title} ${d.text}`.toLowerCase();
     let score = 0;
@@ -271,6 +285,17 @@ export function lexicalFallback(index: RetrievedDoc[], query: string, k = 3): Re
     // Basic text matching
     for (const w of kw) {
       if (hay.includes(w)) score += 1;
+    }
+    
+    // Strong content type boost
+    if (isProjectQuery && d.type === "project") {
+      score += 50; // Very strong boost for project matches when asking about projects
+    } else if (isProjectQuery && d.type === "post") {
+      score = Math.max(0, score - 20); // Penalize posts when asking about projects
+    } else if (isPostQuery && d.type === "post") {
+      score += 50; // Very strong boost for post matches when asking about posts
+    } else if (isPostQuery && d.type === "project") {
+      score = Math.max(0, score - 20); // Penalize projects when asking about posts
     }
     
     // Boost score for technology matches in the technologies array
@@ -291,8 +316,8 @@ export function lexicalFallback(index: RetrievedDoc[], query: string, k = 3): Re
   
   scored.sort((a, b) => b.score - a.score);
   
-  // For technology queries, return more results to ensure we don't miss any
-  const resultCount = isTechQuery ? Math.min(k * 2, 8) : k;
+  // For technology queries or content type queries, return more results
+  const resultCount = (isTechQuery || isProjectQuery) ? Math.min(k * 2, 12) : k;
   return scored.filter((s) => s.score > 0).slice(0, resultCount).map((s) => s.d);
 }
 
