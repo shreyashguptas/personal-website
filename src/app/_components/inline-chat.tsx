@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { capture, AnalyticsEvent } from "@/lib/analytics";
 import Image from "next/image";
 import DOMPurify from "dompurify";
+import { Kbd } from "./kbd";
 
 // Constants
 const MAX_MESSAGE_LENGTH = 1000;
@@ -556,9 +557,10 @@ export function InlineChat() {
                 {suggestions.map((s, index) => (
                   <button
                     key={s}
-                    className="group text-left text-sm md:text-base rounded-xl bg-accent/30 hover:bg-accent/50 border border-border/50 hover:border-border text-foreground px-4 py-3 transition-all duration-200 hover:shadow-premium-sm hover:-translate-y-0.5 animate-fade-in"
+                    className="group text-left text-sm md:text-base rounded-xl bg-accent/30 hover:bg-accent/50 border border-border/50 hover:border-border text-foreground px-4 py-3 transition-all duration-200 hover:shadow-premium-sm hover:-translate-y-0.5 animate-fade-in flex items-center justify-between"
                     style={{ animationDelay: `${800 + (index * 100)}ms` }}
                     data-cursor-intent="hover"
+                    data-suggestion-index={index}
                     onClick={() => {
                       // Validate suggestion before sending
                       if (typeof s !== 'string' || s.length === 0 || s.length > MAX_MESSAGE_LENGTH) {
@@ -566,11 +568,13 @@ export function InlineChat() {
                         return;
                       }
                       console.info("[inline-chat] suggestion_click", { suggestion: s });
+                      // Clear input in case user was typing
+                      setInput('');
                       setSuggestions([]);
                       send(s);
                     }}
                   >
-                    <span className="inline-flex items-center gap-2">
+                    <span className="inline-flex items-center gap-2 flex-1">
                       <svg 
                         className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" 
                         fill="none" 
@@ -581,6 +585,7 @@ export function InlineChat() {
                       </svg>
                       {s}
                     </span>
+                    <Kbd keys={[(index + 1).toString()]} />
                   </button>
                 ))}
               </div>
@@ -636,7 +641,7 @@ export function InlineChat() {
                 }}
                 className="w-full rounded-xl border-2 border-border bg-background px-4 py-3.5 text-sm md:text-base focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60"
                 data-cursor-intent="text"
-                placeholder="Type your question here..."
+                placeholder="Type your question here... (Press / to focus)"
                 maxLength={MAX_MESSAGE_LENGTH}
                 minLength={1}
                 required
@@ -648,7 +653,7 @@ export function InlineChat() {
             <button
               type="submit"
               disabled={loading}
-              className="rounded-xl bg-primary text-primary-foreground px-5 py-3.5 text-sm md:text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:opacity-90 shadow-premium-sm hover:shadow-premium-md flex-shrink-0"
+              className="group rounded-xl bg-primary text-primary-foreground px-5 py-3.5 text-sm md:text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:opacity-90 shadow-premium-sm hover:shadow-premium-md flex-shrink-0 flex items-center gap-2"
               aria-label="Send message"
             >
               {loading ? (
@@ -657,9 +662,10 @@ export function InlineChat() {
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
               ) : (
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-                </svg>
+                <>
+                  <span className="hidden sm:inline">Send</span>
+                  <Kbd keys={['enter']} className="bg-primary-foreground/20 text-primary-foreground border-primary-foreground/30" />
+                </>
               )}
             </button>
           </form>

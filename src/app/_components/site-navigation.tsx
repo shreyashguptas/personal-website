@@ -8,6 +8,7 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "./navigation-menu"
+import { Kbd } from "./kbd"
 
 export function SiteNavigation() {
   return (
@@ -16,17 +17,26 @@ export function SiteNavigation() {
         <NavigationMenuList>
           <NavigationMenuItem>
             <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-              <Link href="/" data-cursor-intent="hover">Home</Link>
+              <Link href="/" data-cursor-intent="hover" className="group flex items-center gap-2">
+                Home
+                <Kbd keys={['mod', '1']} className="ml-1" />
+              </Link>
             </NavigationMenuLink>
           </NavigationMenuItem>
           <NavigationMenuItem>
             <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-              <Link href="/blog" data-cursor-intent="hover">Blog</Link>
+              <Link href="/blog" data-cursor-intent="hover" className="group flex items-center gap-2">
+                Blog
+                <Kbd keys={['mod', '2']} className="ml-1" />
+              </Link>
             </NavigationMenuLink>
           </NavigationMenuItem>
             <NavigationMenuItem>
             <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-              <Link href="/projects" data-cursor-intent="hover">Project</Link>
+              <Link href="/projects" data-cursor-intent="hover" className="group flex items-center gap-2">
+                Project
+                <Kbd keys={['mod', '3']} className="ml-1" />
+              </Link>
             </NavigationMenuLink>
           </NavigationMenuItem>
         </NavigationMenuList>

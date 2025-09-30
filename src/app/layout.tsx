@@ -10,6 +10,7 @@ import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { SiteFooter } from "./_components/footer";
 import { PosthogInit } from './_components/posthog-init';
+import { KeyboardShortcutsProvider } from "./_components/keyboard-shortcuts-provider";
 
 import "./globals.css";
 
@@ -88,6 +89,7 @@ export default function RootLayout({
       >
         <PosthogInit />
         <CustomCursor />
+        <KeyboardShortcutsProvider />
         <ThemeSwitcher />
         <SiteNavigation />
         <main className="flex-1">{children}</main>
