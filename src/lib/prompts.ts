@@ -52,7 +52,7 @@ Output:
 // You can add more prompt configurations here in the future
 export const PROMPT_CONFIG = {
   maxCompletionTokens: 1200, // GPT-5 uses max_completion_tokens instead of max_tokens (max: 128,000)
-  model: "gpt-5-mini-2025-08-07", // GPT-5 Mini (dated snapshot for stability) - 400B params, 400K context window
+  model: "gpt-5-mini", // GPT-5 Mini - always uses latest version (400B params, 400K context window)
   // GPT-5 new parameters
   reasoningEffort: "minimal", // minimal | low | medium | high - controls depth of reasoning
   verbosity: "medium", // low | medium | high - controls response length/detail
