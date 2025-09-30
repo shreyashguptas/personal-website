@@ -234,7 +234,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json().catch(() => null);
     const parsed = BodySchema.safeParse(body);
     if (!parsed.success) {
-      const errorDetails = parsed.error.errors.map(err =>
+      const errorDetails = parsed.error.issues.map(err =>
         `${err.path.join('.')}: ${err.message}`
       ).join(', ');
 
