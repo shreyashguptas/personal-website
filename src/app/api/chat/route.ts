@@ -519,8 +519,10 @@ export async function POST(req: NextRequest) {
           ...history.map((h) => ({ role: h.role as "user" | "assistant", content: h.content })),
           { role: "user", content: combinedUser },
         ],
-        temperature: PROMPT_CONFIG.temperature,
-        max_tokens: PROMPT_CONFIG.maxTokens,
+        // GPT-5 parameters (temperature removed, new parameters added)
+        max_completion_tokens: PROMPT_CONFIG.maxCompletionTokens, // GPT-5 uses max_completion_tokens
+        reasoning_effort: PROMPT_CONFIG.reasoningEffort, // Controls depth of reasoning
+        verbosity: PROMPT_CONFIG.verbosity, // Controls response length/detail
         stream: true,
       });
       

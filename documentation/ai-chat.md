@@ -57,8 +57,9 @@ This document explains the end-to-end AI chat feature: how it's built, where to 
   Centralized prompt configuration with enhanced content type awareness:
   - **Enhanced System Prompt**: Explicit content type recognition (projects vs blog posts vs resume)
   - **Content Type Instructions**: Clear guidance for distinguishing between different content types
-  - Model selection (currently `gpt-4o-mini`)
-  - Configurable parameters (temperature, max tokens, context sizes)
+  - Model selection (currently `gpt-5-mini` - 400B params, 400K context window)
+  - Configurable parameters (max tokens up to 128K, context sizes)
+  - **Note**: Temperature parameter removed in GPT-5 models
   - **Advanced Embedding Settings**: Semantic chunking, structure preservation, enhanced chunk sizes
   - Retrieval settings (results count, context size per query type)
 
@@ -102,7 +103,7 @@ This document explains the end-to-end AI chat feature: how it's built, where to 
 #### Required Variables
 - **`OPENAI_API_KEY`** (required): OpenAI API key for embeddings and chat completion. Never quote in `.env` file.
   - Format: `OPENAI_API_KEY=sk-...`
-  - Used for: `text-embedding-3-small` (embeddings) and `gpt-4o-mini` (chat completion)
+  - Used for: `text-embedding-3-small` (embeddings) and `gpt-5-mini` (chat completion)
 
 #### Optional Variables
 - **`UPSTASH_REDIS_REST_URL`** & **`UPSTASH_REDIS_REST_TOKEN`**: Enable production-grade Redis rate limiting
@@ -265,7 +266,7 @@ npm run build:index
 - `x-latency-ms`: Total request processing time
 - `x-embed-ms`: Embedding generation time
 - `x-retrieve-ms`: Document retrieval time
-- `x-model-used`: AI model identifier (`gpt-4o-mini`)
+- `x-model-used`: AI model identifier (`gpt-5-mini`)
 - `x-index-size`: Total documents in vector index
 - `x-retrieved`: Number of documents retrieved for context
 
@@ -389,7 +390,7 @@ npm run build:index
 
 **Server Errors (500/502):**
 - **API Key Issues**: Verify `OPENAI_API_KEY` is valid and has sufficient credits
-- **Model Availability**: Check OpenAI service status for `gpt-4o-mini` and `text-embedding-3-small`
+- **Model Availability**: Check OpenAI service status for `gpt-5-mini` and `text-embedding-3-small`
 - **Timeout Issues**: Embedding requests timeout after 30s, chat completion after 60s
 - **Memory Issues**: Vector index loading may fail if system memory is constrained
 
@@ -450,7 +451,7 @@ Expected headers:
 x-latency-ms: 1250
 x-embed-ms: 450
 x-retrieve-ms: 150
-x-model-used: gpt-4o-mini
+x-model-used: gpt-5-mini
 x-index-size: 125
 x-retrieved: 5
 ```

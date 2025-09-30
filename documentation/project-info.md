@@ -87,7 +87,7 @@ The website features comprehensive image optimization:
 - **Build Tool**: Turbopack for optimized development
 
 ### AI & Search
-- **AI Provider**: OpenAI GPT-4o-mini and text-embedding-3-small
+- **AI Provider**: OpenAI GPT-5 Mini (400B params, 400K context) and text-embedding-3-small
 - **Enhanced Vector Search**: Advanced RAG with semantic chunking and content type intelligence
 - **Content Processing**: Markdown parsing with structure preservation and paragraph-aware chunking
 - **Intelligent Retrieval**: Strong content type differentiation with dedicated pathways for projects/blog posts/resume
