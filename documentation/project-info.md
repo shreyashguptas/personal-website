@@ -5,21 +5,33 @@ This is a modern personal website and blog built with Next.js 15, featuring opti
 ## 🚀 Features
 
 - **Next.js 15.5.0** with App Router and React 19.1.0
-- **Advanced AI-Powered Chat Interface**: Enhanced RAG system with intelligent content type detection
+- **GPT-5 Mini Integration**: Latest AI model with 400B params, 400K context window, enhanced reasoning
+- **Advanced AI-Powered Chat Interface**: Personalized greetings, typing indicators, and intelligent quick start questions
 - **Semantic Vector Search**: Advanced chunking with paragraph-aware processing and structure preservation  
 - **Content Type Intelligence**: Strong differentiation between projects, blog posts, and resume content
+- **Full Keyboard Shortcut System**: OS-aware shortcuts for navigation (⌘1-3) and chat (/, 1-3, Enter)
+- **Premium Design System**: HSL-based colors, custom shadow system, smooth animations, and hover effects
+- **Custom Interactive Cursor**: Circle cursor with hover intent detection
 - **Fully optimized images** with automatic WebP/AVIF conversion
-- **Dark/Light theme** with system preference detection
+- **Dark/Light theme** with system preference detection and premium color palette
 - **Static generation** for excellent performance
 - **Analytics integration** with Vercel Web Analytics and Speed Insights
 - **TypeScript** for type safety
-- **Tailwind CSS** for styling
+- **Tailwind CSS** for styling with custom utility classes
 - **Responsive design** with mobile-first approach
 - **Enterprise-grade security** with XSS protection and rate limiting
+- **WCAG AA Accessibility**: Full keyboard navigation and proper contrast ratios
 
 ## 📁 Project Structure
 
 The website includes both a blog and a projects portfolio:
+
+### New Files Added in Latest Updates
+- **`src/lib/keyboard.ts`**: Keyboard utility functions (platform detection, modifier key handling)
+- **`src/app/_components/kbd.tsx`**: Kbd component for displaying keyboard shortcuts
+- **`src/app/_components/keyboard-shortcuts-provider.tsx`**: Global keyboard shortcuts provider
+- **`src/hooks/use-keyboard-shortcuts.ts`**: Custom hook for keyboard shortcut management
+- **`src/app/_components/custom-cursor.tsx`**: Custom interactive cursor component
 
 ### Blog Posts
 - Stored in `/_posts` as Markdown files with front matter
@@ -101,10 +113,15 @@ The website features comprehensive image optimization:
 - **Authentication**: API key management (server-side only)
 
 ### UI & Styling
-- **Styling**: Tailwind CSS 3.4.17 with custom design system
+- **Styling**: Tailwind CSS 3.4.17 with premium design system
+- **Color System**: HSL-based semantic colors with warm tones
+- **Shadow System**: Custom premium shadows (xs through xl)
 - **Icons**: Lucide React for consistent iconography
 - **Theme**: Dark/light mode with system preference detection
-- **Accessibility**: ARIA labels and keyboard navigation
+- **Animations**: Fade-in animations and smooth hover micro-interactions
+- **Keyboard Shortcuts**: Full system with OS detection and visual hints
+- **Custom Cursor**: Interactive circle cursor with hover intent detection
+- **Accessibility**: ARIA labels, full keyboard navigation, and WCAG AA compliance
 
 ### Content & Media
 - **Content**: Markdown with front matter (Gray Matter)
@@ -147,12 +164,15 @@ Notes:
 - `npm run lint` - Run ESLint checks
 
 ### Key Components
-- **InlineChat**: Enhanced AI-powered Q&A with intelligent content type recognition and real-time streaming
+- **InlineChat**: Enhanced AI-powered chat with GPT-5 Mini, personalized greetings, typing indicators, and quick start questions
 - **Advanced RAG System**: Semantic chunking with paragraph-aware processing and universal metadata
 - **Content Type Intelligence**: Dedicated retrieval pathways preventing project/blog post confusion
+- **Kbd Component**: Displays keyboard shortcuts with automatic OS detection (⌘ vs Ctrl)
+- **KeyboardShortcutsProvider**: Global keyboard shortcut management for navigation and chat
+- **CustomCursor**: Interactive circle cursor that adapts to hover intent
 - **ThemeSwitcher**: Automatic dark/light mode with system preference
-- **SiteNavigation**: Main navigation with responsive design
-- **Image Components**: Optimized image rendering across the site
+- **SiteNavigation**: Main navigation with responsive design and keyboard hints
+- **Image Components**: Optimized image rendering with hover effects and glow
 - **Analytics**: Integrated Vercel analytics and speed monitoring
 - **Security Layer**: Multi-tier input validation and XSS protection
 

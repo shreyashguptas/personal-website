@@ -3,7 +3,6 @@ import { getSiteUrl } from "@/lib/seo";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import cn from "classnames";
-import { ThemeSwitcher } from "./_components/theme-switcher";
 import { SiteNavigation } from "./_components/site-navigation";
 import { CustomCursor } from "./_components/custom-cursor";
 import { Analytics } from '@vercel/analytics/react';
@@ -49,6 +48,34 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                const media = matchMedia('(prefers-color-scheme: dark)');
+                
+                function updateTheme() {
+                  const isDark = media.matches;
+                  const html = document.documentElement;
+                  
+                  if (isDark) {
+                    html.classList.add('dark');
+                  } else {
+                    html.classList.remove('dark');
+                  }
+                  
+                  html.setAttribute('data-theme', isDark ? 'dark' : 'light');
+                }
+
+                // Apply theme immediately
+                updateTheme();
+                
+                // Listen for system theme changes
+                media.addEventListener('change', updateTheme);
+              })();
+            `,
+          }}
+        />
         <link
           rel="apple-touch-icon"
           sizes="180x180"
@@ -84,13 +111,12 @@ export default function RootLayout({
       <body
         className={cn(
           inter.className,
-          "bg-white text-black dark:bg-black dark:text-white transition-colors duration-200 min-h-screen flex flex-col"
+          "bg-background text-foreground transition-colors duration-200 min-h-screen flex flex-col"
         )}
       >
         <PosthogInit />
         <CustomCursor />
         <KeyboardShortcutsProvider />
-        <ThemeSwitcher />
         <SiteNavigation />
         <main className="flex-1">{children}</main>
         <SiteFooter />

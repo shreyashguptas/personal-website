@@ -5,19 +5,35 @@ This website uses a clean, modern design system with automatic dark/light mode d
 
 ## Color Scheme
 
-### Light Mode
-- **Background**: White (`bg-white`)
-- **Text**: Black (`text-black`)
-- **Muted Text**: Gray-600 (`text-gray-600`)
-- **Borders**: Gray-200 (`border-gray-200`)
-- **Accent**: Blue tones for links and interactive elements
+### Premium Neutral Palette with Warm Tones
+The website uses a sophisticated color system with HSL CSS variables for consistent theming:
 
-### Dark Mode
-- **Background**: Black (`bg-black`)
-- **Text**: White (`text-white`)
-- **Muted Text**: Gray-400 (`text-gray-400`)
-- **Borders**: Gray-800 (`border-gray-800`)
-- **Accent**: Lighter blue tones for links and interactive elements
+#### Light Mode
+- **Background**: `hsl(40, 10%, 98%)` - Warm near-white
+- **Foreground**: `hsl(240, 10%, 5%)` - Deep charcoal
+- **Muted Background**: `hsl(60, 5%, 96%)` - Subtle warm gray
+- **Muted Foreground**: `hsl(240, 5%, 45%)` - Medium gray
+- **Accent**: `hsl(240, 5%, 93%)` - Light accent gray
+- **Primary**: `hsl(240, 10%, 10%)` - Rich black
+- **Border**: `hsl(240, 6%, 90%)` - Soft border gray
+
+#### Dark Mode
+- **Background**: `hsl(240, 10%, 5%)` - Deep dark
+- **Foreground**: `hsl(40, 10%, 98%)` - Warm white
+- **Muted Background**: `hsl(240, 5%, 10%)` - Subtle dark gray
+- **Muted Foreground**: `hsl(240, 5%, 60%)` - Medium light gray
+- **Accent**: `hsl(240, 5%, 15%)` - Dark accent
+- **Primary**: `hsl(40, 10%, 98%)` - Bright primary
+- **Border**: `hsl(240, 6%, 20%)` - Soft border dark
+
+### Usage
+```css
+/* Use semantic color variables */
+bg-background text-foreground
+bg-accent text-accent-foreground
+border-border
+text-muted-foreground
+```
 
 ## Typography
 
@@ -91,18 +107,79 @@ className="bg-white dark:bg-black text-black dark:text-white"
 - **ProjectPreview**: Project showcase cards with responsive layouts
 - **SectionSeparator**: Consistent spacing between content sections
 
+## Premium Shadow System
+
+Custom shadow system for depth and elevation:
+
+### Shadow Classes
+- **Extra Small**: `shadow-premium-xs` - Subtle depth for small elements
+- **Small**: `shadow-premium-sm` - Cards and buttons
+- **Medium**: `shadow-premium-md` - Elevated cards and containers
+- **Large**: `shadow-premium-lg` - Modal dialogs and popovers
+- **Extra Large**: `shadow-premium-xl` - Maximum elevation
+
+### Implementation
+```css
+/* Light mode shadows */
+--shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+--shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+--shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+--shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+--shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+/* Dark mode shadows - slightly stronger */
+--shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+/* ... etc */
+```
+
+## Utility Classes
+
+### Premium Utilities
+- **`transition-premium`**: Smooth transitions for hover effects
+- **`glass-subtle`**: Subtle backdrop blur for layered UI
+- **`card-elevated`**: Premium card styling with hover effects
+- **`text-gradient-premium`**: Subtle text gradients
+- **`hover-lift`**: Smooth hover micro-interactions with scale and translate
+- **`animate-fade-in`**: Fade-in animation for content reveals
+
+### Usage Examples
+```tsx
+// Elevated card with hover effect
+<div className="card-elevated hover-lift">
+  {/* Content */}
+</div>
+
+// Fade-in animation
+<div className="animate-fade-in">
+  {/* Content */}
+</div>
+```
+
 ## Interactive Elements
 
 ### Links and Buttons
-- **Default Links**: `text-blue-600 dark:text-blue-400 underline`
-- **Hover States**: `hover:text-blue-800 dark:hover:text-blue-300`
-- **Transitions**: `duration-200 transition-colors`
+- **Default Links**: Semantic color with hover transitions
+- **Hover States**: `hover:text-muted-foreground transition-colors duration-200`
+- **Transitions**: `transition-premium` for smooth interactions
 - **Focus States**: Visible focus rings for accessibility
+- **Primary Buttons**: `bg-primary text-primary-foreground` with shadow elevation
+
+### Keyboard Shortcuts
+- **Kbd Component**: Displays keyboard shortcuts with OS detection
+- **Platform Awareness**: Shows ⌘ on Mac, Ctrl on Windows/Linux
+- **Styling**: `text-sm font-mono font-semibold` with subtle background
+- **Usage**: Navigation (⌘1-3), Chat (/, 1-3, Enter)
 
 ### Image Interactions
-- **Hover Effects**: Subtle scale transforms on project images
+- **Hover Effects**: Scale transforms (`group-hover:scale-[1.02]`) on project images
+- **Glow Effects**: Headshot with hover glow and enhanced shadows
 - **Loading States**: Smooth transitions with blur placeholders
 - **Error Handling**: Graceful fallbacks for failed image loads
+
+### Custom Cursor
+- **Custom Cursor Component**: Circle cursor that follows mouse movement
+- **Hover Intent**: Hides on clickable elements, shows on hover elements
+- **Smooth Tracking**: Uses transform for GPU-accelerated positioning
 
 ## Component Architecture
 
@@ -159,17 +236,32 @@ export default function Component() {
 - Progressive enhancement for larger screens
 - Touch-friendly interactive elements
 
+## Keyboard Accessibility
+
+### Global Keyboard Shortcuts
+- **Navigation**: `⌘1` (Home), `⌘2` (Blog), `⌘3` (Projects)
+- **Chat Focus**: `/` to focus chat input
+- **Quick Actions**: `1`, `2`, `3` for quick start questions
+- **Submit**: `Enter` to send chat messages
+
+### Implementation
+- **OS Detection**: Automatically shows ⌘ on Mac, Ctrl on Windows/Linux
+- **Visual Hints**: Kbd badges on all interactive elements
+- **Provider**: `KeyboardShortcutsProvider` for global shortcuts
+- **Hook**: `useKeyboardShortcuts` for custom shortcuts
+
 ## Accessibility Features
 
 ### Color Contrast
 - **WCAG AA compliance**: All color combinations meet contrast requirements
 - **Theme consistency**: Both light and dark modes fully accessible
-- **Focus indicators**: Clear visual focus states
+- **Focus indicators**: Clear visual focus states with premium styling
 
 ### Semantic HTML
 - **Proper heading hierarchy**: h1 → h2 → h3 structure
 - **Alt text**: All images include descriptive alt attributes
 - **ARIA labels**: Enhanced accessibility for interactive elements
+- **Keyboard Navigation**: Full keyboard support with visible shortcuts
 
 ## Creating New Components
 
