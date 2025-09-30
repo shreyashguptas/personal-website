@@ -54,8 +54,8 @@ export const PROMPT_CONFIG = {
   maxCompletionTokens: 1200, // GPT-5 uses max_completion_tokens instead of max_tokens (max: 128,000)
   model: "gpt-5-mini", // GPT-5 Mini - always uses latest version (400B params, 400K context window)
   // GPT-5 new parameters
-  reasoningEffort: "minimal", // minimal | low | medium | high - controls depth of reasoning
-  verbosity: "medium", // low | medium | high - controls response length/detail
+  reasoningEffort: "minimal" as const, // minimal | low | medium | high - controls depth of reasoning
+  verbosity: "medium" as const, // low | medium | high - controls response length/detail
   // Note: temperature parameter removed - not supported in GPT-5 models
   
   // Search and retrieval settings
