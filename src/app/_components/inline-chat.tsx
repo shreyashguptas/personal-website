@@ -441,40 +441,73 @@ export function InlineChat() {
 
   return (
     <section aria-labelledby="inline-chat-heading" className="w-full">
-      <div className="mx-auto w-full rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/60 dark:bg-black/40 backdrop-blur p-5 sm:p-8 shadow-sm flex flex-col min-h-[55svh] md:min-h-[60svh] max-h-[85svh]">
-        <div className="mb-3 flex items-center justify-between">
-        </div>
-
+      <div className="mx-auto w-full flex flex-col min-h-[55svh] md:min-h-[60svh] max-h-[85svh]">
         {/* Messages */}
-        <div ref={scrollRef} className="space-y-3 flex-1 min-h-0 overflow-y-auto pr-1 sm:pr-2" aria-live="polite">
+        <div ref={scrollRef} className="space-y-4 flex-1 min-h-0 overflow-y-auto pr-1 sm:pr-2 mb-4" aria-live="polite">
           {messages.length === 0 && (
             <>
-              <div className="flex items-start justify-start">
-                <Image src="/headshot/headshot.jpg" alt="Shreyash" width={28} height={28} className="rounded-full object-cover mr-2 flex-shrink-0 mt-2" />
-                <div className="inline-block rounded-2xl bg-gray-100 text-black dark:bg-gray-900 dark:text-white px-3 py-2 max-w-[80%] text-sm sm:text-base">
-                  {`Good ${timeOfDay}${returningVisitor ? "!!" : ""}
-                  Ask me anything about my work, projects, or blog posts. 
-                  `}
+              <div className="flex items-start justify-start animate-fade-in">
+                <div className="relative flex-shrink-0 mr-3">
+                  <Image 
+                    src="/headshot/headshot.jpg" 
+                    alt="Shreyash" 
+                    width={36} 
+                    height={36} 
+                    className="rounded-full object-cover ring-2 ring-accent/50" 
+                  />
+                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full ring-2 ring-background" />
+                </div>
+                <div className="inline-block rounded-2xl rounded-tl-sm bg-accent/50 px-4 py-3 max-w-[85%] text-sm md:text-base shadow-premium-sm">
+                  <p className="font-medium mb-1">
+                    Good {timeOfDay}{returningVisitor ? ", welcome back! 👋" : "! I'm Shreyash 👋"}
+                  </p>
+                  <p className="text-foreground/80">
+                    {returningVisitor 
+                      ? "What would you like to know today?" 
+                      : "Ask me anything about my work, projects, or what I've been writing about!"}
+                  </p>
                 </div>
               </div>
-              <div className="flex items-start justify-start">
-                <Image src="/headshot/headshot.jpg" alt="Shreyash" width={24} height={24} className="rounded-full object-cover mr-2 flex-shrink-0 mt-2" />
-                <div className="inline-block rounded-2xl bg-gray-100 text-black dark:bg-gray-900 dark:text-white px-3 py-2 max-w-[80%] text-sm sm:text-base">
-                If you're not sure where to start, try a quick question below.
+              
+              {!returningVisitor && (
+                <div className="flex items-start justify-start animate-fade-in" style={{ animationDelay: '400ms' }}>
+                  <div className="relative flex-shrink-0 mr-3">
+                    <Image 
+                      src="/headshot/headshot.jpg" 
+                      alt="Shreyash" 
+                      width={36} 
+                      height={36} 
+                      className="rounded-full object-cover ring-2 ring-accent/50" 
+                    />
+                  </div>
+                  <div className="inline-block rounded-2xl rounded-tl-sm bg-accent/50 px-4 py-3 max-w-[85%] text-sm md:text-base shadow-premium-sm">
+                    <p className="text-foreground/80">
+                      Try one of the questions below, or type your own! 💬
+                    </p>
+                  </div>
                 </div>
-              </div>
+              )}
             </>
           )}
           {messages.map((m, i) => (
-            <div key={i} className={m.role === "user" ? "flex items-start justify-end" : "flex items-start justify-start"}>
+            <div key={i} className={m.role === "user" ? "flex items-start justify-end animate-fade-in" : "flex items-start justify-start animate-fade-in"}>
               {m.role !== "user" && (
-                <Image src="/headshot/headshot.jpg" alt="Shreyash" width={24} height={24} className="rounded-full object-cover mt-2 mr-2 flex-shrink-0" />
+                <div className="relative flex-shrink-0 mr-3">
+                  <Image 
+                    src="/headshot/headshot.jpg" 
+                    alt="Shreyash" 
+                    width={36} 
+                    height={36} 
+                    className="rounded-full object-cover ring-2 ring-accent/50" 
+                  />
+                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full ring-2 ring-background" />
+                </div>
               )}
               <div
                 className={
                   m.role === "user"
-                    ? "inline-block rounded-2xl bg-gray-900 text-white dark:bg-gray-100 dark:text-black px-3 py-2 max-w-[80%] text-sm sm:text-base"
-                    : "inline-block rounded-2xl bg-gray-100 text-black dark:bg-gray-900 dark:text-white px-3 py-2 max-w-[80%] text-sm sm:text-base"
+                    ? "inline-block rounded-2xl rounded-tr-sm bg-primary text-primary-foreground px-4 py-3 max-w-[85%] text-sm md:text-base shadow-premium-sm"
+                    : "inline-block rounded-2xl rounded-tl-sm bg-accent/50 px-4 py-3 max-w-[85%] text-sm md:text-base shadow-premium-sm"
                 }
                 dangerouslySetInnerHTML={
                   m.role === "assistant"
@@ -487,31 +520,70 @@ export function InlineChat() {
             </div>
           ))}
           
+          {/* Typing indicator when loading */}
+          {loading && (
+            <div className="flex items-start justify-start animate-fade-in">
+              <div className="relative flex-shrink-0 mr-3">
+                <Image 
+                  src="/headshot/headshot.jpg" 
+                  alt="Shreyash" 
+                  width={36} 
+                  height={36} 
+                  className="rounded-full object-cover ring-2 ring-accent/50" 
+                />
+                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full ring-2 ring-background" />
+              </div>
+              <div className="inline-block rounded-2xl rounded-tl-sm bg-accent/50 px-4 py-3 shadow-premium-sm">
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <div className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <div className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '300ms' }} />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Input */}
-        <div className="mt-4">
+        <div className="mt-auto pt-4">
           {/* Suggestion prompts above input - only show when no messages */}
           {messages.length === 0 && (
-            <div className="flex flex-col items-end gap-2 mb-3">
-              {suggestions.map((s) => (
-                <button
-                  key={s}
-                  className="text-left text-sm sm:text-base rounded-2xl border border-dashed border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-950 transition self-end max-w-[80%]"
-                  onClick={() => {
-                    // Validate suggestion before sending
-                    if (typeof s !== 'string' || s.length === 0 || s.length > MAX_MESSAGE_LENGTH) {
-                      console.warn("[inline-chat] Invalid suggestion clicked");
-                      return;
-                    }
-                    console.info("[inline-chat] suggestion_click", { suggestion: s });
-                    setSuggestions([]);
-                    send(s);
-                  }}
-                >
-                  {s}
-                </button>
-              ))}
+            <div className="mb-4">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3 text-center">
+                Quick Start Questions
+              </p>
+              <div className="flex flex-col gap-2">
+                {suggestions.map((s, index) => (
+                  <button
+                    key={s}
+                    className="group text-left text-sm md:text-base rounded-xl bg-accent/30 hover:bg-accent/50 border border-border/50 hover:border-border text-foreground px-4 py-3 transition-all duration-200 hover:shadow-premium-sm hover:-translate-y-0.5 animate-fade-in"
+                    style={{ animationDelay: `${800 + (index * 100)}ms` }}
+                    data-cursor-intent="hover"
+                    onClick={() => {
+                      // Validate suggestion before sending
+                      if (typeof s !== 'string' || s.length === 0 || s.length > MAX_MESSAGE_LENGTH) {
+                        console.warn("[inline-chat] Invalid suggestion clicked");
+                        return;
+                      }
+                      console.info("[inline-chat] suggestion_click", { suggestion: s });
+                      setSuggestions([]);
+                      send(s);
+                    }}
+                  >
+                    <span className="inline-flex items-center gap-2">
+                      <svg 
+                        className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" 
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                      </svg>
+                      {s}
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
           )}
           <form
@@ -526,65 +598,74 @@ export function InlineChat() {
               setSuggestions([]);
               send(trimmed);
             }}
-            className="flex items-center gap-2"
+            className="flex items-center gap-3"
           >
             <div className="relative flex-1">
-                          <input
-              ref={inputRef}
-              value={input}
-              onChange={(e) => {
-                const value = e.target.value;
+              <input
+                ref={inputRef}
+                value={input}
+                onChange={(e) => {
+                  const value = e.target.value;
 
-                // Basic security sanitization
-                let sanitized = value
-                  // Remove dangerous HTML characters and protocol handlers
-                  .replace(/[<>'"&]/g, '')
-                  .replace(/javascript:/gi, '')
-                  .replace(/data:/gi, '')
-                  .replace(/vbscript:/gi, '')
-                  .replace(/file:/gi, '')
-                  .replace(/ftp:/gi, '')
-                  // Remove potentially dangerous characters
-                  .replace(/[`\\]/g, '')
-                  .replace(/\0/g, ''); // Null bytes
+                  // Basic security sanitization
+                  let sanitized = value
+                    // Remove dangerous HTML characters and protocol handlers
+                    .replace(/[<>'"&]/g, '')
+                    .replace(/javascript:/gi, '')
+                    .replace(/data:/gi, '')
+                    .replace(/vbscript:/gi, '')
+                    .replace(/file:/gi, '')
+                    .replace(/ftp:/gi, '')
+                    // Remove potentially dangerous characters
+                    .replace(/[`\\]/g, '')
+                    .replace(/\0/g, ''); // Null bytes
 
-                // Length limit
-                if (sanitized.length > MAX_MESSAGE_LENGTH) {
-                  sanitized = sanitized.substring(0, MAX_MESSAGE_LENGTH);
-                }
+                  // Length limit
+                  if (sanitized.length > MAX_MESSAGE_LENGTH) {
+                    sanitized = sanitized.substring(0, MAX_MESSAGE_LENGTH);
+                  }
 
-                setInput(sanitized);
-              }}
-              onKeyDown={(e) => {
-                // Allow normal typing - only prevent problematic combinations
-                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey || e.shiftKey)) {
-                  e.preventDefault();
-                  return;
-                }
-              }}
-              className="w-full rounded-lg border border-gray-200 dark:border-gray-800 bg-transparent pl-4 pr-3 py-3 text-sm sm:text-base focus:outline-none placeholder:text-gray-400"
-              data-cursor-intent="text"
-              placeholder="What would you like to know about me?"
-              maxLength={MAX_MESSAGE_LENGTH}
-              minLength={1}
-              required
-              aria-label="Ask a question"
-              autoFocus
-              pattern=".*\S.*"
-            />
-              
+                  setInput(sanitized);
+                }}
+                onKeyDown={(e) => {
+                  // Allow normal typing - only prevent problematic combinations
+                  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey || e.shiftKey)) {
+                    e.preventDefault();
+                    return;
+                  }
+                }}
+                className="w-full rounded-xl border-2 border-border bg-background px-4 py-3.5 text-sm md:text-base focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60"
+                data-cursor-intent="text"
+                placeholder="Type your question here..."
+                maxLength={MAX_MESSAGE_LENGTH}
+                minLength={1}
+                required
+                aria-label="Ask a question"
+                autoFocus
+                pattern=".*\S.*"
+              />
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="rounded-lg bg-black text-white dark:bg-white dark:text-black px-4 py-3 text-sm sm:text-base disabled:opacity-50"
+              className="rounded-xl bg-primary text-primary-foreground px-5 py-3.5 text-sm md:text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:opacity-90 shadow-premium-sm hover:shadow-premium-md flex-shrink-0"
+              aria-label="Send message"
             >
-              Send
+              {loading ? (
+                <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                </svg>
+              )}
             </button>
           </form>
-          <div className="pt-2 text-[10px] opacity-70">
-            AI can hallucinate. Answers are based only on content from this website.
-          </div>
+          <p className="mt-3 text-xs text-center text-muted-foreground/70">
+            💡 Powered by AI • Responses based on site content
+          </p>
         </div>
       </div>
     </section>

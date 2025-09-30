@@ -45,9 +45,7 @@ export default function HomePage() {
 
             {/* Right column: enhanced chat interface */}
             <div className="mt-10 desktop:mt-0">
-              <div className="card-elevated p-6 md:p-8 hover-lift">
-                <InlineChat />
-              </div>
+              <InlineChat />
             </div>
           </div>
         </div>
