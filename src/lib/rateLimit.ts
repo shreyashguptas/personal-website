@@ -6,6 +6,7 @@ const WINDOW = "5 m";
 const LIMIT = 30;
 
 let ratelimit: Ratelimit | null = null;
+const isProduction = process.env.NODE_ENV === 'production';
 
 export function getRateLimiter(): Ratelimit | null {
   try {
@@ -14,7 +15,11 @@ export function getRateLimiter(): Ratelimit | null {
     const token = process.env.UPSTASH_REDIS_REST_TOKEN;
     
     if (!url || !token) {
-      console.info('[rate-limit] Redis not configured, falling back to local rate limiting');
+      if (isProduction) {
+        console.error('[rate-limit] Redis not configured in production - this is a security risk');
+        throw new Error('Redis rate limiting is required in production');
+      }
+      console.info('[rate-limit] Redis not configured, falling back to local rate limiting (dev only)');
       return null; // fallback to in-memory in route
     }
     
@@ -28,15 +33,25 @@ export function getRateLimiter(): Ratelimit | null {
     console.info('[rate-limit] Redis-based rate limiting initialized successfully');
     return ratelimit;
   } catch (error) {
+    if (isProduction) {
+      console.error('[rate-limit] Failed to initialize Redis rate limiter in production:', error);
+      throw error; // Fail fast in production
+    }
     console.error('[rate-limit] Failed to initialize Redis rate limiter:', error);
     return null;
   }
 }
 
 // Local in-memory fallback for dev (single instance only)
+// WARNING: This is not secure for production as it can be bypassed by server restarts
 const localBuckets = new Map<string, { count: number; resetAt: number }>();
 
 export function localRateLimit(key: string): { success: boolean; remaining: number; reset: number } {
+  // Prevent use in production
+  if (isProduction) {
+    console.error('[rate-limit] Local rate limiting attempted in production - this is a security risk');
+    throw new Error('Local rate limiting is not allowed in production');
+  }
   const now = Date.now();
   const windowMs = 2 * 60 * 1000;
   const record = localBuckets.get(key);
