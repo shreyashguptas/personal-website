@@ -77,6 +77,13 @@ export function CustomCursor() {
     };
   }, [shouldRender]);
 
+  useEffect(() => {
+    document.documentElement.classList.add("motion-ready");
+    return () => {
+      document.documentElement.classList.remove("motion-ready");
+    };
+  }, []);
+
   // Don't render on touch-only devices
   if (!shouldRender) return null;
   // Hide custom cursor entirely when hovering clickable areas to show system pointer

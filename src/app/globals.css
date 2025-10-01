@@ -157,4 +157,101 @@
     animation: fade-in 0.4s ease-out forwards;
     opacity: 0;
   }
+
+  /* Graceful no-JS fallback */
+  html:not(.motion-ready) [data-animate] {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Homepage motion system */
+  @keyframes hero-float {
+    0% {
+      transform: translate3d(0, 0, 0);
+    }
+    50% {
+      transform: translate3d(0, -8px, 0);
+    }
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes grid-pan {
+    0% {
+      transform: translate3d(0, 0, 0);
+    }
+    100% {
+      transform: translate3d(-4%, -6%, 0);
+    }
+  }
+
+  @keyframes soft-glow {
+    0%, 100% {
+      opacity: 0.35;
+    }
+    50% {
+      opacity: 0.55;
+    }
+  }
+
+  .animate-hero-float {
+    animation: hero-float 18s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .animate-soft-glow {
+    animation: soft-glow 6s ease-in-out infinite;
+  }
+
+  .bg-grid-motion {
+    animation: grid-pan 48s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+
+  [data-animate] {
+    opacity: 0;
+    transform: translate3d(0, 0, 0);
+    transition-property: transform, opacity;
+    transition-duration: 600ms;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--fade-delay, 0ms);
+    will-change: transform, opacity;
+  }
+
+  [data-animate="fade-up"] {
+    transform: translate3d(0, 24px, 0);
+  }
+
+  [data-animate="fade-up-sm"] {
+    transform: translate3d(0, 12px, 0);
+  }
+
+  [data-animate="fade-left"] {
+    transform: translate3d(32px, 0, 0);
+  }
+
+  [data-animate="fade-right"] {
+    transform: translate3d(-32px, 0, 0);
+  }
+
+  [data-animate-state="visible"] {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-hero-float,
+    .animate-soft-glow,
+    .bg-grid-motion {
+      animation-duration: 1ms !important;
+      animation-iteration-count: 1 !important;
+    }
+
+    [data-animate] {
+      opacity: 1;
+      transform: none !important;
+      transition-duration: 1ms !important;
+    }
+  }
 }
