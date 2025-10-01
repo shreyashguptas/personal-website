@@ -25,6 +25,22 @@ export function MotionObserver() {
     }
 
     const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    const debug = (() => {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        return process.env.NODE_ENV !== "production" || params.has("debug-motion");
+      } catch {
+        return process.env.NODE_ENV !== "production";
+      }
+    })();
+
+    if (debug) {
+      console.info("[motion-observer] init", {
+        env: process.env.NODE_ENV,
+        prefersReducedMotion,
+        hasIntersectionObserver: typeof window !== "undefined" && "IntersectionObserver" in window,
+      });
+    }
     const animatedElements = new Set<AnimateElement>();
     let intersectionObserver: IntersectionObserver | null = null;
     let mutationObserver: MutationObserver | null = null;
@@ -34,7 +50,7 @@ export function MotionObserver() {
       animatedElements.add(element);
       element.dataset.animateState = "visible";
 
-      if (process.env.NODE_ENV !== "production") {
+      if (debug) {
         const label = element.getAttribute("data-animate") || "unnamed";
         const delay = element.style.getPropertyValue("--fade-delay") || "0ms";
         console.info("[motion-observer] reveal", { label, delay });
@@ -45,10 +61,17 @@ export function MotionObserver() {
       if (animatedElements.has(element)) return;
       ensureHiddenState(element);
       intersectionObserver?.observe(element);
+      if (debug) {
+        const label = element.getAttribute("data-animate") || "unnamed";
+        console.info("[motion-observer] register", { label });
+      }
     };
 
     const bootstrap = () => {
       const nodes = document.querySelectorAll<AnimateElement>("[data-animate]");
+      if (debug) {
+        console.info("[motion-observer] bootstrap", { count: nodes.length });
+      }
       nodes.forEach((node) => {
         if (prefersReducedMotion || !("IntersectionObserver" in window)) {
           reveal(node);
@@ -64,12 +87,22 @@ export function MotionObserver() {
     }
 
     document.documentElement.classList.add("motion-ready");
+    if (debug) {
+      console.info("[motion-observer] motion-ready class added");
+    }
 
     intersectionObserver = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (!entry.isIntersecting) continue;
           const target = entry.target as AnimateElement;
+          if (debug) {
+            const label = target.getAttribute("data-animate") || "unnamed";
+            console.info("[motion-observer] intersect", {
+              label,
+              ratio: entry.intersectionRatio,
+            });
+          }
           reveal(target);
           intersectionObserver?.unobserve(target);
         }
@@ -84,6 +117,9 @@ export function MotionObserver() {
 
     mutationObserver = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
+        if (debug && mutation.addedNodes.length > 0) {
+          console.info("[motion-observer] mutation:add", { count: mutation.addedNodes.length });
+        }
         mutation.addedNodes.forEach((node) => {
           if (!isAnimateElement(node)) {
             if (node instanceof HTMLElement) {
@@ -107,6 +143,9 @@ export function MotionObserver() {
       mutationObserver?.disconnect();
       intersectionObserver?.disconnect();
       document.documentElement.classList.remove("motion-ready");
+      if (debug) {
+        console.info("[motion-observer] cleanup: observers disconnected, motion-ready removed");
+      }
     };
   }, []);
 
