@@ -26,6 +26,24 @@ export function getPlatform(): Platform {
 }
 
 /**
+ * Detect if the device is touch-only (no fine pointer like mouse/trackpad)
+ * We use CSS media queries via matchMedia to determine input capabilities.
+ */
+export function isTouchOnlyDevice(): boolean {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+    return false;
+  }
+  try {
+    const noFinePointer = window.matchMedia('(any-pointer: fine)').matches === false;
+    const hasCoarsePointer = window.matchMedia('(any-pointer: coarse)').matches === true;
+    // Touch-only devices typically have coarse pointers and no fine pointers
+    return hasCoarsePointer && noFinePointer;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Get the modifier key symbol for the current platform
  */
 export function getModifierKey(platform: Platform = getPlatform()): string {

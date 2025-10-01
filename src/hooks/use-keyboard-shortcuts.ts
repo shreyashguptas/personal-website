@@ -7,7 +7,7 @@
 
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { isModifierPressed, getPlatform } from "@/lib/keyboard";
+import { isModifierPressed, getPlatform, isTouchOnlyDevice } from "@/lib/keyboard";
 
 export function useKeyboardShortcuts() {
   const router = useRouter();
@@ -15,6 +15,10 @@ export function useKeyboardShortcuts() {
   
   useEffect(() => {
     const platform = getPlatform();
+    // Disable keyboard shortcuts entirely on touch-only devices (phones/tablets without fine pointer)
+    if (isTouchOnlyDevice()) {
+      return;
+    }
     
     const handleKeyPress = (e: KeyboardEvent) => {
       // Don't trigger shortcuts when typing in input fields

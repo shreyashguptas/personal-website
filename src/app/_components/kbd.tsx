@@ -6,7 +6,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getPlatform, formatShortcut, type Platform } from "@/lib/keyboard";
+import { getPlatform, formatShortcut, isTouchOnlyDevice, type Platform } from "@/lib/keyboard";
 
 interface KbdProps {
   keys: string[];
@@ -15,13 +15,17 @@ interface KbdProps {
 
 export function Kbd({ keys, className = "" }: KbdProps) {
   const [platform, setPlatform] = useState<Platform>('unknown');
+  const [touchOnly, setTouchOnly] = useState<boolean>(false);
   
   useEffect(() => {
     setPlatform(getPlatform());
+    setTouchOnly(isTouchOnlyDevice());
   }, []);
   
   // Don't render until we know the platform to avoid hydration mismatch
   if (platform === 'unknown') return null;
+  // Hide entirely on touch-only devices (phones/tablets without fine pointer)
+  if (touchOnly) return null;
   
   const shortcut = formatShortcut(keys, platform);
   
