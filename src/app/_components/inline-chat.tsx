@@ -441,8 +441,8 @@ export function InlineChat() {
   };
 
   return (
-    <section aria-labelledby="inline-chat-heading" className="w-full">
-      <div className="mx-auto w-full flex flex-col min-h-[55svh] md:min-h-[60svh] max-h-[85svh]">
+    <section aria-labelledby="inline-chat-heading" className="w-full h-full">
+      <div className="mx-auto w-full flex flex-col h-full min-h-[55svh] md:min-h-[60svh] max-h-[85svh]">
         {/* Messages */}
         <div ref={scrollRef} className="space-y-4 flex-1 min-h-0 overflow-y-auto pr-1 sm:pr-2 mb-4" aria-live="polite">
           {messages.length === 0 && (

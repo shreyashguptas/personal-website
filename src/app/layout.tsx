@@ -10,6 +10,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { SiteFooter } from "./_components/footer";
 import { PosthogInit } from './_components/posthog-init';
 import { KeyboardShortcutsProvider } from "./_components/keyboard-shortcuts-provider";
+import { ThemeProvider } from "./_components/theme-provider";
 
 import "./globals.css";
 
@@ -52,26 +53,66 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
-                const media = matchMedia('(prefers-color-scheme: dark)');
-                
-                function updateTheme() {
-                  const isDark = media.matches;
+                try {
+                  // Force immediate theme application
+                  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
                   const html = document.documentElement;
+                  
+                  // Remove any existing theme classes
+                  html.classList.remove('dark', 'light');
                   
                   if (isDark) {
                     html.classList.add('dark');
                   } else {
-                    html.classList.remove('dark');
+                    html.classList.add('light');
                   }
                   
                   html.setAttribute('data-theme', isDark ? 'dark' : 'light');
+                  
+                  // Debug logging in development
+                  if (window.location.hostname === 'localhost') {
+                    console.info('Theme applied immediately:', isDark ? 'dark' : 'light');
+                  }
+                  
+                  // Set up listener for system theme changes
+                  const media = window.matchMedia('(prefers-color-scheme: dark)');
+                  media.addEventListener('change', function() {
+                    const isDark = media.matches;
+                    html.classList.remove('dark', 'light');
+                    if (isDark) {
+                      html.classList.add('dark');
+                    } else {
+                      html.classList.add('light');
+                    }
+                    html.setAttribute('data-theme', isDark ? 'dark' : 'light');
+                    
+                    if (window.location.hostname === 'localhost') {
+                      console.info('Theme changed to:', isDark ? 'dark' : 'light');
+                    }
+                  });
+                  
+                  // Force re-application after a short delay to handle hydration
+                  setTimeout(function() {
+                    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    html.classList.remove('dark', 'light');
+                    if (isDark) {
+                      html.classList.add('dark');
+                    } else {
+                      html.classList.add('light');
+                    }
+                    html.setAttribute('data-theme', isDark ? 'dark' : 'light');
+                    
+                    if (window.location.hostname === 'localhost') {
+                      console.info('Theme re-applied after delay:', isDark ? 'dark' : 'light');
+                    }
+                  }, 50);
+                  
+                } catch (error) {
+                  console.error('Theme detection failed:', error);
+                  // Fallback to light mode
+                  document.documentElement.classList.add('light');
+                  document.documentElement.setAttribute('data-theme', 'light');
                 }
-
-                // Apply theme immediately
-                updateTheme();
-                
-                // Listen for system theme changes
-                media.addEventListener('change', updateTheme);
               })();
             `,
           }}
@@ -117,6 +158,7 @@ export default function RootLayout({
         <PosthogInit />
         <CustomCursor />
         <KeyboardShortcutsProvider />
+        <ThemeProvider />
         <SiteNavigation />
         <main className="flex-1">{children}</main>
         <SiteFooter />
