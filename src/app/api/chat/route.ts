@@ -142,6 +142,7 @@ export async function POST(req: NextRequest) {
     }
 
     const limiter = getRateLimiter();
+    try { console.info('[chat] rate_limit_mode', { mode: limiter ? 'redis' : 'local' }); } catch { void 0; }
     const clientKey = getClientKey(req);
     if (limiter) {
       const { success, reset } = await limiter.limit(clientKey);
