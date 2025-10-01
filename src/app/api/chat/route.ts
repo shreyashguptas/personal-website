@@ -187,6 +187,7 @@ export async function POST(req: NextRequest) {
         });
       }
     } else {
+      // Graceful in-memory fallback in any environment
       const { success, reset } = localRateLimit(clientKey);
       if (!success) {
         logSecurityEvent({

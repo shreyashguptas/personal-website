@@ -7,6 +7,7 @@ const LIMIT = 30;
 
 let ratelimit: Ratelimit | null = null;
 const isProduction = process.env.NODE_ENV === 'production';
+let warnedLocalInProd = false;
 
 export function getRateLimiter(): Ratelimit | null {
   try {
@@ -15,12 +16,10 @@ export function getRateLimiter(): Ratelimit | null {
     const token = process.env.UPSTASH_REDIS_REST_TOKEN;
     
     if (!url || !token) {
-      if (isProduction) {
-        console.error('[rate-limit] Redis not configured in production - this is a security risk');
-        throw new Error('Redis rate limiting is required in production');
-      }
-      console.info('[rate-limit] Redis not configured, falling back to local rate limiting (dev only)');
-      return null; // fallback to in-memory in route
+      // Degrade gracefully in any environment. We'll use local fallback in the route.
+      // In production this is not ideal, so log prominently.
+      console.warn('[rate-limit] Redis env not configured. Falling back to local in-memory limiter.');
+      return null; // route will use local fallback
     }
     
     const redis = new Redis({ url, token });
@@ -33,11 +32,8 @@ export function getRateLimiter(): Ratelimit | null {
     console.info('[rate-limit] Redis-based rate limiting initialized successfully');
     return ratelimit;
   } catch (error) {
-    if (isProduction) {
-      console.error('[rate-limit] Failed to initialize Redis rate limiter in production:', error);
-      throw error; // Fail fast in production
-    }
     console.error('[rate-limit] Failed to initialize Redis rate limiter:', error);
+    // Graceful fallback; route will use local in-memory limiter
     return null;
   }
 }
@@ -47,10 +43,10 @@ export function getRateLimiter(): Ratelimit | null {
 const localBuckets = new Map<string, { count: number; resetAt: number }>();
 
 export function localRateLimit(key: string): { success: boolean; remaining: number; reset: number } {
-  // Prevent use in production
-  if (isProduction) {
-    console.error('[rate-limit] Local rate limiting attempted in production - this is a security risk');
-    throw new Error('Local rate limiting is not allowed in production');
+  // Warn once if we're using local limiter in production
+  if (isProduction && !warnedLocalInProd) {
+    console.warn('[rate-limit] Using local in-memory rate limiting in production (fallback). Configure Upstash to enable durable limits.');
+    warnedLocalInProd = true;
   }
   const now = Date.now();
   // 5 minutes in ms, to match production
