@@ -178,6 +178,7 @@ export function InlineChat() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
 
   const [focusUrls, setFocusUrls] = useState<string[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -238,6 +239,16 @@ export function InlineChat() {
     const built = buildSuggestions();
     setSuggestions(built);
     console.info("[inline-chat] greeting_context", { period, returningVisitor: isReturning, suggestions: built });
+  }, []);
+
+  // Detect touch-capable devices to tailor UI hints (e.g., hide keyboard shortcuts on phones)
+  useEffect(() => {
+    try {
+      const hasTouch = matchMedia("(any-pointer: coarse)").matches || 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      setIsTouchDevice(hasTouch);
+    } catch {
+      setIsTouchDevice(false);
+    }
   }, []);
 
   const send = async (text: string) => {
@@ -665,8 +676,12 @@ export function InlineChat() {
                 </svg>
               ) : (
                 <>
-                  <span className="hidden sm:inline">Send</span>
-                  <Kbd keys={['enter']} className="bg-primary-foreground/20 text-primary-foreground border-primary-foreground/30" />
+                  {/* Always show label to keep size/shape consistent on mobile */}
+                  <span className="inline">Send</span>
+                  {/* Hide keyboard shortcut hint on touch devices */}
+                  {!isTouchDevice && (
+                    <Kbd keys={['enter']} className="bg-primary-foreground/20 text-primary-foreground border-primary-foreground/30 hidden sm:inline" />
+                  )}
                 </>
               )}
             </button>
