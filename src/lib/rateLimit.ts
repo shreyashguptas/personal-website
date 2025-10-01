@@ -1,7 +1,7 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
-// 20 requests per 2 minutes per unique client key (doubled)
+// 30 requests per 5 minutes per unique client key (same for dev and prod)
 const WINDOW = "5 m";
 const LIMIT = 30;
 
@@ -53,7 +53,8 @@ export function localRateLimit(key: string): { success: boolean; remaining: numb
     throw new Error('Local rate limiting is not allowed in production');
   }
   const now = Date.now();
-  const windowMs = 2 * 60 * 1000;
+  // 5 minutes in ms, to match production
+  const windowMs = 5 * 60 * 1000;
   const record = localBuckets.get(key);
   
   if (!record || record.resetAt < now) {
@@ -76,5 +77,3 @@ export function localRateLimit(key: string): { success: boolean; remaining: numb
   
   return { success: true, remaining: LIMIT - record.count, reset: record.resetAt };
 }
-
-
