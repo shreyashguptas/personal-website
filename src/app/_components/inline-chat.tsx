@@ -192,9 +192,12 @@ export function InlineChat() {
     }
   }, [messages]);
 
-  // Try to auto-focus on mount; some mobile browsers may ignore for security.
+  // Do not auto-focus on mount to prevent browsers from auto-scrolling the page on first load
+  // Focus will be handled by explicit user interaction (e.g., pressing "/" via keyboard shortcut)
+  // This avoids unexpected initial scroll-to-input behavior
+  // (See: https://html.spec.whatwg.org/multipage/interaction.html#dom-focus)
   useEffect(() => {
-    inputRef.current?.focus();
+    // intentionally no-op to avoid initial focus-induced scrolling
   }, []);
 
   // Track clicks on chat source links
@@ -646,7 +649,6 @@ export function InlineChat() {
                 minLength={1}
                 required
                 aria-label="Ask a question"
-                autoFocus
                 pattern=".*\S.*"
               />
             </div>
