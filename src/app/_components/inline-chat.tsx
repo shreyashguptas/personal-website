@@ -291,8 +291,12 @@ export function InlineChat() {
           const errorData = await res.json();
           errorMessage = errorData.message || errorData.error || errorMessage;
 
-          // Handle rate limiting with custom message
+          // Handle specific error types with custom messages
           if (errorData.error === "rate_limited" && errorData.message) {
+            userFriendlyMessage = errorData.message;
+          } else if (errorData.error === "off_topic" && errorData.message) {
+            userFriendlyMessage = errorData.message;
+          } else if (errorData.error === "insufficient_context" && errorData.message) {
             userFriendlyMessage = errorData.message;
           } else if (errorMessage.includes("rate_limited") || errorMessage.includes("Too many requests")) {
             userFriendlyMessage = "I'm receiving too many requests right now. Please wait a moment and try again.";
@@ -442,6 +446,8 @@ export function InlineChat() {
       let userFriendlyMessage = "Sorry, something went wrong.";
       if (errorMessage.includes("rate_limited") || errorMessage.includes("Too many requests")) {
         userFriendlyMessage = "I'm receiving too many requests right now. Please wait a moment and try again.";
+      } else if (errorMessage.includes("off_topic") || errorMessage.includes("insufficient_context")) {
+        userFriendlyMessage = "I focus on answering questions about my work, projects, and blog posts. Please try asking about my technical projects, writing, or professional experience!";
       } else if (errorMessage.includes("embedding") || errorMessage.includes("process")) {
         userFriendlyMessage = "I'm having trouble understanding your question. Please try rephrasing it.";
       } else if (errorMessage.includes("unavailable")) {

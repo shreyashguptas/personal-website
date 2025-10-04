@@ -332,14 +332,46 @@ export async function POST(req: NextRequest) {
         headers: { "content-type": "application/json" }
       });
     }
+
+    // GUARDRAIL 1: Intent filtering for off-topic questions
+    const offTopicPatterns = [
+      // Medical/health questions
+      /\b(covid|covid-19|coronavirus|pandemic|vaccine|vaccination|health|medical|doctor|hospital|sick|illness|disease|symptoms|medicine|drug|medication)\b/i,
+      // Personal questions not related to work/projects
+      /\b(did you have|have you had|were you|are you|do you have|personal|private|family|relationship|marriage|children|kids|age|birthday|where do you live|address|phone number)\b/i,
+      // Current events/politics
+      /\b(politics|political|election|president|government|news|current events|today's news)\b/i,
+      // General knowledge questions
+      /\b(what is|how does|explain|define|tell me about|what are the benefits|what are the risks)\b/i
+    ];
+    
+    const isOffTopic = offTopicPatterns.some(pattern => pattern.test(userMessage));
+    
+    if (isOffTopic) {
+      console.info('[chat] Off-topic question detected, providing polite refusal', { 
+        userMessage: userMessage.substring(0, 100),
+        matchedPatterns: offTopicPatterns.filter(pattern => pattern.test(userMessage)).map(p => p.source)
+      });
+      
+      return new Response(JSON.stringify({
+        error: "off_topic",
+        message: "I focus on answering questions about my work, projects, and blog posts. I don't discuss personal health, current events, or general knowledge topics. Feel free to ask about my technical projects, writing, or professional experience!"
+      }), {
+        status: 200,
+        headers: { "content-type": "application/json" }
+      });
+    }
     
     // Index loaded successfully
     
     const focusDocs = index.filter((d) => focusUrls.includes(d.url));
     const isPronounFollowUp = /\b(it|that|this|the post|the blog)\b/i.test(userMessage);
     let retrieved = [] as typeof index;
+    let similarityScores: number[] = [];
+    
     if (isPronounFollowUp && focusDocs.length > 0) {
       retrieved = focusDocs.slice(0, 5);
+      similarityScores = [1.0]; // Assume perfect match for focus docs
     } else {
       // For technology queries, retrieve more results to ensure we don't miss any projects
       const isTechQuery = /\b(pytorch|tensorflow|react|next\.js|python|machine learning|ml|ai|nlp|data analysis)\b/i.test(userMessage.toLowerCase());
@@ -349,6 +381,48 @@ export async function POST(req: NextRequest) {
       if (retrieved.length === 0) {
         retrieved = lexicalFallback(index, userMessage, k);
       }
+      
+      // Calculate similarity scores for logging
+      if (retrieved.length > 0) {
+        similarityScores = retrieved.map(doc => {
+          let dot = 0, normA = 0, normB = 0;
+          const len = Math.min(doc.embedding.length, queryEmbedding.length);
+          for (let i = 0; i < len; i++) {
+            dot += doc.embedding[i] * queryEmbedding[i];
+            normA += doc.embedding[i] * doc.embedding[i];
+            normB += queryEmbedding[i] * queryEmbedding[i];
+          }
+          return normA === 0 || normB === 0 ? 0 : dot / (Math.sqrt(normA) * Math.sqrt(normB));
+        });
+      }
+    }
+
+    // GUARDRAIL 2: Context quality validation
+    const minSimilarityThreshold = 0.15; // Minimum similarity score required
+    const hasRelevantContext = similarityScores.length > 0 && Math.max(...similarityScores) >= minSimilarityThreshold;
+    
+    console.info('[chat] Retrieval quality check', {
+      retrievedCount: retrieved.length,
+      maxSimilarityScore: similarityScores.length > 0 ? Math.max(...similarityScores) : 0,
+      avgSimilarityScore: similarityScores.length > 0 ? similarityScores.reduce((a, b) => a + b, 0) / similarityScores.length : 0,
+      hasRelevantContext,
+      userMessage: userMessage.substring(0, 100)
+    });
+
+    if (!hasRelevantContext && retrieved.length > 0) {
+      console.warn('[chat] Low similarity context detected, refusing to answer', {
+        maxScore: Math.max(...similarityScores),
+        threshold: minSimilarityThreshold,
+        userMessage: userMessage.substring(0, 100)
+      });
+      
+      return new Response(JSON.stringify({
+        error: "insufficient_context",
+        message: "I don't have enough relevant information in my knowledge base to answer that question accurately. Please try asking about my projects, blog posts, or professional experience instead!"
+      }), {
+        status: 200,
+        headers: { "content-type": "application/json" }
+      });
     }
     // Intent detection: latest project, latest post, or restrict by type
     const asksLatestProject = /latest\s+(project|thing\s+you\s+built|work(ed)?\s+on)/i.test(userMessage);
