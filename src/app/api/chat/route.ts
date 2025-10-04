@@ -397,33 +397,6 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // GUARDRAIL 2: Context quality validation
-    const minSimilarityThreshold = 0.15; // Minimum similarity score required
-    const hasRelevantContext = similarityScores.length > 0 && Math.max(...similarityScores) >= minSimilarityThreshold;
-    
-    console.info('[chat] Retrieval quality check', {
-      retrievedCount: retrieved.length,
-      maxSimilarityScore: similarityScores.length > 0 ? Math.max(...similarityScores) : 0,
-      avgSimilarityScore: similarityScores.length > 0 ? similarityScores.reduce((a, b) => a + b, 0) / similarityScores.length : 0,
-      hasRelevantContext,
-      userMessage: userMessage.substring(0, 100)
-    });
-
-    if (!hasRelevantContext && retrieved.length > 0) {
-      console.warn('[chat] Low similarity context detected, refusing to answer', {
-        maxScore: Math.max(...similarityScores),
-        threshold: minSimilarityThreshold,
-        userMessage: userMessage.substring(0, 100)
-      });
-      
-      return new Response(JSON.stringify({
-        error: "insufficient_context",
-        message: "I don't have enough relevant information in my knowledge base to answer that question accurately. Please try asking about my projects, blog posts, or professional experience instead!"
-      }), {
-        status: 200,
-        headers: { "content-type": "application/json" }
-      });
-    }
     // Intent detection: latest project, latest post, or restrict by type
     const asksLatestProject = /latest\s+(project|thing\s+you\s+built|work(ed)?\s+on)/i.test(userMessage);
     const asksLatestPost = /latest\s+(blog|post|article|write\w*)/i.test(userMessage);
@@ -463,7 +436,7 @@ export async function POST(req: NextRequest) {
     const mergedDocs = [...focusDocs, ...retrieved];
     const dedup = new Map<string, typeof index[number]>();
     for (const d of mergedDocs) dedup.set(d.id, d);
-    let contextDocs = Array.from(dedup.values()).slice(0, 5);
+    let contextDocs = Array.from(dedup.values());
     // Deterministic overrides for specific intents
     if (asksPrevious) {
       // Choose previous item relative to the most prominent item in context
@@ -535,46 +508,103 @@ export async function POST(req: NextRequest) {
     } else if (asksPostsOnly) {
       // For blog post queries, prioritize blog post content strongly
       const onlyPosts = filterByType(retrieved, "post");
-      if (onlyPosts.length > 0) {
-        // Deduplicate by slug to avoid multiple chunks of the same post
+      
+      // Check if user asked for a specific number of posts
+      const numberMatch = userMessage.match(/\b(\d+)\s+(blog|post|article)/i);
+      const requestedCount = numberMatch ? parseInt(numberMatch[1]) : 10;
+      
+      // Always use fallback for blog post queries to ensure we get enough posts
+      const allPosts = filterByType(index, "post");
+      console.info("[chat] debug_posts", {
+        totalIndexSize: index.length,
+        allPostsCount: allPosts.length,
+        requestedCount,
+        userMessage: userMessage.substring(0, 50)
+      });
+      if (allPosts.length > 0) {
+        // Deduplicate by slug for fallback too
         const slugToPost = new Map<string, typeof index[number]>();
-        for (const post of onlyPosts) {
-          // Prefer chunk 0 (first chunk) for each post, but keep any if chunk 0 not available
+        for (const post of allPosts) {
           if (!slugToPost.has(post.slug) || post.id.endsWith(':0')) {
             slugToPost.set(post.slug, post);
           }
         }
-        contextDocs = Array.from(slugToPost.values()).slice(0, 10);
+        const deduplicatedPosts = Array.from(slugToPost.values());
+        contextDocs = deduplicatedPosts.slice(0, Math.max(requestedCount, 10));
+        console.info("[chat] debug_deduplication", {
+          allPostsCount: allPosts.length,
+          deduplicatedCount: deduplicatedPosts.length,
+          finalContextCount: contextDocs.length,
+          requestedCount,
+          maxCount: Math.max(requestedCount, 10),
+          slugs: deduplicatedPosts.map(p => p.slug).slice(0, 10)
+        });
+        console.info("[chat] post_fallback_applied", { 
+          reason: "posts_only_intent_always_fallback", 
+          fallbackPostCount: allPosts.length,
+          uniquePostCount: contextDocs.length,
+          requestedCount,
+          originalRetrievalCount: retrieved.length
+        });
+      } else if (onlyPosts.length > 0) {
+        // Fallback to similarity-based results if no posts in index (shouldn't happen)
+        const slugToPost = new Map<string, typeof index[number]>();
+        for (const post of onlyPosts) {
+          if (!slugToPost.has(post.slug) || post.id.endsWith(':0')) {
+            slugToPost.set(post.slug, post);
+          }
+        }
+        contextDocs = Array.from(slugToPost.values()).slice(0, Math.max(requestedCount, 10));
         console.info("[chat] post_priority_applied", { 
-          reason: "posts_only_intent", 
+          reason: "posts_only_intent_fallback_to_similarity", 
           postCount: onlyPosts.length,
           uniquePostCount: contextDocs.length,
+          requestedCount,
           originalRetrievalCount: retrieved.length 
         });
-      } else {
-        // Fallback: get all posts from index if none in retrieved
-        const allPosts = filterByType(index, "post");
-        if (allPosts.length > 0) {
-          // Deduplicate by slug for fallback too
-          const slugToPost = new Map<string, typeof index[number]>();
-          for (const post of allPosts) {
-            if (!slugToPost.has(post.slug) || post.id.endsWith(':0')) {
-              slugToPost.set(post.slug, post);
-            }
-          }
-          contextDocs = Array.from(slugToPost.values()).slice(0, 10);
-          console.info("[chat] post_fallback_applied", { 
-            reason: "no_posts_in_retrieval", 
-            fallbackPostCount: allPosts.length,
-            uniquePostCount: contextDocs.length
-          });
-        }
       }
     }
+    console.info("[chat] debug_earliest", { 
+      earliest: earliest ? { type: earliest.type, slug: earliest.slug } : null,
+      contextDocsCount: contextDocs.length,
+      userMessage: userMessage.substring(0, 50)
+    });
     if (earliest) {
       try { console.info("[chat] override_selected", { reason: "earliest_post", selected: { type: earliest.type, slug: earliest.slug, date: earliest.date } }); } catch { void 0; }
       contextDocs = [earliest, ...contextDocs.filter((d) => d.id !== earliest.id)].slice(0, 5);
     }
+
+    // GUARDRAIL 2: Context quality validation (but skip for general listing queries)
+    const isGeneralListingQuery = asksProjectsOnly || asksPostsOnly || asksLatestProject || asksLatestPost || asksLastProject || asksLastPost || asksResume || asksContact;
+    const minSimilarityThreshold = 0.15; // Minimum similarity score required
+    const hasRelevantContext = similarityScores.length > 0 && Math.max(...similarityScores) >= minSimilarityThreshold;
+    
+    console.info('[chat] Retrieval quality check', {
+      retrievedCount: retrieved.length,
+      maxSimilarityScore: similarityScores.length > 0 ? Math.max(...similarityScores) : 0,
+      avgSimilarityScore: similarityScores.length > 0 ? similarityScores.reduce((a, b) => a + b, 0) / similarityScores.length : 0,
+      hasRelevantContext,
+      isGeneralListingQuery,
+      userMessage: userMessage.substring(0, 100)
+    });
+
+    // Only apply similarity threshold for specific content queries, not general listing queries
+    if (!hasRelevantContext && retrieved.length > 0 && !isGeneralListingQuery) {
+      console.warn('[chat] Low similarity context detected, refusing to answer', {
+        maxScore: Math.max(...similarityScores),
+        threshold: minSimilarityThreshold,
+        userMessage: userMessage.substring(0, 100)
+      });
+      
+      return new Response(JSON.stringify({
+        error: "insufficient_context",
+        message: "I don't have enough relevant information in my knowledge base to answer that question accurately. Please try asking about my projects, blog posts, or professional experience instead!"
+      }), {
+        status: 200,
+        headers: { "content-type": "application/json" }
+      });
+    }
+
     // For technology queries, use larger context to fit more projects
     const isTechQuery = /\b(pytorch|tensorflow|react|next\.js|python|machine learning|ml|ai|nlp|data analysis)\b/i.test(userMessage.toLowerCase());
     const contextSize = isTechQuery ? PROMPT_CONFIG.search.techQueryContextSize : PROMPT_CONFIG.search.defaultContextSize;
