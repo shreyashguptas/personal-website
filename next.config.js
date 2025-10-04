@@ -28,6 +28,10 @@ const nextConfig = {
   experimental: {
     // Enable image optimization for better performance
     optimizePackageImports: ['next/image'],
+    // Set turbopack root to avoid workspace detection issues
+    turbopack: {
+      root: __dirname,
+    },
   },
 
   // Rewrites for PostHog ingestion

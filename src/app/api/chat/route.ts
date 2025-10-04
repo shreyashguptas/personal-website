@@ -355,7 +355,7 @@ export async function POST(req: NextRequest) {
       
       return new Response(JSON.stringify({
         error: "off_topic",
-        message: "I focus on answering questions about my work, projects, and blog posts. I don't discuss personal health, current events, or general knowledge topics. Feel free to ask about my technical projects, writing, or professional experience!"
+        message: "I don't have information about that topic in my knowledge base. I focus on answering questions about my work, projects, and blog posts. Feel free to ask about my technical projects, writing, or professional experience instead!"
       }), {
         status: 200,
         headers: { "content-type": "application/json" }
@@ -448,6 +448,10 @@ export async function POST(req: NextRequest) {
       /\b(what\s+(kind\s+of\s+)?(blog|post|article)|tell\s+me\s+about.*(blog|post|article)|show\s+me.*(blog|post|article))/i.test(userMessage) ||
       // "posts you wrote" patterns  
       /(blog|post|article)\s+(you\s+)?(wrote|written|published|created)/i.test(userMessage) ||
+      // Numbered post requests (e.g., "give me 4 blog posts")
+      /\b\d+\s+(blog|post|article)/i.test(userMessage) ||
+      // "give me" patterns for posts
+      /give\s+me.*(blog|post|article)/i.test(userMessage) ||
       // General blog/post inquiry without project mentions
       (/\b(post|blog|article|write|wrote|writing)\b/i.test(userMessage) && !/\b(project|projects)\b/i.test(userMessage))
     );
@@ -494,27 +498,78 @@ export async function POST(req: NextRequest) {
       // For project queries, prioritize project content strongly
       const onlyProjects = filterByType(retrieved, "project");
       if (onlyProjects.length > 0) {
-        // If we have projects from retrieval, use only those
-        contextDocs = onlyProjects.slice(0, 10); // Allow more projects to be shown
+        // Deduplicate by slug to avoid multiple chunks of the same project
+        const slugToProject = new Map<string, typeof index[number]>();
+        for (const project of onlyProjects) {
+          // Prefer chunk 0 (first chunk) for each project, but keep any if chunk 0 not available
+          if (!slugToProject.has(project.slug) || project.id.endsWith(':0')) {
+            slugToProject.set(project.slug, project);
+          }
+        }
+        contextDocs = Array.from(slugToProject.values()).slice(0, 10);
         console.info("[chat] project_priority_applied", { 
           reason: "projects_only_intent", 
           projectCount: onlyProjects.length,
+          uniqueProjectCount: contextDocs.length,
           originalRetrievalCount: retrieved.length 
         });
       } else {
         // Fallback: get all projects from index if none in retrieved
         const allProjects = filterByType(index, "project");
         if (allProjects.length > 0) {
-          contextDocs = allProjects.slice(0, 10);
+          // Deduplicate by slug for fallback too
+          const slugToProject = new Map<string, typeof index[number]>();
+          for (const project of allProjects) {
+            if (!slugToProject.has(project.slug) || project.id.endsWith(':0')) {
+              slugToProject.set(project.slug, project);
+            }
+          }
+          contextDocs = Array.from(slugToProject.values()).slice(0, 10);
           console.info("[chat] project_fallback_applied", { 
             reason: "no_projects_in_retrieval", 
-            fallbackProjectCount: allProjects.length 
+            fallbackProjectCount: allProjects.length,
+            uniqueProjectCount: contextDocs.length
           });
         }
       }
     } else if (asksPostsOnly) {
-      const onlyPosts = filterByType(contextDocs, "post");
-      if (onlyPosts.length > 0) contextDocs = onlyPosts;
+      // For blog post queries, prioritize blog post content strongly
+      const onlyPosts = filterByType(retrieved, "post");
+      if (onlyPosts.length > 0) {
+        // Deduplicate by slug to avoid multiple chunks of the same post
+        const slugToPost = new Map<string, typeof index[number]>();
+        for (const post of onlyPosts) {
+          // Prefer chunk 0 (first chunk) for each post, but keep any if chunk 0 not available
+          if (!slugToPost.has(post.slug) || post.id.endsWith(':0')) {
+            slugToPost.set(post.slug, post);
+          }
+        }
+        contextDocs = Array.from(slugToPost.values()).slice(0, 10);
+        console.info("[chat] post_priority_applied", { 
+          reason: "posts_only_intent", 
+          postCount: onlyPosts.length,
+          uniquePostCount: contextDocs.length,
+          originalRetrievalCount: retrieved.length 
+        });
+      } else {
+        // Fallback: get all posts from index if none in retrieved
+        const allPosts = filterByType(index, "post");
+        if (allPosts.length > 0) {
+          // Deduplicate by slug for fallback too
+          const slugToPost = new Map<string, typeof index[number]>();
+          for (const post of allPosts) {
+            if (!slugToPost.has(post.slug) || post.id.endsWith(':0')) {
+              slugToPost.set(post.slug, post);
+            }
+          }
+          contextDocs = Array.from(slugToPost.values()).slice(0, 10);
+          console.info("[chat] post_fallback_applied", { 
+            reason: "no_posts_in_retrieval", 
+            fallbackPostCount: allPosts.length,
+            uniquePostCount: contextDocs.length
+          });
+        }
+      }
     }
     if (earliest) {
       try { console.info("[chat] override_selected", { reason: "earliest_post", selected: { type: earliest.type, slug: earliest.slug, date: earliest.date } }); } catch { void 0; }

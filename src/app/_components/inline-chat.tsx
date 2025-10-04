@@ -193,13 +193,17 @@ export function InlineChat() {
     }
   }, [messages]);
 
-  // Do not auto-focus on mount to prevent browsers from auto-scrolling the page on first load
-  // Focus will be handled by explicit user interaction (e.g., pressing "/" via keyboard shortcut)
-  // This avoids unexpected initial scroll-to-input behavior
-  // (See: https://html.spec.whatwg.org/multipage/interaction.html#dom-focus)
+  // Auto-focus on mount for first-time visitors
   useEffect(() => {
-    // intentionally no-op to avoid initial focus-induced scrolling
-  }, []);
+    // Only auto-focus if this is a first-time visitor (not returning)
+    if (!returningVisitor && inputRef.current) {
+      // Small delay to ensure the component is fully rendered
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [returningVisitor]);
 
   // Track clicks on chat source links
   useEffect(() => {
@@ -251,6 +255,24 @@ export function InlineChat() {
     }
   }, []);
 
+  // Handle keyboard shortcuts (e.g., "/" to focus input)
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Only handle "/" key when not already focused on input and not typing in input
+      if (event.key === '/' && document.activeElement !== inputRef.current && !loading) {
+        // Prevent the "/" from appearing in any focused input
+        event.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+
+    // Add event listener to document
+    document.addEventListener('keydown', handleKeyDown);
+    
+    // Cleanup
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [loading]);
+
   const send = async (text: string) => {
     const trimmed = text.trim();
     if (!trimmed || loading) return;
@@ -277,7 +299,11 @@ export function InlineChat() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ message: trimmed, focusUrls, history }),
       });
-      if (!res.ok) {
+      // Check if response is JSON error (even with 200 status) or actual error
+      const contentType = res.headers.get("content-type");
+      const isJsonError = contentType?.includes("application/json");
+      
+      if (!res.ok || isJsonError) {
         capture(AnalyticsEvent.ChatResponseError, { 
           status: res.status,
           status_text: res.statusText,
@@ -310,7 +336,14 @@ export function InlineChat() {
           errorMessage = res.statusText || errorMessage;
         }
 
-        // If we have a user-friendly message from the API, use it instead of throwing
+        // Always use the user-friendly message for JSON errors, even if it's the default
+        if (isJsonError) {
+          setMessages((m) => [...m, { role: "assistant", content: userFriendlyMessage }]);
+          setLoading(false);
+          return;
+        }
+
+        // For actual HTTP errors, only use user-friendly message if it's not the default
         if (userFriendlyMessage !== "Sorry, something went wrong.") {
           setMessages((m) => [...m, { role: "assistant", content: userFriendlyMessage }]);
           setLoading(false);
@@ -361,6 +394,26 @@ export function InlineChat() {
 
         // Add the text to our buffer
         buffer += textToProcess;
+
+        // Safety check: if we detect JSON in the buffer, treat it as an error
+        if (buffer.includes('{"error":') || buffer.includes('"error":')) {
+          console.warn("[inline-chat] Detected JSON error in stream, handling as error");
+          const jsonMatch = buffer.match(/\{"error":.*?\}/);
+          if (jsonMatch) {
+            try {
+              const errorData = JSON.parse(jsonMatch[0]);
+              const userFriendlyMessage = errorData.message || "I don't have information about that topic in my knowledge base. Please try asking about my work, projects, or professional experience instead!";
+              setMessages((m) => [...m, { role: "assistant", content: userFriendlyMessage }]);
+              setLoading(false);
+              return;
+            } catch {
+              // If JSON parsing fails, use fallback message
+              setMessages((m) => [...m, { role: "assistant", content: "I don't have information about that topic in my knowledge base. Please try asking about my work, projects, or professional experience instead!" }]);
+              setLoading(false);
+              return;
+            }
+          }
+        }
 
         // Only display text when we have a complete word or sentence boundary
         // Look for word boundaries (spaces, punctuation) to avoid cutting words
@@ -447,7 +500,7 @@ export function InlineChat() {
       if (errorMessage.includes("rate_limited") || errorMessage.includes("Too many requests")) {
         userFriendlyMessage = "I'm receiving too many requests right now. Please wait a moment and try again.";
       } else if (errorMessage.includes("off_topic") || errorMessage.includes("insufficient_context")) {
-        userFriendlyMessage = "I focus on answering questions about my work, projects, and blog posts. Please try asking about my technical projects, writing, or professional experience!";
+        userFriendlyMessage = "I don't have information about that topic in my knowledge base. I focus on answering questions about my work, projects, and blog posts. Feel free to ask about my technical projects, writing, or professional experience instead!";
       } else if (errorMessage.includes("embedding") || errorMessage.includes("process")) {
         userFriendlyMessage = "I'm having trouble understanding your question. Please try rephrasing it.";
       } else if (errorMessage.includes("unavailable")) {
