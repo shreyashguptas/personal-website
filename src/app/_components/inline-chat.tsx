@@ -193,17 +193,17 @@ export function InlineChat() {
     }
   }, [messages]);
 
-  // Auto-focus on mount for first-time visitors
+  // Auto-focus on mount for all visitors
   useEffect(() => {
-    // Only auto-focus if this is a first-time visitor (not returning)
-    if (!returningVisitor && inputRef.current) {
+    // Auto-focus for all visitors when the component mounts
+    if (inputRef.current) {
       // Small delay to ensure the component is fully rendered
       const timer = setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
       return () => clearTimeout(timer);
     }
-  }, [returningVisitor]);
+  }, []);
 
   // Track clicks on chat source links
   useEffect(() => {
