@@ -334,7 +334,40 @@ async function main() {
   }
 
   fs.writeFileSync(outPath, JSON.stringify(embedded), "utf8");
-  console.info(`Wrote index to ${outPath}`);
+
+  // Validation: Verify the generated index
+  console.info(`\n[build-embeddings] 📊 Validation Results:`);
+  console.info(`  ✓ Generated ${embedded.length} embeddings`);
+
+  const fileStats = fs.statSync(outPath);
+  const fileSizeMB = (fileStats.size / 1024 / 1024).toFixed(2);
+  console.info(`  ✓ Index size: ${fileSizeMB} MB`);
+
+  if (embedded.length === 0) {
+    console.error(`  ✗ WARNING: No embeddings generated!`);
+    console.error(`  ✗ Check that markdown files exist in _posts/, _projects/, _resume/`);
+  } else {
+    // Count by type
+    const postCount = embedded.filter(e => e.type === 'post').length;
+    const projectCount = embedded.filter(e => e.type === 'project').length;
+    const resumeCount = embedded.filter(e => e.type === 'resume').length;
+    console.info(`  ✓ Type distribution:`);
+    console.info(`    - Posts: ${postCount} chunks`);
+    console.info(`    - Projects: ${projectCount} chunks`);
+    console.info(`    - Resume: ${resumeCount} chunks`);
+
+    // Verify embeddings have correct dimensions
+    const firstEmbedding = embedded[0].embedding;
+    if (firstEmbedding && firstEmbedding.length > 0) {
+      console.info(`  ✓ Embedding dimensions: ${firstEmbedding.length}`);
+    } else {
+      console.error(`  ✗ WARNING: Embeddings may be malformed!`);
+    }
+  }
+
+  console.info(`\n[build-embeddings] ✓ Index written to ${outPath}`);
+  console.info(`[build-embeddings] ✓ Build complete! Run "npm run dev" to test.`);
+
   try { await flushPosthog(); } catch {
     // no-op
     void 0;

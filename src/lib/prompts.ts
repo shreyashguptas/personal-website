@@ -58,12 +58,9 @@ Output:
 
 // You can add more prompt configurations here in the future
 export const PROMPT_CONFIG = {
-  maxCompletionTokens: 1200, // GPT-5 uses max_completion_tokens instead of max_tokens (max: 128,000)
-  model: "gpt-5-mini", // GPT-5 Mini - always uses latest version (400B params, 400K context window)
-  // GPT-5 new parameters
-  reasoningEffort: "minimal" as const, // minimal | low | medium | high - controls depth of reasoning
-  verbosity: "medium" as const, // low | medium | high - controls response length/detail
-  // Note: temperature parameter removed - not supported in GPT-5 models
+  maxTokens: 1200, // Maximum tokens for completion
+  model: "llama-3.3-70b-versatile", // GROQ's Llama 3.3 70B - 128K context, excellent quality, ultra-fast inference
+  temperature: 0.7, // Controls randomness (0-1, higher = more creative)
   
   // Search and retrieval settings
   search: {

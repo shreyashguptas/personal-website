@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import OpenAI from "openai";
+import Groq from "groq-sdk";
 import { z } from "zod";
 import { getRateLimiter, localRateLimit } from "@/lib/rateLimit";
 import { logSecurityEvent, sanitizeClientKey } from "@/lib/security";
@@ -261,9 +262,11 @@ export async function POST(req: NextRequest) {
     const focusUrls = (parsed.data.focusUrls || []).filter((u) => typeof u === 'string');
     const history = (parsed.data.history || []).slice(-PROMPT_CONFIG.chat.maxHistoryLength); // limit context size
 
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) {
-      console.error('[chat] OPENAI_API_KEY not configured');
+    const groqKey = process.env.GROQ_API_KEY;
+    const openaiKey = process.env.OPENAI_API_KEY;
+
+    if (!groqKey || !openaiKey) {
+      console.error('[chat] API keys not configured', { hasGroq: !!groqKey, hasOpenAI: !!openaiKey });
       return new Response(JSON.stringify({
         error: "server_configuration",
         message: "Service temporarily unavailable"
@@ -273,7 +276,9 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const openai = new OpenAI({ apiKey });
+    // OpenAI for embeddings, GROQ for chat completions (hybrid approach)
+    const openai = new OpenAI({ apiKey: openaiKey });
+    const groq = new Groq({ apiKey: groqKey });
 
     // Compute query embedding with timeout
     const t1 = Date.now();
@@ -312,10 +317,19 @@ export async function POST(req: NextRequest) {
     try {
       index = loadIndex();
       if (!index || index.length === 0) {
-        console.error('[chat] No documents available in index');
+        const isDev = process.env.NODE_ENV !== 'production';
+        console.error('[chat] ✗ No documents available in vector index');
+        if (isDev) {
+          console.error('[chat] 💡 Run "npm run build:index" to generate embeddings from your content');
+        }
+
+        const userMessage = isDev
+          ? "AI chat is initializing. Please run 'npm run build:index' to generate the content index, then restart the server."
+          : "AI chat is initializing. Please check back in a moment.";
+
         return new Response(JSON.stringify({
           error: "no_content",
-          message: "Service is temporarily unavailable. Please try again later."
+          message: userMessage
         }), {
           status: 503,
           headers: { "content-type": "application/json" }
@@ -323,10 +337,10 @@ export async function POST(req: NextRequest) {
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown index loading error';
-      console.error('[chat] Failed to load index:', errorMessage);
+      console.error('[chat] ✗ Failed to load vector index:', errorMessage);
       return new Response(JSON.stringify({
         error: "index_loading_failed",
-        message: "Unable to access content. Please try again."
+        message: "Unable to access AI chat content. Please try again in a moment."
       }), {
         status: 500,
         headers: { "content-type": "application/json" }
@@ -673,17 +687,16 @@ export async function POST(req: NextRequest) {
     console.info("[chat] model selection", { preferred, source: "prompts.ts" });
     try {
       // Add timeout to chat completion request (60 seconds)
-      const chatPromise = openai.chat.completions.create({
+      const chatPromise = groq.chat.completions.create({
         model: preferred,
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           ...history.map((h) => ({ role: h.role as "user" | "assistant", content: h.content })),
           { role: "user", content: combinedUser },
         ],
-        // GPT-5 parameters (temperature removed, new parameters added)
-        max_completion_tokens: PROMPT_CONFIG.maxCompletionTokens, // GPT-5 uses max_completion_tokens
-        reasoning_effort: PROMPT_CONFIG.reasoningEffort, // Controls depth of reasoning
-        verbosity: PROMPT_CONFIG.verbosity, // Controls response length/detail
+        // GROQ parameters
+        max_tokens: PROMPT_CONFIG.maxTokens,
+        temperature: PROMPT_CONFIG.temperature,
         stream: true,
       });
       

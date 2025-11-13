@@ -27,6 +27,15 @@ const MAX_MEMORY_USAGE = 50 * 1024 * 1024; // 50MB limit
 let cachedIndex: CacheEntry | null = null;
 let fileWatcher: fs.FSWatcher | null = null;
 
+// Cache metrics for monitoring
+let cacheMetrics = {
+  hits: 0,
+  misses: 0,
+  loads: 0,
+  lastLoadTime: null as Date | null,
+  errors: 0
+};
+
 
 
 function setupFileWatcher(filePath: string): void {
@@ -49,6 +58,9 @@ export function loadIndex(): RetrievedDoc[] {
 
   // Check if file exists
   if (!fs.existsSync(p)) {
+    console.warn('[rag] Vector index file not found at', p);
+    console.warn('[rag] Run "npm run build:index" to generate embeddings');
+    cacheMetrics.errors++;
     cachedIndex = { data: [], timestamp: Date.now(), fileSize: 0 };
     return cachedIndex.data;
   }
@@ -62,10 +74,14 @@ export function loadIndex(): RetrievedDoc[] {
     // Invalidate cache if expired or file size changed
     if (isExpired || cachedIndex.fileSize !== currentFileSize) {
       console.info('[rag] Cache invalidated - expired or file changed');
+      cacheMetrics.misses++;
       cachedIndex = null;
     } else {
+      cacheMetrics.hits++;
       return cachedIndex.data;
     }
+  } else {
+    cacheMetrics.misses++;
   }
 
   // Load fresh data
@@ -86,13 +102,18 @@ export function loadIndex(): RetrievedDoc[] {
       fileSize
     };
 
+    // Update metrics
+    cacheMetrics.loads++;
+    cacheMetrics.lastLoadTime = new Date();
+
     // Setup file watcher for cache invalidation
     setupFileWatcher(p);
 
-    console.info(`[rag] Loaded vector index: ${data.length} documents, ${(estimatedSize / 1024 / 1024).toFixed(2)}MB`);
+    console.info(`[rag] ✓ Loaded vector index: ${data.length} documents, ${(estimatedSize / 1024 / 1024).toFixed(2)}MB`);
     return data;
   } catch (error) {
-    console.error('[rag] Failed to load vector index:', error);
+    console.error('[rag] ✗ Failed to load vector index:', error);
+    cacheMetrics.errors++;
     cachedIndex = { data: [], timestamp: Date.now(), fileSize: 0 };
     return cachedIndex.data;
   }
@@ -449,9 +470,26 @@ export function getCacheStats(): {
   cacheAge?: number;
   memoryUsage?: number;
   documentCount?: number;
+  metrics: {
+    hits: number;
+    misses: number;
+    loads: number;
+    errors: number;
+    lastLoadTime: Date | null;
+    hitRate: number;
+  };
 } {
+  const totalRequests = cacheMetrics.hits + cacheMetrics.misses;
+  const hitRate = totalRequests > 0 ? (cacheMetrics.hits / totalRequests) * 100 : 0;
+
   if (!cachedIndex) {
-    return { isCached: false };
+    return {
+      isCached: false,
+      metrics: {
+        ...cacheMetrics,
+        hitRate
+      }
+    };
   }
 
   const now = Date.now();
@@ -462,7 +500,29 @@ export function getCacheStats(): {
     isCached: true,
     cacheAge: now - cachedIndex.timestamp,
     memoryUsage,
-    documentCount: cachedIndex.data.length
+    documentCount: cachedIndex.data.length,
+    metrics: {
+      ...cacheMetrics,
+      hitRate
+    }
   };
 }
 
+// Cache warming: Preload vector index on server startup
+// This ensures the first API request doesn't experience cold start delay
+if (typeof window === 'undefined') {
+  // Only run on server side (Node.js), not in browser
+  try {
+    console.info('[rag] Warming cache on startup...');
+    const startTime = Date.now();
+    const index = loadIndex();
+    const loadTime = Date.now() - startTime;
+    if (index.length > 0) {
+      console.info(`[rag] ✓ Cache warmed successfully: ${index.length} documents loaded in ${loadTime}ms`);
+    } else {
+      console.warn('[rag] ⚠️  Cache warming: No documents found in index');
+    }
+  } catch (error) {
+    console.error('[rag] ✗ Cache warming failed:', error);
+  }
+}
