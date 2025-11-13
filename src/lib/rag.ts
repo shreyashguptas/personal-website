@@ -28,7 +28,7 @@ let cachedIndex: CacheEntry | null = null;
 let fileWatcher: fs.FSWatcher | null = null;
 
 // Cache metrics for monitoring
-let cacheMetrics = {
+const cacheMetrics = {
   hits: 0,
   misses: 0,
   loads: 0,
