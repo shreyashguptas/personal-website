@@ -96,6 +96,50 @@ function sameOriginOnly(req: NextRequest): boolean {
   }
 }
 
+// Helper function to generate smart suggestions when query doesn't match well
+function generateSmartSuggestions(
+  index: ReturnType<typeof loadIndex>,
+  retrievedDocs?: ReturnType<typeof loadIndex>
+): { message: string; suggestions: Array<{title: string; url: string; type: string}> } {
+
+  // Use retrieved docs if available (even if low similarity)
+  const candidateDocs = retrievedDocs && retrievedDocs.length > 0 ? retrievedDocs : [];
+
+  // If no retrieved docs or very few, get latest content as fallback
+  if (candidateDocs.length < 3) {
+    const latestProject = getLatestProject(index);
+    const latestPost = getLatestPost(index);
+    const resumeInfo = getResumeInfo(index);
+
+    if (latestProject) candidateDocs.push(latestProject);
+    if (latestPost) candidateDocs.push(latestPost);
+    if (resumeInfo && candidateDocs.length < 3) candidateDocs.push(resumeInfo);
+  }
+
+  // Take up to 3 suggestions, deduplicate by slug
+  const seen = new Set<string>();
+  const suggestions: Array<{title: string; url: string; type: string}> = [];
+
+  for (const doc of candidateDocs) {
+    if (!seen.has(doc.slug) && suggestions.length < 3) {
+      suggestions.push({
+        title: doc.title,
+        url: doc.url,
+        type: doc.type
+      });
+      seen.add(doc.slug);
+    }
+  }
+
+  // Build short, friendly message
+  const suggestionText = suggestions.length > 0
+    ? suggestions.map(s => s.title).join(', ')
+    : "my projects, blog posts, or resume";
+
+  const message = `I don't have info on that. Try asking about: ${suggestionText}`;
+
+  return { message, suggestions };
+}
 
 
 export async function POST(req: NextRequest) {
@@ -280,14 +324,77 @@ export async function POST(req: NextRequest) {
     const openai = new OpenAI({ apiKey: openaiKey });
     const groq = new Groq({ apiKey: groqKey });
 
+    // Load index early for vague question detection
+    let index;
+    try {
+      index = loadIndex();
+      if (!index || index.length === 0) {
+        const isDev = process.env.NODE_ENV !== 'production';
+        console.error('[chat] ✗ No documents available in vector index');
+        if (isDev) {
+          console.error('[chat] 💡 Run "npm run build:index" to generate embeddings from your content');
+        }
+
+        const errorMessage = isDev
+          ? "AI chat is initializing. Please run 'npm run build:index' to generate the content index, then restart the server."
+          : "AI chat is initializing. Please check back in a moment.";
+
+        return new Response(JSON.stringify({
+          error: "no_content",
+          message: errorMessage
+        }), {
+          status: 503,
+          headers: { "content-type": "application/json" }
+        });
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown index loading error';
+      console.error('[chat] ✗ Failed to load vector index:', errorMessage);
+      return new Response(JSON.stringify({
+        error: "index_loading_failed",
+        message: "Unable to access AI chat content. Please try again in a moment."
+      }), {
+        status: 500,
+        headers: { "content-type": "application/json" }
+      });
+    }
+
     // Compute query embedding with timeout
     const t1 = Date.now();
     let queryEmbedding: number[] = [];
+
+    // Detect vague follow-up questions that need context
+    const isVagueFollowUp = /^(tell me more|what else|anything else|more|and\?|go on|continue|interesting|cool|nice|okay|ok)$/i.test(userMessage.trim());
+
+    // If vague question with no context, return helpful suggestions
+    if (isVagueFollowUp && history.length === 0 && focusUrls.length === 0) {
+      console.info('[chat] Vague question with no context, providing suggestions');
+      const { suggestions } = generateSmartSuggestions(index);
+
+      return new Response(JSON.stringify({
+        error: "vague_question",
+        message: `What would you like to know more about? I can tell you about: ${suggestions.map(s => s.title).join(', ')}`,
+        suggestions
+      }), {
+        status: 200,
+        headers: { "content-type": "application/json" }
+      });
+    }
+
     try {
-      // If follow-up pronoun, enrich embedding input with last user message
+      // Enrich embedding input for follow-ups
       const lastUser = [...history].reverse().find((h) => h.role === "user");
+      const lastAssistant = [...history].reverse().find((h) => h.role === "assistant");
       const pronounFollowUp = /\b(it|that|this|the post|the blog)\b/i.test(userMessage);
-      const embedInput = pronounFollowUp && lastUser ? `${lastUser.content}\nFollow-up: ${userMessage}` : userMessage;
+
+      let embedInput = userMessage;
+
+      // Enrich with previous context for vague or pronoun follow-ups
+      if (isVagueFollowUp && lastAssistant) {
+        embedInput = `Previous topic: ${lastAssistant.content.substring(0, 200)}\nFollow-up: ${userMessage}`;
+      } else if (pronounFollowUp && lastUser) {
+        embedInput = `${lastUser.content}\nFollow-up: ${userMessage}`;
+      }
       
       // Add timeout to embedding request (30 seconds)
       const embedPromise = openai.embeddings.create({ model: "text-embedding-3-small", input: embedInput });
@@ -312,64 +419,35 @@ export async function POST(req: NextRequest) {
     }
     const t2 = Date.now();
 
-    // Retrieve with error handling
-    let index;
-    try {
-      index = loadIndex();
-      if (!index || index.length === 0) {
-        const isDev = process.env.NODE_ENV !== 'production';
-        console.error('[chat] ✗ No documents available in vector index');
-        if (isDev) {
-          console.error('[chat] 💡 Run "npm run build:index" to generate embeddings from your content');
-        }
-
-        const userMessage = isDev
-          ? "AI chat is initializing. Please run 'npm run build:index' to generate the content index, then restart the server."
-          : "AI chat is initializing. Please check back in a moment.";
-
-        return new Response(JSON.stringify({
-          error: "no_content",
-          message: userMessage
-        }), {
-          status: 503,
-          headers: { "content-type": "application/json" }
-        });
-      }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown index loading error';
-      console.error('[chat] ✗ Failed to load vector index:', errorMessage);
-      return new Response(JSON.stringify({
-        error: "index_loading_failed",
-        message: "Unable to access AI chat content. Please try again in a moment."
-      }), {
-        status: 500,
-        headers: { "content-type": "application/json" }
-      });
-    }
+    // Index already loaded earlier, continue with off-topic filtering
 
     // GUARDRAIL 1: Intent filtering for off-topic questions
     const offTopicPatterns = [
       // Medical/health questions
       /\b(covid|covid-19|coronavirus|pandemic|vaccine|vaccination|health|medical|doctor|hospital|sick|illness|disease|symptoms|medicine|drug|medication)\b/i,
-      // Personal questions not related to work/projects
-      /\b(did you have|have you had|were you|are you|do you have|personal|private|family|relationship|marriage|children|kids|age|birthday|where do you live|address|phone number)\b/i,
+      // Personal life questions (specific, not work-related)
+      /\b(are you (married|single|dating|in a relationship)|do you have (a girlfriend|a boyfriend|kids|children|a family)|where do you live|your address|phone number|how old are you|your age|your birthday)\b/i,
       // Current events/politics
       /\b(politics|political|election|president|government|news|current events|today's news)\b/i,
-      // General knowledge questions
-      /\b(what is|how does|explain|define|tell me about|what are the benefits|what are the risks)\b/i
+      // Philosophical/existential questions
+      /\b(what is (the meaning of life|god|consciousness|the universe|love|happiness))\b/i
     ];
     
     const isOffTopic = offTopicPatterns.some(pattern => pattern.test(userMessage));
     
     if (isOffTopic) {
-      console.info('[chat] Off-topic question detected, providing polite refusal', { 
+      console.info('[chat] Off-topic question detected, providing suggestions', {
         userMessage: userMessage.substring(0, 100),
         matchedPatterns: offTopicPatterns.filter(pattern => pattern.test(userMessage)).map(p => p.source)
       });
-      
+
+      // Generate smart suggestions from actual content
+      const { message, suggestions } = generateSmartSuggestions(index);
+
       return new Response(JSON.stringify({
         error: "off_topic",
-        message: "I don't have information about that topic in my knowledge base. I focus on answering questions about my work, projects, and blog posts. Feel free to ask about my technical projects, writing, or professional experience instead!"
+        message,
+        suggestions
       }), {
         status: 200,
         headers: { "content-type": "application/json" }
@@ -590,7 +668,7 @@ export async function POST(req: NextRequest) {
 
     // GUARDRAIL 2: Context quality validation (but skip for general listing queries)
     const isGeneralListingQuery = asksProjectsOnly || asksPostsOnly || asksLatestProject || asksLatestPost || asksLastProject || asksLastPost || asksResume || asksContact;
-    const minSimilarityThreshold = 0.15; // Minimum similarity score required
+    const minSimilarityThreshold = 0.12; // Lowered from 0.15 to catch more edge cases
     const hasRelevantContext = similarityScores.length > 0 && Math.max(...similarityScores) >= minSimilarityThreshold;
     
     console.info('[chat] Retrieval quality check', {
@@ -604,15 +682,19 @@ export async function POST(req: NextRequest) {
 
     // Only apply similarity threshold for specific content queries, not general listing queries
     if (!hasRelevantContext && retrieved.length > 0 && !isGeneralListingQuery) {
-      console.warn('[chat] Low similarity context detected, refusing to answer', {
+      console.warn('[chat] Low similarity context detected, providing suggestions', {
         maxScore: Math.max(...similarityScores),
         threshold: minSimilarityThreshold,
         userMessage: userMessage.substring(0, 100)
       });
-      
+
+      // Generate smart suggestions based on retrieved docs (even if low similarity)
+      const { message, suggestions } = generateSmartSuggestions(index, retrieved);
+
       return new Response(JSON.stringify({
         error: "insufficient_context",
-        message: "I don't have enough relevant information in my knowledge base to answer that question accurately. Please try asking about my projects, blog posts, or professional experience instead!"
+        message,
+        suggestions
       }), {
         status: 200,
         headers: { "content-type": "application/json" }
