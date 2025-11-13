@@ -23,9 +23,22 @@ export function CustomCursor() {
       setShouldRender(true); // safe default
     }
 
+    let rafId: number | null = null;
+    let currentX = 0;
+    let currentY = 0;
+
     const updatePosition = (e: MouseEvent) => {
-      setPosition({ x: e.clientX, y: e.clientY });
-      setIsVisible(true);
+      currentX = e.clientX;
+      currentY = e.clientY;
+
+      // Use RAF to throttle updates and sync with browser repaint
+      if (rafId === null) {
+        rafId = requestAnimationFrame(() => {
+          setPosition({ x: currentX, y: currentY });
+          setIsVisible(true);
+          rafId = null;
+        });
+      }
 
       // Determine intent: turn into a typing caret when hovering over text inputs
       const target = e.target as Element | null;
@@ -68,6 +81,9 @@ export function CustomCursor() {
     }
 
     return () => {
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+      }
       if (shouldRender) {
         document.removeEventListener("mousemove", updatePosition);
         document.removeEventListener("mouseenter", handleMouseEnter);
@@ -77,40 +93,33 @@ export function CustomCursor() {
     };
   }, [shouldRender]);
 
-  useEffect(() => {
-    document.documentElement.classList.add("motion-ready");
-    return () => {
-      document.documentElement.classList.remove("motion-ready");
-    };
-  }, []);
-
   // Don't render on touch-only devices
   if (!shouldRender) return null;
-  // Hide custom cursor entirely when hovering clickable areas to show system pointer
-  if (!isVisible || isPointerArea) return null;
+  // Hide cursor when not visible
+  if (!isVisible) return null;
 
-  const caretWidth = cursorMode === "text" ? 4 : 16; // px
-  const caretHeight = cursorMode === "text" ? 18 : 16; // px
+  // When hovering over clickable areas, show a larger circle (pointer effect)
+  const caretWidth = isPointerArea ? 22 : (cursorMode === "text" ? 4 : 16); // px - larger on clickable
+  const caretHeight = isPointerArea ? 22 : (cursorMode === "text" ? 18 : 16); // px - larger on clickable
   const borderRadiusPx = cursorMode === "text" ? 2 : 9999;
 
   return (
     <div
-      className="fixed pointer-events-none z-50 transition-transform duration-75 ease-out"
+      className="fixed pointer-events-none z-50"
       style={{
         left: position.x - caretWidth / 2,
         top: position.y - caretHeight / 2,
-        transform: "translate3d(0, 0, 0)", // Hardware acceleration
+        transform: "translate3d(0, 0, 0)", // Hardware acceleration only
+        willChange: "left, top", // Hint browser to optimize
       }}
     >
       <div
-        className={`${isDark ? "bg-white shadow-lg" : "bg-black shadow-lg"} transition-all duration-200 ease-out`}
+        className={isDark ? "bg-white" : "bg-black"}
         style={{
           width: caretWidth,
           height: caretHeight,
           borderRadius: borderRadiusPx,
-          boxShadow: isDark
-            ? "0 0 8px rgba(255, 255, 255, 0.3)"
-            : "0 0 8px rgba(0, 0, 0, 0.3)"
+          transition: "width 0.1s ease-out, height 0.1s ease-out", // Only transition size, instant
         }}
       />
     </div>

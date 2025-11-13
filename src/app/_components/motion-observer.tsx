@@ -151,5 +151,3 @@ export function MotionObserver() {
 
   return null;
 }
-
-
