@@ -72,11 +72,11 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
     title,
     description: post.excerpt || undefined,
     alternates: {
-      canonical: `/posts/${post.slug}`,
+      canonical: absoluteUrl(`/posts/${post.slug}`),
     },
     openGraph: {
       type: "article",
-      url: `/posts/${post.slug}`,
+      url: absoluteUrl(`/posts/${post.slug}`),
       title,
       description: post.excerpt || undefined,
       ...(post.coverImage && { images: [absoluteUrl(post.coverImage)!] }),

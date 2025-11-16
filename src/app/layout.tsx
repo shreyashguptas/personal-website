@@ -23,11 +23,11 @@ export const metadata: Metadata = {
     "Personal website and blog of Shreyash Gupta - Data Scientist, Software Engineer, and Tech Enthusiast.",
   metadataBase: new URL(getSiteUrl()),
   alternates: {
-    canonical: "/",
+    canonical: getSiteUrl(),
   },
   openGraph: {
     type: "website",
-    url: "/",
+    url: getSiteUrl(),
     title: "Shreyash Gupta",
     description:
       "Personal website and blog of Shreyash Gupta - Software Engineer, Tech Enthusiast, and Content Creator.",

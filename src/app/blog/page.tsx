@@ -3,15 +3,16 @@ import { HeroPost } from "@/app/_components/hero-post";
 import { Intro } from "@/app/_components/intro";
 import { MoreStories } from "@/app/_components/more-stories";
 import { getAllPosts } from "@/lib/api";
+import { absoluteUrl } from "@/lib/seo";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Blog | Shreyash Gupta",
   description: "Articles and notes by Shreyash Gupta.",
-  alternates: { canonical: "/blog" },
+  alternates: { canonical: absoluteUrl("/blog") },
   openGraph: {
     type: "website",
-    url: "/blog",
+    url: absoluteUrl("/blog"),
     title: "Blog | Shreyash Gupta",
     description: "Articles and notes by Shreyash Gupta.",
   },

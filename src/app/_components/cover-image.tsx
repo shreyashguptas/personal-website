@@ -18,6 +18,7 @@ const CoverImage = ({ title, src, slug, variant = "default" }: Props) => {
         src={src}
         alt={`Cover Image for ${title}`}
         fill
+        priority={variant === "hero"}
         className={cn("object-cover", {
           "hover:shadow-lg transition-shadow duration-200": slug,
         })}

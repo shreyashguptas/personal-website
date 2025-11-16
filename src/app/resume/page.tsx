@@ -2,6 +2,7 @@ import Container from "@/app/_components/container";
 import type { Metadata } from "next";
 import { PostBody } from "@/app/_components/post-body";
 import markdownToHtml from "@/lib/markdownToHtml";
+import { absoluteUrl } from "@/lib/seo";
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
@@ -9,10 +10,10 @@ import matter from "gray-matter";
 export const metadata: Metadata = {
   title: "Resume | Shreyash Gupta",
   description: "Professional resume and work experience of Shreyash Gupta.",
-  alternates: { canonical: "/resume" },
+  alternates: { canonical: absoluteUrl("/resume") },
   openGraph: {
     type: "website",
-    url: "/resume",
+    url: absoluteUrl("/resume"),
     title: "Resume | Shreyash Gupta",
     description: "Professional resume and work experience of Shreyash Gupta.",
   },

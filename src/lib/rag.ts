@@ -22,7 +22,7 @@ interface CacheEntry {
 }
 
 // Cache configuration
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = process.env.NODE_ENV === 'production' ? 30 * 60 * 1000 : 5 * 60 * 1000; // 30min prod, 5min dev
 const MAX_MEMORY_USAGE = 50 * 1024 * 1024; // 50MB limit
 let cachedIndex: CacheEntry | null = null;
 let fileWatcher: fs.FSWatcher | null = null;
