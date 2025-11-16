@@ -4,9 +4,10 @@
 
 /* Custom cursor styles - only hide system cursor when a fine pointer exists */
 @media (any-pointer: fine) {
-  body { cursor: none; }
-  #__next { cursor: none; }
-  * { cursor: none; }
+  /* Hide system cursor globally for smooth custom cursor experience */
+  * {
+    cursor: none !important;
+  }
 }
 
 /* On coarse-only (touch) pointers, keep normal behavior */

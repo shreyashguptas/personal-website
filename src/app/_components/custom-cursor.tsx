@@ -1,125 +1,275 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useRef, useCallback } from "react";
 
 type CursorMode = "dot" | "text";
 
-export function CustomCursor() {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [isVisible, setIsVisible] = useState(false);
-  const [isDark, setIsDark] = useState(false);
-  const [cursorMode, setCursorMode] = useState<CursorMode>("dot");
-  const [isPointerArea, setIsPointerArea] = useState(false);
-  const [shouldRender, setShouldRender] = useState(true);
+interface CursorState {
+  isVisible: boolean;
+  isDark: boolean;
+  cursorMode: CursorMode;
+  isPointerArea: boolean;
+}
 
-  useEffect(() => {
-    // Decide whether to render custom cursor:
-    // - Render when there is ANY fine pointer available (mouse/trackpad), including hybrid touch laptops/tablets
-    // - Do not render when only coarse pointers exist (touch-only phones)
-    try {
-      const hasFine = window.matchMedia && window.matchMedia('(any-pointer: fine)').matches;
-      setShouldRender(!!hasFine);
-    } catch {
-      setShouldRender(true); // safe default
+type CursorAction =
+  | { type: "SET_VISIBLE"; payload: boolean }
+  | { type: "SET_DARK"; payload: boolean }
+  | { type: "SET_INTENT"; payload: { mode: CursorMode; isPointer: boolean } };
+
+function cursorReducer(state: CursorState, action: CursorAction): CursorState {
+  switch (action.type) {
+    case "SET_VISIBLE":
+      return { ...state, isVisible: action.payload };
+    case "SET_DARK":
+      return { ...state, isDark: action.payload };
+    case "SET_INTENT":
+      // Batch mode and pointer area updates together
+      if (
+        state.cursorMode === action.payload.mode &&
+        state.isPointerArea === action.payload.isPointer
+      ) {
+        return state; // No change, skip update
+      }
+      return {
+        ...state,
+        cursorMode: action.payload.mode,
+        isPointerArea: action.payload.isPointer,
+      };
+    default:
+      return state;
+  }
+}
+
+// Throttle helper - limits function execution to once per interval
+function throttle<T extends (...args: unknown[]) => void>(
+  func: T,
+  limit: number
+): (...args: Parameters<T>) => void {
+  let inThrottle: boolean;
+  let lastResult: void;
+
+  return function (this: unknown, ...args: Parameters<T>) {
+    if (!inThrottle) {
+      lastResult = func.apply(this, args);
+      inThrottle = true;
+      setTimeout(() => (inThrottle = false), limit);
     }
+    return lastResult;
+  };
+}
 
-    let rafId: number | null = null;
-    let currentX = 0;
-    let currentY = 0;
+export function CustomCursor() {
+  const [state, dispatch] = useReducer(cursorReducer, {
+    isVisible: false,
+    isDark: false,
+    cursorMode: "dot",
+    isPointerArea: false,
+  });
 
-    const updatePosition = (e: MouseEvent) => {
-      currentX = e.clientX;
-      currentY = e.clientY;
+  // Refs for DOM manipulation (no re-renders on position updates!)
+  const cursorRef = useRef<HTMLDivElement>(null);
+  const innerCursorRef = useRef<HTMLDivElement>(null);
+  const shouldRenderRef = useRef(true);
 
-      // Use RAF to throttle updates and sync with browser repaint
-      if (rafId === null) {
-        rafId = requestAnimationFrame(() => {
-          setPosition({ x: currentX, y: currentY });
-          setIsVisible(true);
-          rafId = null;
-        });
+  // Cache for intent detection to avoid repeated DOM queries
+  const intentCacheRef = useRef<WeakMap<Element, { mode: CursorMode; isPointer: boolean }>>(
+    new WeakMap()
+  );
+
+  // Separate text input selectors for better performance
+  const isTextInput = (element: Element): boolean => {
+    const tagName = element.tagName.toLowerCase();
+    if (tagName === "input" || tagName === "textarea") return true;
+    if (element.getAttribute("contenteditable") === "" ||
+        element.getAttribute("contenteditable") === "true") return true;
+    if (element.hasAttribute("data-cursor-intent")) {
+      return element.getAttribute("data-cursor-intent") === "text";
+    }
+    return false;
+  };
+
+  // Separate clickable element detection
+  const isClickable = (element: Element): boolean => {
+    // Skip elements explicitly marked as hover-only
+    if (element.getAttribute("data-cursor-intent") === "hover") return false;
+    if (element.getAttribute("data-cursor-intent") === "click") return true;
+
+    const tagName = element.tagName.toLowerCase();
+    if (tagName === "button") return true;
+    if (tagName === "a" && element.hasAttribute("href")) return true;
+    if (element.getAttribute("role") === "button") return true;
+    if (tagName === "input") {
+      const type = element.getAttribute("type");
+      if (type === "submit" || type === "button") return true;
+    }
+    return false;
+  };
+
+  // Check element and ancestors for intent
+  const detectIntent = useCallback((target: Element | null): { mode: CursorMode; isPointer: boolean } => {
+    if (!target) return { mode: "dot", isPointer: false };
+
+    // Check cache first
+    const cached = intentCacheRef.current.get(target);
+    if (cached) return cached;
+
+    let isTyping = false;
+    let isPointer = false;
+    let current: Element | null = target;
+
+    // Traverse up to 10 ancestors (prevents excessive traversal)
+    let depth = 0;
+    while (current && depth < 10) {
+      if (!isTyping && isTextInput(current)) {
+        isTyping = true;
+      }
+      if (!isPointer && isClickable(current)) {
+        isPointer = true;
       }
 
-      // Determine intent: turn into a typing caret when hovering over text inputs
-      const target = e.target as Element | null;
-      const isTypingTarget = !!target && !!(
-        target.closest(
-          'input, textarea, [contenteditable=""], [contenteditable="true"], [data-cursor-intent="text"]'
-        )
-      );
-      const isClickableTarget = !!target && !!(
-        target.closest('button:not([data-cursor-intent="hover"]), a[href]:not([data-cursor-intent="hover"]), [role="button"]:not([data-cursor-intent="hover"]), [data-cursor-intent="click"], input[type="submit"], input[type="button"]')
-      );
-      setIsPointerArea(isClickableTarget);
-      setCursorMode(isTypingTarget ? "text" : "dot");
+      // Early exit if we found both
+      if (isTyping && isPointer) break;
+
+      current = current.parentElement;
+      depth++;
+    }
+
+    const result = {
+      mode: (isTyping ? "text" : "dot") as CursorMode,
+      isPointer,
     };
 
-    const handleMouseEnter = () => setIsVisible(true);
-    const handleMouseLeave = () => setIsVisible(false);
+    // Cache result
+    intentCacheRef.current.set(target, result);
 
-    // no press/hand modes; use system pointer on clickable elements
+    return result;
+  }, []);
 
-    // Check theme by looking for dark class on document element
+  useEffect(() => {
+    // Decide whether to render custom cursor
+    try {
+      const hasFine = window.matchMedia && window.matchMedia("(any-pointer: fine)").matches;
+      shouldRenderRef.current = !!hasFine;
+    } catch {
+      shouldRenderRef.current = true; // safe default
+    }
+
+    if (!shouldRenderRef.current) return;
+
+    let rafId: number | null = null;
+
+    // GPU-accelerated position update using transform
+    const updatePosition = (e: MouseEvent) => {
+      const cursorEl = cursorRef.current;
+      if (!cursorEl) return;
+
+      // Cancel any pending RAF
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+      }
+
+      // Use RAF to sync with browser repaint (60fps)
+      rafId = requestAnimationFrame(() => {
+        // Direct DOM manipulation - no React re-render!
+        // Using translate3d triggers GPU acceleration (composite-only, no layout!)
+        cursorEl.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+
+        // Show cursor on first move
+        if (!state.isVisible) {
+          dispatch({ type: "SET_VISIBLE", payload: true });
+        }
+
+        rafId = null;
+      });
+    };
+
+    // Throttled intent detection - runs max 20 times/sec instead of 60-120
+    const throttledIntentDetection = throttle((e) => {
+      const target = (e as MouseEvent).target as Element | null;
+      const intent = detectIntent(target);
+      dispatch({ type: "SET_INTENT", payload: intent });
+    }, 50); // 50ms = ~20 updates/sec
+
+    // Combined mousemove handler
+    const handleMouseMove = (e: MouseEvent) => {
+      updatePosition(e);
+      throttledIntentDetection(e);
+    };
+
+    const handleMouseEnter = () => dispatch({ type: "SET_VISIBLE", payload: true });
+    const handleMouseLeave = () => dispatch({ type: "SET_VISIBLE", payload: false });
+
+    // Theme detection
     const checkTheme = () => {
-      setIsDark(document.documentElement.classList.contains('dark'));
+      dispatch({
+        type: "SET_DARK",
+        payload: document.documentElement.classList.contains("dark"),
+      });
     };
 
     // Initial theme check
     checkTheme();
 
-    // Listen for theme changes by observing class changes
+    // Listen for theme changes
     const observer = new MutationObserver(checkTheme);
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['class']
+      attributeFilter: ["class"],
     });
 
-    if (shouldRender) {
-      document.addEventListener("mousemove", updatePosition);
-      document.addEventListener("mouseenter", handleMouseEnter);
-      document.addEventListener("mouseleave", handleMouseLeave);
-    }
+    // Add event listeners
+    document.addEventListener("mousemove", handleMouseMove, { passive: true });
+    document.addEventListener("mouseenter", handleMouseEnter);
+    document.addEventListener("mouseleave", handleMouseLeave);
 
     return () => {
       if (rafId !== null) {
         cancelAnimationFrame(rafId);
       }
-      if (shouldRender) {
-        document.removeEventListener("mousemove", updatePosition);
-        document.removeEventListener("mouseenter", handleMouseEnter);
-        document.removeEventListener("mouseleave", handleMouseLeave);
-      }
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseenter", handleMouseEnter);
+      document.removeEventListener("mouseleave", handleMouseLeave);
       observer.disconnect();
     };
-  }, [shouldRender]);
+  }, []); // Empty deps - runs once, uses refs for updates
 
   // Don't render on touch-only devices
-  if (!shouldRender) return null;
-  // Hide cursor when not visible
-  if (!isVisible) return null;
+  if (!shouldRenderRef.current) return null;
 
-  // When hovering over clickable areas, show a larger circle (pointer effect)
-  const caretWidth = isPointerArea ? 22 : (cursorMode === "text" ? 4 : 16); // px - larger on clickable
-  const caretHeight = isPointerArea ? 22 : (cursorMode === "text" ? 18 : 16); // px - larger on clickable
-  const borderRadiusPx = cursorMode === "text" ? 2 : 9999;
+  // Hide cursor when not visible
+  if (!state.isVisible) return null;
+
+  // Dynamic sizing based on intent
+  const caretWidth = state.isPointerArea ? 22 : state.cursorMode === "text" ? 4 : 16;
+  const caretHeight = state.isPointerArea ? 22 : state.cursorMode === "text" ? 18 : 16;
+  const borderRadiusPx = state.cursorMode === "text" ? 2 : 9999;
 
   return (
     <div
+      ref={cursorRef}
       className="fixed pointer-events-none z-50"
       style={{
-        left: position.x - caretWidth / 2,
-        top: position.y - caretHeight / 2,
-        transform: "translate3d(0, 0, 0)", // Hardware acceleration only
-        willChange: "left, top", // Hint browser to optimize
+        // Static positioning at 0,0 - all movement via transform!
+        left: 0,
+        top: 0,
+        // GPU-accelerated transform (composite-only operation)
+        transform: "translate3d(0px, 0px, 0)",
+        // Hint browser to create GPU layer
+        willChange: "transform",
+        // Center the cursor on the pointer
+        marginLeft: -caretWidth / 2,
+        marginTop: -caretHeight / 2,
       }}
     >
       <div
-        className={isDark ? "bg-white" : "bg-black"}
+        ref={innerCursorRef}
+        className={state.isDark ? "bg-white" : "bg-black"}
         style={{
           width: caretWidth,
           height: caretHeight,
           borderRadius: borderRadiusPx,
-          transition: "width 0.1s ease-out, height 0.1s ease-out", // Only transition size, instant
+          // Hardware-accelerated transitions
+          transition: "width 0.15s cubic-bezier(0.4, 0, 0.2, 1), height 0.15s cubic-bezier(0.4, 0, 0.2, 1), border-radius 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
         }}
       />
     </div>
