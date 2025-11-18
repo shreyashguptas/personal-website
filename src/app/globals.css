@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+@theme {
+  --breakpoint-desktop: 1412px;
+}
+
 /* Custom cursor styles - only hide system cursor when a fine pointer exists */
 @media (any-pointer: fine) {
   /* Hide system cursor globally for smooth custom cursor experience */
