@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --breakpoint-desktop: 1412px;
+  --breakpoint-desktop: 1024px;
 }
 
 /* Custom cursor styles - only hide system cursor when a fine pointer exists */

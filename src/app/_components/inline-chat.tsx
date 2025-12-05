@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { capture, AnalyticsEvent } from "@/lib/analytics";
 import DOMPurify from "dompurify";
 import { Kbd } from "./kbd";
-import { Sparkles, User, ArrowRight, Loader2 } from "lucide-react";
+import { User, ArrowRight, Loader2 } from "lucide-react";
+import Image from "next/image";
 import { cn } from "./utils/cn";
 
 // Constants
@@ -515,172 +516,95 @@ export function InlineChat() {
     }
   };
 
-  return (
-    <section 
-      aria-labelledby="inline-chat-heading" 
-      className="w-full h-full flex flex-col glass-subtle rounded-3xl border border-border/40 shadow-premium-xl overflow-hidden"
+  // Input form component (reused in both states)
+  const inputForm = (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        const trimmed = input.trim();
+        if (!trimmed || loading) return;
+        setSuggestions([]);
+        send(trimmed);
+      }}
+      className="relative group w-full"
     >
-      {/* Header area - simplified */}
-      <div className="px-6 py-4 border-b border-border/20 flex items-center justify-between bg-accent/10">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-premium-sm text-primary-foreground">
-            <Sparkles size={16} />
-          </div>
-          <div>
-            <h2 id="inline-chat-heading" className="font-semibold text-sm leading-none">
-              Ask me anything
-            </h2>
-            <p className="text-xs text-muted-foreground mt-1">
-              Interactive Portfolio
-            </p>
-          </div>
-        </div>
-        {messages.length > 0 && (
-          <button 
-            onClick={() => {
-              setMessages([]);
-              setInput("");
-              setSuggestions(buildSuggestions());
-            }}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors p-2 rounded-lg hover:bg-accent/50"
-          >
-            Clear
-          </button>
-        )}
-      </div>
-
-      <div className="flex-1 flex flex-col min-h-[450px] md:min-h-[500px] max-h-[700px] relative">
-        {/* Messages Area */}
-        <div 
-          ref={scrollRef} 
-          className="flex-1 overflow-y-auto p-4 space-y-6 scroll-smooth" 
-          aria-live="polite"
-        >
-          {messages.length === 0 && (
-            <div className="h-full flex flex-col items-center justify-center py-8 text-center space-y-8">
-               <div className="space-y-3 max-w-xs mx-auto animate-fade-in" style={{ animationDelay: '100ms' }}>
-                 <h3 className="font-bold text-2xl text-gradient-premium">
-                   Hello there! 👋
-                 </h3>
-                 <p className="text-muted-foreground text-sm leading-relaxed">
-                   Welcome to my interactive portfolio. Feel free to ask me about my projects, experience, or what I've been working on recently.
-                 </p>
-               </div>
-
-               {/* Suggestions Grid */}
-               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-md px-2 animate-fade-in" style={{ animationDelay: '200ms' }}>
-                  {suggestions.map((s, i) => (
-                    <button
-                      key={s}
-                      onClick={() => {
-                        setInput("");
-                        setSuggestions([]);
-                        send(s);
-                      }}
-                      className="flex items-center justify-center p-3 text-center text-sm rounded-xl border border-border/40 bg-card/40 hover:bg-accent/50 hover:border-border hover:shadow-premium-sm transition-all duration-200"
-                      style={{ animationDelay: `${300 + (i * 50)}ms` }}
-                    >
-                      <span className="line-clamp-2">{s}</span>
-                    </button>
-                  ))}
-               </div>
-            </div>
-          )}
-
-          {messages.map((m, i) => (
-            <div 
-              key={i} 
-              className={cn(
-                "flex gap-3 animate-fade-in",
-                m.role === "user" ? "flex-row-reverse" : "flex-row"
-              )}
-            >
-              {/* Avatar */}
-              <div className={cn(
-                "w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm mt-1",
-                m.role === "user" 
-                  ? "bg-primary text-primary-foreground" 
-                  : "bg-accent text-accent-foreground border border-border/50"
-              )}>
-                {m.role === "user" ? <User size={14} /> : <Sparkles size={14} />}
-              </div>
-
-              {/* Message Bubble */}
-              <div className={cn(
-                "max-w-[85%] rounded-2xl px-4 py-2.5 shadow-sm text-sm md:text-base leading-relaxed",
-                m.role === "user"
-                  ? "bg-primary text-primary-foreground rounded-tr-sm"
-                  : "bg-card border border-border/40 rounded-tl-sm"
-              )}>
-                 <div
-                    dangerouslySetInnerHTML={
-                      m.role === "assistant"
-                        ? { __html: renderMarkdown(m.content) }
-                        : undefined
-                    }
-                  >
-                    {m.role !== "assistant" ? m.content : null}
-                  </div>
-              </div>
-            </div>
-          ))}
-
-          {/* Loading Indicator */}
-          {loading && (
-            <div className="flex gap-3 animate-fade-in">
-               <div className="w-8 h-8 rounded-full bg-accent text-accent-foreground border border-border/50 flex items-center justify-center shrink-0 shadow-sm mt-1">
-                 <Sparkles size={14} />
-               </div>
-               <div className="bg-card border border-border/40 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm flex items-center gap-1">
-                  <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: '300ms' }} />
-               </div>
-            </div>
-          )}
-        </div>
-
-        {/* Input Area */}
-        <div className="p-4 bg-gradient-to-t from-background/80 to-transparent backdrop-blur-[2px]">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              const trimmed = input.trim();
-              if (!trimmed || loading) return;
+      <input
+        ref={inputRef}
+        value={input}
+        onChange={(e) => {
+          const value = e.target.value;
+          if (value.length <= MAX_MESSAGE_LENGTH) setInput(value);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            if (input.trim() && !loading) {
               setSuggestions([]);
-              send(trimmed);
-            }}
-            className="relative group"
-          >
-            <input
-              ref={inputRef}
-              value={input}
-              onChange={(e) => {
-                 const value = e.target.value;
-                 if (value.length <= MAX_MESSAGE_LENGTH) setInput(value);
-              }}
-              onKeyDown={(e) => {
-                 if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    if (input.trim() && !loading) {
-                       setSuggestions([]);
-                       send(input);
-                    }
-                 }
-              }}
-              disabled={loading}
-              placeholder="Type a message..."
-              className="w-full bg-card/80 backdrop-blur-md border border-border/50 rounded-full pl-5 pr-14 py-3.5 text-sm shadow-premium-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all placeholder:text-muted-foreground/60 disabled:opacity-60"
+              send(input);
+            }
+          }
+        }}
+        disabled={loading}
+        placeholder="Type a message..."
+        className="w-full bg-card/80 backdrop-blur-md border border-border/50 rounded-full pl-5 pr-14 py-3.5 text-sm shadow-premium-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all placeholder:text-muted-foreground/60 disabled:opacity-60"
+      />
+      <button
+        type="submit"
+        disabled={!input.trim() || loading}
+        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-primary text-primary-foreground shadow-md hover:shadow-lg hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 disabled:shadow-none transition-all duration-200"
+      >
+        {loading ? <Loader2 size={18} className="animate-spin" /> : <ArrowRight size={18} />}
+      </button>
+    </form>
+  );
+
+  // EMPTY STATE: Centered layout like Grok
+  if (messages.length === 0) {
+    return (
+      <section
+        aria-label="Chat with Shreyash"
+        className="w-full flex-1 flex flex-col items-center justify-center"
+      >
+        {/* Centered branding */}
+        <div className="flex flex-col items-center mb-8 animate-fade-in" style={{ animationDelay: '100ms' }}>
+          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden ring-1 ring-border/50 shadow-premium-lg mb-4">
+            <Image
+              src="/headshot/headshot.jpg"
+              alt="Shreyash Gupta"
+              width={96}
+              height={96}
+              className="w-full h-full object-cover"
+              priority
             />
-            <button
-              type="submit"
-              disabled={!input.trim() || loading}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-primary text-primary-foreground shadow-md hover:shadow-lg hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 disabled:shadow-none transition-all duration-200"
-            >
-              {loading ? <Loader2 size={18} className="animate-spin" /> : <ArrowRight size={18} />}
-            </button>
-          </form>
-          
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+            Shreyash Gupta
+          </h1>
+        </div>
+
+        {/* Suggestions - left-aligned, half width */}
+        <div className="w-full mb-4 animate-fade-in" style={{ animationDelay: '200ms' }}>
+          <div className="w-1/2 grid grid-cols-2 gap-2">
+            {suggestions.map((s, i) => (
+              <button
+                key={s}
+                onClick={() => {
+                  setInput("");
+                  setSuggestions([]);
+                  send(s);
+                }}
+                className="p-3 text-left text-sm rounded-xl border border-border/40 bg-card/50 hover:bg-accent/60 hover:border-border hover:shadow-premium-sm transition-all duration-200"
+                style={{ animationDelay: `${250 + (i * 50)}ms` }}
+              >
+                <span className="line-clamp-2">{s}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Input */}
+        <div className="w-full animate-fade-in" style={{ animationDelay: '300ms' }}>
+          {inputForm}
           <div className="mt-2 flex items-center justify-center gap-3 text-[10px] text-muted-foreground/60">
             {!isTouchDevice && (
               <span className="flex items-center gap-1">
@@ -690,6 +614,100 @@ export function InlineChat() {
             <span>•</span>
             <span>AI can make mistakes.</span>
           </div>
+        </div>
+      </section>
+    );
+  }
+
+  // CHAT STATE: Messages + input at bottom
+  return (
+    <section
+      aria-label="Chat with Shreyash"
+      className="w-full flex-1 flex flex-col"
+    >
+      {/* Messages Area */}
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto p-4 space-y-6 scroll-smooth"
+        aria-live="polite"
+      >
+        {messages.map((m, i) => (
+          <div
+            key={i}
+            className={cn(
+              "flex gap-3 animate-fade-in",
+              m.role === "user" ? "flex-row-reverse" : "flex-row"
+            )}
+          >
+            {/* Avatar */}
+            {m.role === "user" ? (
+              <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm mt-1 bg-primary text-primary-foreground">
+                <User size={14} />
+              </div>
+            ) : (
+              <div className="w-8 h-8 rounded-full shrink-0 shadow-sm mt-1 overflow-hidden ring-1 ring-border/50">
+                <Image
+                  src="/headshot/headshot.jpg"
+                  alt="Shreyash"
+                  width={32}
+                  height={32}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+
+            {/* Message Bubble */}
+            <div className={cn(
+              "max-w-[85%] rounded-2xl px-4 py-2.5 shadow-sm text-sm md:text-base leading-relaxed",
+              m.role === "user"
+                ? "bg-primary text-primary-foreground rounded-tr-sm"
+                : "bg-card border border-border/40 rounded-tl-sm"
+            )}>
+              <div
+                dangerouslySetInnerHTML={
+                  m.role === "assistant"
+                    ? { __html: renderMarkdown(m.content) }
+                    : undefined
+                }
+              >
+                {m.role !== "assistant" ? m.content : null}
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {/* Loading Indicator */}
+        {loading && (
+          <div className="flex gap-3 animate-fade-in">
+            <div className="w-8 h-8 rounded-full shrink-0 shadow-sm mt-1 overflow-hidden ring-1 ring-border/50">
+              <Image
+                src="/headshot/headshot.jpg"
+                alt="Shreyash"
+                width={32}
+                height={32}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="bg-card border border-border/40 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm flex items-center gap-1">
+              <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: '0ms' }} />
+              <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: '150ms' }} />
+              <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: '300ms' }} />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Input Area - pinned at bottom */}
+      <div className="p-4 border-t border-border/30 bg-card/80 backdrop-blur-sm">
+        {inputForm}
+        <div className="mt-2 flex items-center justify-center gap-3 text-[10px] text-muted-foreground/60">
+          {!isTouchDevice && (
+            <span className="flex items-center gap-1">
+              <Kbd keys={['/']} className="text-[9px] py-0 px-1 min-h-0 h-4" /> to focus
+            </span>
+          )}
+          <span>•</span>
+          <span>AI can make mistakes.</span>
         </div>
       </div>
     </section>

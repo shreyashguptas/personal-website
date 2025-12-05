@@ -12,7 +12,7 @@ import { Kbd } from "./kbd"
 
 export function SiteNavigation() {
   return (
-    <div className="flex justify-center w-full py-4">
+    <div className="flex justify-center w-full py-3 sm:py-4">
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
