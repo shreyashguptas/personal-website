@@ -80,11 +80,13 @@ export default function HomePage() {
             </div>
 
             <div
-              className="mt-10 desktop:mt-0 flex-1 flex flex-col"
+              className="mt-10 desktop:mt-0 w-full flex flex-col items-center desktop:items-start"
               data-animate="fade-left"
               style={fade(260)}
             >
-              <InlineChat />
+              <div className="w-full max-w-2xl">
+                <InlineChat />
+              </div>
             </div>
           </div>
         </div>

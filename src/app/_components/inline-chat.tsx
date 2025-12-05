@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { capture, AnalyticsEvent } from "@/lib/analytics";
-import Image from "next/image";
 import DOMPurify from "dompurify";
 import { Kbd } from "./kbd";
+import { Sparkles, User, ArrowRight, Loader2 } from "lucide-react";
+import { cn } from "./utils/cn";
 
 // Constants
 const MAX_MESSAGE_LENGTH = 1000;
@@ -24,9 +25,10 @@ function getTimeOfDay(date: Date = new Date()): TimeOfDay {
 
 function buildSuggestions(): string[] {
   const base: string[] = [
-    "What email can I reach you at?",
-    "What was the latest blog you wrote about?",
-    "What's the latest project you've worked on?"
+    "What are your main skills?",
+    "Tell me about your latest project",
+    "How can I contact you?",
+    "What do you write about?"
   ];
   const returning: string[] = [];
   const set = [...base, ...returning];
@@ -514,244 +516,182 @@ export function InlineChat() {
   };
 
   return (
-    <section aria-labelledby="inline-chat-heading" className="w-full h-full">
-      <div className="mx-auto w-full flex flex-col h-full min-h-[55svh] md:min-h-[60svh] max-h-[85svh]">
-        {/* Messages */}
-        <div ref={scrollRef} className="space-y-4 flex-1 min-h-0 overflow-y-auto pr-1 sm:pr-2 mb-4" aria-live="polite">
+    <section 
+      aria-labelledby="inline-chat-heading" 
+      className="w-full h-full flex flex-col glass-subtle rounded-3xl border border-border/40 shadow-premium-xl overflow-hidden"
+    >
+      {/* Header area - simplified */}
+      <div className="px-6 py-4 border-b border-border/20 flex items-center justify-between bg-accent/10">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-premium-sm text-primary-foreground">
+            <Sparkles size={16} />
+          </div>
+          <div>
+            <h2 id="inline-chat-heading" className="font-semibold text-sm leading-none">
+              Ask me anything
+            </h2>
+            <p className="text-xs text-muted-foreground mt-1">
+              Interactive Portfolio
+            </p>
+          </div>
+        </div>
+        {messages.length > 0 && (
+          <button 
+            onClick={() => {
+              setMessages([]);
+              setInput("");
+              setSuggestions(buildSuggestions());
+            }}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors p-2 rounded-lg hover:bg-accent/50"
+          >
+            Clear
+          </button>
+        )}
+      </div>
+
+      <div className="flex-1 flex flex-col min-h-[450px] md:min-h-[500px] max-h-[700px] relative">
+        {/* Messages Area */}
+        <div 
+          ref={scrollRef} 
+          className="flex-1 overflow-y-auto p-4 space-y-6 scroll-smooth" 
+          aria-live="polite"
+        >
           {messages.length === 0 && (
-            <>
-              <div className="flex items-start justify-start animate-fade-in">
-                <div className="relative flex-shrink-0 mr-3">
-                  <Image 
-                    src="/headshot/headshot.jpg" 
-                    alt="Shreyash" 
-                    width={36} 
-                    height={36} 
-                    className="rounded-full object-cover ring-2 ring-accent/50" 
-                  />
-                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full ring-2 ring-background" />
-                </div>
-                <div className="inline-block rounded-2xl rounded-tl-sm bg-accent/50 px-4 py-3 max-w-[85%] text-sm md:text-base shadow-premium-sm">
-                  <p className="font-medium mb-1">
-                    Good {timeOfDay}{returningVisitor ? ", welcome back! 👋" : "! I'm Shreyash 👋"}
-                  </p>
-                  <p className="text-foreground/80">
-                    {returningVisitor 
-                      ? "What would you like to know today?" 
-                      : "Ask me anything about my work, projects, or what I've been writing about!"}
-                  </p>
-                </div>
-              </div>
-              
-              {!returningVisitor && (
-                <div className="flex items-start justify-start animate-fade-in" style={{ animationDelay: '400ms' }}>
-                  <div className="relative flex-shrink-0 mr-3">
-                    <Image 
-                      src="/headshot/headshot.jpg" 
-                      alt="Shreyash" 
-                      width={36} 
-                      height={36} 
-                      className="rounded-full object-cover ring-2 ring-accent/50" 
-                    />
-                  </div>
-                  <div className="inline-block rounded-2xl rounded-tl-sm bg-accent/50 px-4 py-3 max-w-[85%] text-sm md:text-base shadow-premium-sm">
-                    <p className="text-foreground/80">
-                      Try one of the questions below, or type your own! 💬
-                    </p>
-                  </div>
-                </div>
-              )}
-            </>
+            <div className="h-full flex flex-col items-center justify-center py-8 text-center space-y-8">
+               <div className="space-y-3 max-w-xs mx-auto animate-fade-in" style={{ animationDelay: '100ms' }}>
+                 <h3 className="font-bold text-2xl text-gradient-premium">
+                   Hello there! 👋
+                 </h3>
+                 <p className="text-muted-foreground text-sm leading-relaxed">
+                   Welcome to my interactive portfolio. Feel free to ask me about my projects, experience, or what I've been working on recently.
+                 </p>
+               </div>
+
+               {/* Suggestions Grid */}
+               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-md px-2 animate-fade-in" style={{ animationDelay: '200ms' }}>
+                  {suggestions.map((s, i) => (
+                    <button
+                      key={s}
+                      onClick={() => {
+                        setInput("");
+                        setSuggestions([]);
+                        send(s);
+                      }}
+                      className="flex items-center justify-center p-3 text-center text-sm rounded-xl border border-border/40 bg-card/40 hover:bg-accent/50 hover:border-border hover:shadow-premium-sm transition-all duration-200"
+                      style={{ animationDelay: `${300 + (i * 50)}ms` }}
+                    >
+                      <span className="line-clamp-2">{s}</span>
+                    </button>
+                  ))}
+               </div>
+            </div>
           )}
+
           {messages.map((m, i) => (
-            <div key={i} className={m.role === "user" ? "flex items-start justify-end animate-fade-in" : "flex items-start justify-start animate-fade-in"}>
-              {m.role !== "user" && (
-                <div className="relative flex-shrink-0 mr-3">
-                  <Image 
-                    src="/headshot/headshot.jpg" 
-                    alt="Shreyash" 
-                    width={36} 
-                    height={36} 
-                    className="rounded-full object-cover ring-2 ring-accent/50" 
-                  />
-                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full ring-2 ring-background" />
-                </div>
+            <div 
+              key={i} 
+              className={cn(
+                "flex gap-3 animate-fade-in",
+                m.role === "user" ? "flex-row-reverse" : "flex-row"
               )}
-              <div
-                className={
-                  m.role === "user"
-                    ? "inline-block rounded-2xl rounded-tr-sm bg-primary text-primary-foreground px-4 py-3 max-w-[85%] text-sm md:text-base shadow-premium-sm"
-                    : "inline-block rounded-2xl rounded-tl-sm bg-accent/50 px-4 py-3 max-w-[85%] text-sm md:text-base shadow-premium-sm"
-                }
-                dangerouslySetInnerHTML={
-                  m.role === "assistant"
-                    ? { __html: renderMarkdown(m.content) }
-                    : undefined
-                }
-              >
-                {m.role !== "assistant" ? m.content : null}
+            >
+              {/* Avatar */}
+              <div className={cn(
+                "w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm mt-1",
+                m.role === "user" 
+                  ? "bg-primary text-primary-foreground" 
+                  : "bg-accent text-accent-foreground border border-border/50"
+              )}>
+                {m.role === "user" ? <User size={14} /> : <Sparkles size={14} />}
+              </div>
+
+              {/* Message Bubble */}
+              <div className={cn(
+                "max-w-[85%] rounded-2xl px-4 py-2.5 shadow-sm text-sm md:text-base leading-relaxed",
+                m.role === "user"
+                  ? "bg-primary text-primary-foreground rounded-tr-sm"
+                  : "bg-card border border-border/40 rounded-tl-sm"
+              )}>
+                 <div
+                    dangerouslySetInnerHTML={
+                      m.role === "assistant"
+                        ? { __html: renderMarkdown(m.content) }
+                        : undefined
+                    }
+                  >
+                    {m.role !== "assistant" ? m.content : null}
+                  </div>
               </div>
             </div>
           ))}
-          
-          {/* Typing indicator when loading */}
+
+          {/* Loading Indicator */}
           {loading && (
-            <div className="flex items-start justify-start animate-fade-in">
-              <div className="relative flex-shrink-0 mr-3">
-                <Image 
-                  src="/headshot/headshot.jpg" 
-                  alt="Shreyash" 
-                  width={36} 
-                  height={36} 
-                  className="rounded-full object-cover ring-2 ring-accent/50" 
-                />
-                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full ring-2 ring-background" />
-              </div>
-              <div className="inline-block rounded-2xl rounded-tl-sm bg-accent/50 px-4 py-3 shadow-premium-sm">
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <div className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <div className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '300ms' }} />
-                </div>
-              </div>
+            <div className="flex gap-3 animate-fade-in">
+               <div className="w-8 h-8 rounded-full bg-accent text-accent-foreground border border-border/50 flex items-center justify-center shrink-0 shadow-sm mt-1">
+                 <Sparkles size={14} />
+               </div>
+               <div className="bg-card border border-border/40 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm flex items-center gap-1">
+                  <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: '300ms' }} />
+               </div>
             </div>
           )}
         </div>
 
-        {/* Input */}
-        <div className="mt-auto pt-4">
-          {/* Suggestion prompts above input - only show when no messages */}
-          {messages.length === 0 && (
-            <div className="mb-4">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3 text-center">
-                Quick Start Questions
-              </p>
-              <div className="flex flex-col gap-2">
-                {suggestions.map((s, index) => (
-                  <button
-                    key={s}
-                    className="group text-left text-sm md:text-base rounded-xl bg-accent/30 hover:bg-accent/50 border border-border/50 hover:border-border text-foreground px-4 py-3 transition-all duration-200 hover:shadow-premium-sm hover:-translate-y-0.5 animate-fade-in flex items-center justify-between"
-                    style={{ animationDelay: `${800 + (index * 100)}ms` }}
-                    data-cursor-intent="hover"
-                    data-suggestion-index={index}
-                    onClick={() => {
-                      // Validate suggestion before sending
-                      if (typeof s !== 'string' || s.length === 0 || s.length > MAX_MESSAGE_LENGTH) {
-                        console.warn("[inline-chat] Invalid suggestion clicked");
-                        return;
-                      }
-                      console.info("[inline-chat] suggestion_click", { suggestion: s });
-                      // Clear input in case user was typing
-                      setInput('');
-                      setSuggestions([]);
-                      send(s);
-                    }}
-                  >
-                    <span className="inline-flex items-center gap-2 flex-1">
-                      <svg 
-                        className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" 
-                        fill="none" 
-                        viewBox="0 0 24 24" 
-                        stroke="currentColor"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                      </svg>
-                      {s}
-                    </span>
-                    <Kbd keys={[(index + 1).toString()]} />
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+        {/* Input Area */}
+        <div className="p-4 bg-gradient-to-t from-background/80 to-transparent backdrop-blur-[2px]">
           <form
             onSubmit={(e) => {
               e.preventDefault();
               const trimmed = input.trim();
-              if (!trimmed || loading) {
-                console.info("[inline-chat] typed_submit_ignored", { reason: !trimmed ? "empty" : "loading" });
-                return;
-              }
-              console.info("[inline-chat] typed_submit", { hideSuggestions: true });
+              if (!trimmed || loading) return;
               setSuggestions([]);
               send(trimmed);
             }}
-            className="flex items-center gap-3"
+            className="relative group"
           >
-            <div className="relative flex-1">
-              <input
-                ref={inputRef}
-                value={input}
-                onChange={(e) => {
-                  const value = e.target.value;
-
-                  // Basic security sanitization
-                  let sanitized = value
-                    // Remove dangerous HTML characters and protocol handlers
-                    .replace(/[<>'"&]/g, '')
-                    .replace(/javascript:/gi, '')
-                    .replace(/data:/gi, '')
-                    .replace(/vbscript:/gi, '')
-                    .replace(/file:/gi, '')
-                    .replace(/ftp:/gi, '')
-                    // Remove potentially dangerous characters
-                    .replace(/[`\\]/g, '')
-                    .replace(/\0/g, ''); // Null bytes
-
-                  // Length limit
-                  if (sanitized.length > MAX_MESSAGE_LENGTH) {
-                    sanitized = sanitized.substring(0, MAX_MESSAGE_LENGTH);
-                  }
-
-                  setInput(sanitized);
-                }}
-                onKeyDown={(e) => {
-                  // Allow normal typing - only prevent problematic combinations
-                  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey || e.shiftKey)) {
+            <input
+              ref={inputRef}
+              value={input}
+              onChange={(e) => {
+                 const value = e.target.value;
+                 if (value.length <= MAX_MESSAGE_LENGTH) setInput(value);
+              }}
+              onKeyDown={(e) => {
+                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
-                    return;
-                  }
-                }}
-                className="w-full rounded-xl border-2 border-border bg-background px-4 py-3.5 text-sm md:text-base focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60"
-                data-cursor-intent="text"
-                placeholder="Type your question here... (Press / to focus)"
-                maxLength={MAX_MESSAGE_LENGTH}
-                minLength={1}
-                required
-                aria-label="Ask a question"
-                pattern=".*\S.*"
-              />
-            </div>
+                    if (input.trim() && !loading) {
+                       setSuggestions([]);
+                       send(input);
+                    }
+                 }
+              }}
+              disabled={loading}
+              placeholder="Type a message..."
+              className="w-full bg-card/80 backdrop-blur-md border border-border/50 rounded-full pl-5 pr-14 py-3.5 text-sm shadow-premium-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all placeholder:text-muted-foreground/60 disabled:opacity-60"
+            />
             <button
               type="submit"
-              disabled={loading}
-              className="group rounded-xl bg-primary text-primary-foreground px-5 py-3.5 text-sm md:text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:opacity-90 shadow-premium-sm hover:shadow-premium-md flex-shrink-0 flex items-center gap-2"
-              aria-label="Send message"
+              disabled={!input.trim() || loading}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-primary text-primary-foreground shadow-md hover:shadow-lg hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 disabled:shadow-none transition-all duration-200"
             >
-              {loading ? (
-                <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-              ) : (
-                <>
-                  {/* Always show label to keep size/shape consistent on mobile */}
-                  <span className="inline">Send</span>
-                  {/* Hide keyboard shortcut hint on touch devices */}
-                  {!isTouchDevice && (
-                    <Kbd keys={['enter']} className="bg-primary-foreground/20 text-primary-foreground border-primary-foreground/30 hidden sm:inline" />
-                  )}
-                </>
-              )}
+              {loading ? <Loader2 size={18} className="animate-spin" /> : <ArrowRight size={18} />}
             </button>
           </form>
-          <p className="mt-3 text-xs text-center text-muted-foreground/70">
-            💡 Powered by AI • Responses based on site content
-          </p>
+          
+          <div className="mt-2 flex items-center justify-center gap-3 text-[10px] text-muted-foreground/60">
+            {!isTouchDevice && (
+              <span className="flex items-center gap-1">
+                <Kbd keys={['/']} className="text-[9px] py-0 px-1 min-h-0 h-4" /> to focus
+              </span>
+            )}
+            <span>•</span>
+            <span>AI can make mistakes.</span>
+          </div>
         </div>
       </div>
     </section>
   );
 }
-
-
