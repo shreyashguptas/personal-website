@@ -546,7 +546,7 @@ export function InlineChat() {
         }}
         disabled={loading}
         placeholder="Type a message..."
-        className="w-full bg-card/80 backdrop-blur-md border border-border/50 rounded-full pl-5 pr-14 py-3.5 text-sm shadow-premium-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all placeholder:text-muted-foreground/60 disabled:opacity-60"
+        className="w-full bg-zinc-800/90 border border-zinc-600/60 rounded-full pl-5 pr-14 py-3.5 text-sm shadow-premium-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-zinc-500 transition-all placeholder:text-zinc-400 disabled:opacity-60"
       />
       <button
         type="submit"
@@ -582,9 +582,9 @@ export function InlineChat() {
           </h1>
         </div>
 
-        {/* Suggestions - left-aligned, half width */}
+        {/* Suggestions - full width above input */}
         <div className="w-full mb-4 animate-fade-in" style={{ animationDelay: '200ms' }}>
-          <div className="w-1/2 grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             {suggestions.map((s, i) => (
               <button
                 key={s}
@@ -593,7 +593,7 @@ export function InlineChat() {
                   setSuggestions([]);
                   send(s);
                 }}
-                className="p-3 text-left text-sm rounded-xl border border-border/40 bg-card/50 hover:bg-accent/60 hover:border-border hover:shadow-premium-sm transition-all duration-200"
+                className="p-3 text-center text-sm rounded-xl border border-border/40 bg-card/50 hover:bg-accent/60 hover:border-border hover:shadow-premium-sm transition-all duration-200"
                 style={{ animationDelay: `${250 + (i * 50)}ms` }}
               >
                 <span className="line-clamp-2">{s}</span>
