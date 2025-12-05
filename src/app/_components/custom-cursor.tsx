@@ -236,9 +236,6 @@ export function CustomCursor() {
   // Don't render on touch-only devices
   if (!shouldRenderRef.current) return null;
 
-  // Hide cursor when not visible
-  if (!state.isVisible) return null;
-
   // Dynamic sizing based on intent
   const caretWidth = state.isPointerArea ? 22 : state.cursorMode === "text" ? 4 : 16;
   const caretHeight = state.isPointerArea ? 22 : state.cursorMode === "text" ? 18 : 16;
@@ -259,6 +256,10 @@ export function CustomCursor() {
         // Center the cursor on the pointer
         marginLeft: -caretWidth / 2,
         marginTop: -caretHeight / 2,
+        // Visibility controlled by opacity - element always exists in DOM
+        // so cursor appears immediately on first mouse move
+        opacity: state.isVisible ? 1 : 0,
+        transition: "opacity 0.15s ease-out",
       }}
     >
       <div
