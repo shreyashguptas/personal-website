@@ -15,10 +15,10 @@ export function getRateLimiter(): Ratelimit | null {
     const url = process.env.UPSTASH_REDIS_REST_URL;
     const token = process.env.UPSTASH_REDIS_REST_TOKEN;
     
-    if (!url || !token) {
+    if (!url || !token || !url.startsWith('https://')) {
       // Degrade gracefully in any environment. We'll use local fallback in the route.
       // In production this is not ideal, so log prominently.
-      console.warn('[rate-limit] Redis env not configured. Falling back to local in-memory limiter.');
+      console.warn('[rate-limit] Redis env not configured or invalid. Falling back to local in-memory limiter.');
       return null; // route will use local fallback
     }
     
