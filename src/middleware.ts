@@ -21,7 +21,7 @@ export function middleware(request: NextRequest) {
   // Rate limiting headers for debugging
   if (request.nextUrl.pathname.startsWith('/api/chat')) {
     response.headers.set('X-RateLimit-Limit', '10');
-    response.headers.set('X-RateLimit-Window', '300');
+    response.headers.set('X-RateLimit-Window', '120');
   }
 
   return response;
