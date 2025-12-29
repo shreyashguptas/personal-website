@@ -189,6 +189,10 @@ export function InlineChat() {
   const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>("Morning");
   const [returningVisitor, setReturningVisitor] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [demoShown, setDemoShown] = useState(false);
+  const [isDemoMode, setIsDemoMode] = useState(false);
+  const [showSuggestionsAfterDemo, setShowSuggestionsAfterDemo] = useState(false);
+  const demoTriggeredRef = useRef(false);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -196,17 +200,44 @@ export function InlineChat() {
     }
   }, [messages]);
 
-  // Auto-focus on mount for all visitors
+  // Auto-trigger demo conversation on first visit
   useEffect(() => {
-    // Auto-focus for all visitors when the component mounts
-    if (inputRef.current) {
+    // Only trigger if demo hasn't been shown, suggestions are loaded, no messages yet, and we haven't already triggered
+    if (!demoShown && !demoTriggeredRef.current && suggestions.length > 0 && messages.length === 0 && !loading) {
+      const demoQuestion = suggestions[0]; // Use first suggestion: "What are your main skills?"
+      if (demoQuestion) {
+        demoTriggeredRef.current = true;
+        // Mark demo as shown in sessionStorage
+        try {
+          sessionStorage.setItem("sg_demoShown", "1");
+        } catch {
+          // best-effort only
+        }
+        setDemoShown(true);
+        setIsDemoMode(true);
+        
+        // Small delay to ensure UI is ready, then trigger demo
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        const timer = setTimeout(() => {
+          send(demoQuestion);
+        }, 500);
+        return () => clearTimeout(timer);
+      }
+    }
+    // Note: send is intentionally omitted from deps - it uses stable state setters and we use a ref to prevent multiple triggers
+  }, [demoShown, suggestions.length, messages.length, loading]);
+
+  // Auto-focus on mount for all visitors (but skip during demo mode)
+  useEffect(() => {
+    // Don't auto-focus during demo mode to avoid interrupting animation
+    if (inputRef.current && !isDemoMode && messages.length > 0) {
       // Small delay to ensure the component is fully rendered
       const timer = setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [isDemoMode, messages.length]);
 
   // Track clicks on chat source links
   useEffect(() => {
@@ -230,6 +261,17 @@ export function InlineChat() {
       return () => scrollContainer.removeEventListener('click', handleSourceClick);
     }
   }, [messages.length]);
+
+  // Check if demo has been shown in this session
+  useEffect(() => {
+    try {
+      const demoShownInSession = sessionStorage.getItem("sg_demoShown") === "1";
+      setDemoShown(demoShownInSession);
+    } catch {
+      // best-effort only
+      setDemoShown(false);
+    }
+  }, []);
 
   // Compute greeting context and build suggestion list
   useEffect(() => {
@@ -488,6 +530,21 @@ export function InlineChat() {
         sources_provided: focusUrls.length > 0,
         source_count: focusUrls.length
       });
+      
+      // Handle demo completion
+      if (isDemoMode) {
+        setIsDemoMode(false);
+        // Show suggestions after a short delay
+        setTimeout(() => {
+          setShowSuggestionsAfterDemo(true);
+          // Re-enable auto-focus after demo
+          if (inputRef.current) {
+            setTimeout(() => {
+              inputRef.current?.focus();
+            }, 100);
+          }
+        }, 500);
+      }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
       capture(AnalyticsEvent.ChatClientError, {
@@ -511,6 +568,19 @@ export function InlineChat() {
       }
 
       setMessages((m) => [...m, { role: "assistant", content: userFriendlyMessage }]);
+      
+      // Handle demo completion even on error
+      if (isDemoMode) {
+        setIsDemoMode(false);
+        setTimeout(() => {
+          setShowSuggestionsAfterDemo(true);
+          if (inputRef.current) {
+            setTimeout(() => {
+              inputRef.current?.focus();
+            }, 100);
+          }
+        }, 500);
+      }
     } finally {
       setLoading(false);
     }
@@ -519,13 +589,14 @@ export function InlineChat() {
   // Input form component (reused in both states)
   const inputForm = (
     <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        const trimmed = input.trim();
-        if (!trimmed || loading) return;
-        setSuggestions([]);
-        send(trimmed);
-      }}
+        onSubmit={(e) => {
+          e.preventDefault();
+          const trimmed = input.trim();
+          if (!trimmed || loading) return;
+          setSuggestions([]);
+          setShowSuggestionsAfterDemo(false);
+          send(trimmed);
+        }}
       className="relative group w-full"
     >
       <input
@@ -540,6 +611,7 @@ export function InlineChat() {
             e.preventDefault();
             if (input.trim() && !loading) {
               setSuggestions([]);
+              setShowSuggestionsAfterDemo(false);
               send(input);
             }
           }
@@ -559,7 +631,8 @@ export function InlineChat() {
   );
 
   // EMPTY STATE: Centered layout like Grok
-  if (messages.length === 0) {
+  // Only show if demo hasn't been triggered yet (not in demo mode and demo hasn't been shown)
+  if (messages.length === 0 && !isDemoMode) {
     return (
       <section
         aria-label="Chat with Shreyash"
@@ -584,6 +657,7 @@ export function InlineChat() {
                 onClick={() => {
                   setInput("");
                   setSuggestions([]);
+                  setShowSuggestionsAfterDemo(false);
                   send(s);
                 }}
                 className="p-3 text-center text-sm rounded-xl border border-border/40 bg-card/50 hover:bg-accent/60 hover:border-[hsl(var(--primary))]/30 hover:shadow-premium-sm transition-all duration-200"
@@ -689,6 +763,28 @@ export function InlineChat() {
           </div>
         )}
       </div>
+
+      {/* Suggestions after demo - fade in below messages */}
+      {showSuggestionsAfterDemo && suggestions.length > 0 && (
+        <div className="px-4 pb-4 animate-fade-in">
+          <div className="grid grid-cols-2 gap-2">
+            {suggestions.slice(1).map((s, i) => (
+              <button
+                key={s}
+                onClick={() => {
+                  setInput("");
+                  setShowSuggestionsAfterDemo(false);
+                  send(s);
+                }}
+                className="p-3 text-center text-sm rounded-xl border border-border/40 bg-card/50 hover:bg-accent/60 hover:border-[hsl(var(--primary))]/30 hover:shadow-premium-sm transition-all duration-200"
+                style={{ animationDelay: `${i * 50}ms` }}
+              >
+                <span className="line-clamp-2">{s}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Input Area - pinned at bottom */}
       <div className="p-4 border-t border-border/30 bg-card/90 backdrop-blur-xl">
