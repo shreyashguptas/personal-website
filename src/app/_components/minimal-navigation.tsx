@@ -5,7 +5,7 @@ export function MinimalNavigation() {
     <div className="flex items-center gap-4 text-sm">
       <Link
         href="/blog"
-        className="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors inline-flex items-center gap-1"
+        className="text-muted-foreground hover:text-primary transition-colors duration-200 inline-flex items-center gap-1"
         data-cursor-intent="hover"
       >
         Blog
@@ -13,10 +13,10 @@ export function MinimalNavigation() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 17L17 7M17 7H7M17 7V17" />
         </svg>
       </Link>
-      <span className="text-gray-300 dark:text-gray-600">•</span>
+      <span className="text-muted-foreground/40">•</span>
       <Link
         href="/projects"
-        className="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors inline-flex items-center gap-1"
+        className="text-muted-foreground hover:text-primary transition-colors duration-200 inline-flex items-center gap-1"
         data-cursor-intent="hover"
       >
         Project

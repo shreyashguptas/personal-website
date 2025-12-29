@@ -7,7 +7,7 @@ export function SocialLinks() {
         href="https://x.com/ShreyashGuptas"
         target="_blank"
         rel="noopener noreferrer"
-        className="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors"
+        className="text-muted-foreground hover:text-primary transition-colors duration-200"
         aria-label="X (Twitter)"
         data-cursor-intent="hover"
       >
@@ -20,7 +20,7 @@ export function SocialLinks() {
         href="https://github.com/shreyashguptas"
         target="_blank"
         rel="noopener noreferrer"
-        className="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors"
+        className="text-muted-foreground hover:text-primary transition-colors duration-200"
         aria-label="GitHub"
         data-cursor-intent="hover"
       >
@@ -33,7 +33,7 @@ export function SocialLinks() {
         href="https://www.youtube.com/@ShreyashGuptas"
         target="_blank"
         rel="noopener noreferrer"
-        className="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors"
+        className="text-muted-foreground hover:text-primary transition-colors duration-200"
         aria-label="YouTube"
         data-cursor-intent="hover"
       >

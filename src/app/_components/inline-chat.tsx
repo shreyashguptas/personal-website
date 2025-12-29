@@ -546,12 +546,12 @@ export function InlineChat() {
         }}
         disabled={loading}
         placeholder="Type a message..."
-        className="w-full bg-zinc-800/90 border border-zinc-600/60 rounded-full pl-5 pr-14 py-3.5 text-sm shadow-premium-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-zinc-500 transition-all placeholder:text-zinc-400 disabled:opacity-60"
+        className="w-full bg-card/90 border border-border/60 rounded-full pl-5 pr-14 py-3.5 text-sm shadow-premium-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all placeholder:text-muted-foreground/60 disabled:opacity-60 backdrop-blur-sm"
       />
       <button
         type="submit"
         disabled={!input.trim() || loading}
-        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-primary text-primary-foreground shadow-md hover:shadow-lg hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 disabled:shadow-none transition-all duration-200"
+        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-primary text-primary-foreground shadow-premium-md hover:shadow-premium-lg hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 disabled:shadow-none transition-all duration-200 glow-green"
       >
         {loading ? <Loader2 size={18} className="animate-spin" /> : <ArrowRight size={18} />}
       </button>
@@ -565,21 +565,14 @@ export function InlineChat() {
         aria-label="Chat with Shreyash"
         className="w-full flex-1 flex flex-col items-center justify-center"
       >
-        {/* Centered branding */}
-        <div className="flex flex-col items-center mb-8 animate-fade-in" style={{ animationDelay: '100ms' }}>
-          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden ring-1 ring-border/50 shadow-premium-lg mb-4">
-            <Image
-              src="/headshot/headshot.jpg"
-              alt="Shreyash Gupta"
-              width={96}
-              height={96}
-              className="w-full h-full object-cover"
-              priority
-            />
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-            Shreyash Gupta
-          </h1>
+        {/* Centered branding - removed since it's now in hero */}
+        <div className="flex flex-col items-center mb-6 animate-fade-in" style={{ animationDelay: '100ms' }}>
+          <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-muted-foreground">
+            Ask me anything
+          </h2>
+          <p className="text-sm text-muted-foreground/70 mt-1">
+            I can answer questions about my work, projects, and experience
+          </p>
         </div>
 
         {/* Suggestions - full width above input */}
@@ -593,7 +586,7 @@ export function InlineChat() {
                   setSuggestions([]);
                   send(s);
                 }}
-                className="p-3 text-center text-sm rounded-xl border border-border/40 bg-card/50 hover:bg-accent/60 hover:border-border hover:shadow-premium-sm transition-all duration-200"
+                className="p-3 text-center text-sm rounded-xl border border-border/40 bg-card/50 hover:bg-accent/60 hover:border-[hsl(var(--primary))]/30 hover:shadow-premium-sm transition-all duration-200"
                 style={{ animationDelay: `${250 + (i * 50)}ms` }}
               >
                 <span className="line-clamp-2">{s}</span>
@@ -641,11 +634,11 @@ export function InlineChat() {
           >
             {/* Avatar */}
             {m.role === "user" ? (
-              <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm mt-1 bg-primary text-primary-foreground">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-premium-sm mt-1 bg-primary text-primary-foreground ring-2 ring-primary/20">
                 <User size={14} />
               </div>
             ) : (
-              <div className="w-8 h-8 rounded-full shrink-0 shadow-sm mt-1 overflow-hidden ring-1 ring-border/50">
+              <div className="w-8 h-8 rounded-full shrink-0 shadow-premium-sm mt-1 overflow-hidden ring-2 ring-[hsl(var(--primary))]/20">
                 <Image
                   src="/headshot/headshot.jpg"
                   alt="Shreyash"
@@ -658,10 +651,10 @@ export function InlineChat() {
 
             {/* Message Bubble */}
             <div className={cn(
-              "max-w-[85%] rounded-2xl px-4 py-2.5 shadow-sm text-sm md:text-base leading-relaxed",
+              "max-w-[85%] rounded-2xl px-4 py-2.5 shadow-premium-sm text-sm md:text-base leading-relaxed",
               m.role === "user"
-                ? "bg-primary text-primary-foreground rounded-tr-sm"
-                : "bg-card border border-border/40 rounded-tl-sm"
+                ? "bg-primary text-primary-foreground rounded-tr-sm shadow-premium-md"
+                : "bg-card/80 border border-border/40 rounded-tl-sm backdrop-blur-sm"
             )}>
               <div
                 dangerouslySetInnerHTML={
@@ -698,7 +691,7 @@ export function InlineChat() {
       </div>
 
       {/* Input Area - pinned at bottom */}
-      <div className="p-4 border-t border-border/30 bg-card/80 backdrop-blur-sm">
+      <div className="p-4 border-t border-border/30 bg-card/90 backdrop-blur-xl">
         {inputForm}
         <div className="mt-2 flex items-center justify-center gap-3 text-[10px] text-muted-foreground/60">
           {!isTouchDevice && (
