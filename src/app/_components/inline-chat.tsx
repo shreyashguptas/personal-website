@@ -267,11 +267,19 @@ export function InlineChat() {
     // Note: send is intentionally omitted from deps - it uses stable state setters and we use a ref to prevent multiple triggers
   }, [demoShown, suggestions.length, messages.length, loading]);
 
-  // Auto-focus on mount for all visitors (but skip during demo mode)
+  // Auto-focus input on initial mount so users can start typing immediately
   useEffect(() => {
-    // Don't auto-focus during demo mode to avoid interrupting animation
+    // Focus the input after a short delay to ensure component is mounted
+    const timer = setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []); // Empty deps - only runs on mount
+
+  // Re-focus after demo mode completes
+  useEffect(() => {
+    // Re-focus after demo completes so user can continue typing
     if (inputRef.current && !isDemoMode && messages.length > 0) {
-      // Small delay to ensure the component is fully rendered
       const timer = setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
