@@ -117,9 +117,9 @@ export function CustomCursor() {
     let isPointer = false;
     let current: Element | null = target;
 
-    // Traverse up to 10 ancestors (prevents excessive traversal)
+    // Traverse up to 5 ancestors (reduced from 10 for better INP)
     let depth = 0;
-    while (current && depth < 10) {
+    while (current && depth < 5) {
       if (!isTyping && isTextInput(current)) {
         isTyping = true;
       }
@@ -183,12 +183,12 @@ export function CustomCursor() {
       });
     };
 
-    // Throttled intent detection - runs max 20 times/sec instead of 60-120
+    // Throttled intent detection - runs max 8 times/sec (sufficient for hover feedback)
     const throttledIntentDetection = throttle((e) => {
       const target = (e as MouseEvent).target as Element | null;
       const intent = detectIntent(target);
       dispatch({ type: "SET_INTENT", payload: intent });
-    }, 50); // 50ms = ~20 updates/sec
+    }, 125); // 125ms = ~8 updates/sec (hover feedback doesn't need 20fps)
 
     // Combined mousemove handler
     const handleMouseMove = (e: MouseEvent) => {

@@ -1,10 +1,33 @@
 import Container from "@/app/_components/container";
-import { InlineChat } from "@/app/_components/inline-chat";
 import { MotionObserver } from "@/app/_components/motion-observer";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { CSSProperties } from "react";
+import dynamic from "next/dynamic";
+
+// Code-split the heavy chat component for better LCP
+// This reduces initial JS bundle and defers hydration
+const InlineChat = dynamic(
+  () => import("@/app/_components/inline-chat").then((mod) => ({ default: mod.InlineChat })),
+  {
+    loading: () => (
+      <div className="flex flex-col items-center justify-center min-h-[300px] animate-pulse">
+        <div className="w-full max-w-md space-y-4">
+          <div className="h-8 bg-muted/50 rounded-lg w-3/4 mx-auto" />
+          <div className="h-4 bg-muted/30 rounded w-1/2 mx-auto" />
+          <div className="grid grid-cols-2 gap-2 mt-6">
+            <div className="h-12 bg-muted/40 rounded-xl" />
+            <div className="h-12 bg-muted/40 rounded-xl" />
+            <div className="h-12 bg-muted/40 rounded-xl" />
+            <div className="h-12 bg-muted/40 rounded-xl" />
+          </div>
+          <div className="h-12 bg-muted/50 rounded-full mt-4" />
+        </div>
+      </div>
+    ),
+  }
+);
 
 export default function HomePage() {
   const fade = (ms: number): CSSProperties => ({
@@ -91,8 +114,8 @@ export default function HomePage() {
           {/* Right Column - Chat Interface */}
           <div className="flex-1 w-full max-w-2xl" data-animate="fade-up" style={fade(200)}>
             <div className="relative">
-              {/* Chat container with premium styling */}
-              <div className="relative rounded-2xl border border-border/40 bg-card/80 backdrop-blur-xl shadow-premium-xl p-6 border-[hsl(var(--primary))]/10">
+              {/* Chat container with premium styling - deferred backdrop blur for better LCP */}
+              <div className="relative rounded-2xl border border-border/40 bg-card/80 animate-blur-in shadow-premium-xl p-6 border-[hsl(var(--primary))]/10">
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[hsl(var(--primary))]/5 via-transparent to-transparent pointer-events-none" />
                 <InlineChat />
               </div>

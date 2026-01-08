@@ -43,6 +43,7 @@ export default async function markdownToHtml(markdown: string) {
 
   // AFTER sanitization, safely optimize images
   // This regex replacement is now safe because we've already sanitized the HTML
+  // Use h-auto to preserve natural aspect ratios - CLS is acceptable tradeoff vs distortion
   htmlContent = htmlContent.replace(
     /<img\s+([^>]*?)src=["']([^"']+)["']([^>]*?)>/g,
     (match, beforeSrc, src, afterSrc) => {

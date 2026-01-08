@@ -10,10 +10,11 @@ type Props = {
 };
 
 const CoverImage = ({ title, src, slug, variant = "default" }: Props) => {
-  const heightClass = variant === "hero" ? "h-80" : "h-64";
-  
+  // Use aspect-ratio instead of fixed heights for CLS prevention
+  const aspectClass = variant === "hero" ? "aspect-[16/9]" : "aspect-[3/2]";
+
   const image = (
-    <div className={cn("relative w-full overflow-hidden rounded-lg shadow-sm", heightClass)}>
+    <div className={cn("relative w-full overflow-hidden rounded-lg shadow-sm", aspectClass)}>
       <Image
         src={src}
         alt={`Cover Image for ${title}`}

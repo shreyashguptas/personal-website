@@ -3,8 +3,8 @@ import { getSiteUrl } from "@/lib/seo";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import cn from "classnames";
+import dynamic from "next/dynamic";
 import { SiteNavigation } from "./_components/site-navigation";
-import { CustomCursor } from "./_components/custom-cursor";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SiteFooter } from "./_components/footer";
@@ -14,6 +14,13 @@ import { ThemeProvider } from "./_components/theme-provider";
 import { createThemeInitializerScript } from "@/lib/theme";
 
 import "./globals.css";
+
+// Dynamic import CustomCursor - code-split to reduce initial bundle
+// The component already handles touch device detection internally
+const CustomCursor = dynamic(
+  () => import("./_components/custom-cursor").then((mod) => ({ default: mod.CustomCursor })),
+  { loading: () => null }
+);
 
 const inter = Inter({ subsets: ["latin"] });
 

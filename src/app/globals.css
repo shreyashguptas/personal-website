@@ -6,9 +6,13 @@
 
 /* Custom cursor styles - only hide system cursor when a fine pointer exists */
 @media (any-pointer: fine) {
-  /* Hide system cursor globally for smooth custom cursor experience */
-  * {
-    cursor: none !important;
+  /* Inherit cursor: none from html to avoid universal selector overhead */
+  html {
+    cursor: none;
+  }
+  /* Inherit from html - more performant than * selector */
+  body, body * {
+    cursor: inherit;
   }
 }
 
@@ -239,10 +243,28 @@
       transform: translateY(0);
     }
   }
-  
+
   .animate-fade-in {
     animation: fade-in 0.4s ease-out forwards;
     opacity: 0;
+  }
+
+  /* Deferred backdrop blur - improves LCP by delaying expensive blur effect */
+  @keyframes blur-in {
+    from {
+      backdrop-filter: blur(0px);
+      -webkit-backdrop-filter: blur(0px);
+    }
+    to {
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+    }
+  }
+
+  .animate-blur-in {
+    animation: blur-in 0.3s ease-out 0.3s forwards;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
   }
 
   /* Graceful no-JS fallback */
@@ -284,7 +306,7 @@
 
   .animate-hero-float {
     animation: hero-float 18s ease-in-out infinite;
-    will-change: transform;
+    /* will-change removed - transform3d provides GPU acceleration */
   }
 
   .animate-soft-glow {
@@ -293,7 +315,7 @@
 
   .bg-grid-motion {
     animation: grid-pan 48s ease-in-out infinite alternate;
-    will-change: transform;
+    /* will-change removed - transform3d provides GPU acceleration */
   }
 
   [data-animate] {
@@ -303,7 +325,7 @@
     transition-duration: 600ms;
     transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
     transition-delay: var(--fade-delay, 0ms);
-    will-change: transform, opacity;
+    /* will-change removed - transform3d already triggers GPU acceleration */
   }
 
   [data-animate="fade-up"] {

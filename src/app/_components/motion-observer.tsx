@@ -134,10 +134,21 @@ export function MotionObserver() {
       }
     });
 
-    mutationObserver.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
+    // Only observe the main content container for better performance
+    // Avoids triggering on header/footer/navigation DOM changes
+    const mainContent = document.querySelector('main');
+    if (mainContent) {
+      mutationObserver.observe(mainContent, {
+        childList: true,
+        subtree: true,
+      });
+    } else {
+      // Fallback: observe body with subtree to catch nested elements
+      mutationObserver.observe(document.body, {
+        childList: true,
+        subtree: true,
+      });
+    }
 
     return () => {
       mutationObserver?.disconnect();

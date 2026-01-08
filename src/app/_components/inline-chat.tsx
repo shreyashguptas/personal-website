@@ -8,6 +8,10 @@ import { User, ArrowRight, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { cn } from "./utils/cn";
 
+// Sanitization cache to avoid re-sanitizing the same content
+const sanitizedCache = new Map<string, string>();
+const MAX_CACHE_SIZE = 50;
+
 // Constants
 const MAX_MESSAGE_LENGTH = 1000;
 const BUFFER_DISPLAY_THRESHOLD = 20;
@@ -74,7 +78,32 @@ function validateUrl(url: string): boolean {
   }
 }
 
+// Lightweight render for streaming - basic escaping and formatting only
+// Used during active streaming to reduce INP impact
+function renderMarkdownStreaming(md: string): string {
+  // Basic HTML escaping
+  let content = md
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  // Basic markdown: bold and italic only
+  content = content.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  content = content.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+  content = content.replace(/(^|[^*])\*([^*]+)\*(?!\*)/g, '$1<em>$2</em>');
+  content = content.replace(/(^|[^_])_([^_]+)_(?!_)/g, '$1<em>$2</em>');
+
+  // Simple paragraph wrapping
+  const paragraphs = content.split(/\n{2,}/).filter(p => p.trim());
+  return paragraphs.map(p => `<p class="mb-2 last:mb-0 leading-relaxed">${p.trim()}</p>`).join('');
+}
+
+// Full render with DOMPurify - used for completed messages
+// Includes caching to avoid re-sanitization on re-renders
 function renderMarkdown(md: string) {
+  // Check cache first
+  const cached = sanitizedCache.get(md);
+  if (cached) return cached;
   // Shared sanitize configuration
   const allowConfig = {
     ALLOWED_TAGS: ['p', 'strong', 'em', 'a', 'ul', 'li'],
@@ -174,7 +203,19 @@ function renderMarkdown(md: string) {
   }
 
   const rawHtml = htmlParts.join('');
-  return DOMPurify.sanitize(rawHtml, allowConfig);
+  const sanitized = DOMPurify.sanitize(rawHtml, allowConfig);
+
+  // Cache the result (only for non-trivial content)
+  if (md.length > 20) {
+    // Limit cache size to prevent memory issues
+    if (sanitizedCache.size >= MAX_CACHE_SIZE) {
+      const firstKey = sanitizedCache.keys().next().value;
+      if (firstKey) sanitizedCache.delete(firstKey);
+    }
+    sanitizedCache.set(md, sanitized);
+  }
+
+  return sanitized;
 }
 
 export function InlineChat() {
@@ -217,7 +258,6 @@ export function InlineChat() {
         setIsDemoMode(true);
         
         // Small delay to ensure UI is ready, then trigger demo
-        // eslint-disable-next-line react-hooks/exhaustive-deps
         const timer = setTimeout(() => {
           send(demoQuestion);
         }, 500);
@@ -733,7 +773,13 @@ export function InlineChat() {
               <div
                 dangerouslySetInnerHTML={
                   m.role === "assistant"
-                    ? { __html: renderMarkdown(m.content) }
+                    ? {
+                        // Use lightweight streaming render during active loading for better INP
+                        // Full render with DOMPurify only for completed messages
+                        __html: loading && i === messages.length - 1
+                          ? renderMarkdownStreaming(m.content)
+                          : renderMarkdown(m.content)
+                      }
                     : undefined
                 }
               >
