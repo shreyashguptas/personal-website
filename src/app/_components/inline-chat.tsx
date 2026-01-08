@@ -841,7 +841,10 @@ export function InlineChat() {
       )}
 
       {/* Input Area - pinned at bottom */}
-      <div className="p-4 border-t border-border/30 bg-card/90 backdrop-blur-xl">
+      <div className={cn(
+        "p-4 bg-card/90 backdrop-blur-xl",
+        messages.length > 0 && "border-t border-border/30"
+      )}>
         {inputForm}
         <div className="mt-2 flex items-center justify-center gap-3 text-[10px] text-muted-foreground/60">
           {!isTouchDevice && (

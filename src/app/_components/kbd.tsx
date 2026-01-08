@@ -31,7 +31,7 @@ export function Kbd({ keys, className = "" }: KbdProps) {
   
   return (
     <kbd 
-      className={`inline-flex items-center justify-center px-2.5 py-1.5 text-sm font-mono font-semibold text-muted-foreground/85 bg-muted/50 border border-border/50 rounded shadow-premium-xs ${className}`}
+      className={`inline-flex items-center justify-center px-1.5 py-0.5 text-[11px] font-mono font-medium text-muted-foreground/60 bg-muted/30 rounded-[4px] ${className}`}
       aria-label={`Keyboard shortcut: ${keys.join(' + ')}`}
     >
       {shortcut}
