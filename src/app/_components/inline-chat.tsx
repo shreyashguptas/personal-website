@@ -229,10 +229,6 @@ export function InlineChat() {
   const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>("Morning");
   const [returningVisitor, setReturningVisitor] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [demoShown, setDemoShown] = useState(false);
-  const [isDemoMode, setIsDemoMode] = useState(false);
-  const [showSuggestionsAfterDemo, setShowSuggestionsAfterDemo] = useState(false);
-  const demoTriggeredRef = useRef(false);
 
   // Track mounted state for hydration-safe rendering
   useEffect(() => {
@@ -245,32 +241,6 @@ export function InlineChat() {
     }
   }, [messages]);
 
-  // Auto-trigger demo conversation on first visit
-  useEffect(() => {
-    // Only trigger if demo hasn't been shown, suggestions are loaded, no messages yet, and we haven't already triggered
-    if (!demoShown && !demoTriggeredRef.current && suggestions.length > 0 && messages.length === 0 && !loading) {
-      const demoQuestion = suggestions[0]; // Use first suggestion: "What are your main skills?"
-      if (demoQuestion) {
-        demoTriggeredRef.current = true;
-        // Mark demo as shown in sessionStorage
-        try {
-          sessionStorage.setItem("sg_demoShown", "1");
-        } catch {
-          // best-effort only
-        }
-        setDemoShown(true);
-        setIsDemoMode(true);
-        
-        // Small delay to ensure UI is ready, then trigger demo
-        const timer = setTimeout(() => {
-          send(demoQuestion);
-        }, 500);
-        return () => clearTimeout(timer);
-      }
-    }
-    // Note: send is intentionally omitted from deps - it uses stable state setters and we use a ref to prevent multiple triggers
-  }, [demoShown, suggestions.length, messages.length, loading]);
-
   // Auto-focus input on initial mount so users can start typing immediately
   useEffect(() => {
     // Focus the input after a short delay to ensure component is mounted
@@ -280,16 +250,15 @@ export function InlineChat() {
     return () => clearTimeout(timer);
   }, []); // Empty deps - only runs on mount
 
-  // Re-focus after demo mode completes
+  // Re-focus input when messages exist
   useEffect(() => {
-    // Re-focus after demo completes so user can continue typing
-    if (inputRef.current && !isDemoMode && messages.length > 0) {
+    if (inputRef.current && messages.length > 0) {
       const timer = setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
       return () => clearTimeout(timer);
     }
-  }, [isDemoMode, messages.length]);
+  }, [messages.length]);
 
   // Track clicks on chat source links
   useEffect(() => {
@@ -313,17 +282,6 @@ export function InlineChat() {
       return () => scrollContainer.removeEventListener('click', handleSourceClick);
     }
   }, [messages.length]);
-
-  // Check if demo has been shown in this session
-  useEffect(() => {
-    try {
-      const demoShownInSession = sessionStorage.getItem("sg_demoShown") === "1";
-      setDemoShown(demoShownInSession);
-    } catch {
-      // best-effort only
-      setDemoShown(false);
-    }
-  }, []);
 
   // Compute greeting context and build suggestion list
   useEffect(() => {
@@ -563,7 +521,7 @@ export function InlineChat() {
       const hasLinks = assistantText.includes('[') && assistantText.includes('](');
       const hasBulletPoints = assistantText.includes('- ') || assistantText.includes('* ');
       
-      capture(AnalyticsEvent.ChatResponseStreamComplete, { 
+      capture(AnalyticsEvent.ChatResponseStreamComplete, {
         response_length: assistantText.length,
         response_word_count: responseWordCount,
         response_time_ms: streamEndTime - streamStartTime,
@@ -573,21 +531,6 @@ export function InlineChat() {
         sources_provided: focusUrls.length > 0,
         source_count: focusUrls.length
       });
-      
-      // Handle demo completion
-      if (isDemoMode) {
-        setIsDemoMode(false);
-        // Show suggestions after a short delay
-        setTimeout(() => {
-          setShowSuggestionsAfterDemo(true);
-          // Re-enable auto-focus after demo
-          if (inputRef.current) {
-            setTimeout(() => {
-              inputRef.current?.focus();
-            }, 100);
-          }
-        }, 500);
-      }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
       capture(AnalyticsEvent.ChatClientError, {
@@ -611,19 +554,6 @@ export function InlineChat() {
       }
 
       setMessages((m) => [...m, { role: "assistant", content: userFriendlyMessage }]);
-      
-      // Handle demo completion even on error
-      if (isDemoMode) {
-        setIsDemoMode(false);
-        setTimeout(() => {
-          setShowSuggestionsAfterDemo(true);
-          if (inputRef.current) {
-            setTimeout(() => {
-              inputRef.current?.focus();
-            }, 100);
-          }
-        }, 500);
-      }
     } finally {
       setLoading(false);
     }
@@ -637,7 +567,6 @@ export function InlineChat() {
           const trimmed = input.trim();
           if (!trimmed || loading) return;
           setSuggestions([]);
-          setShowSuggestionsAfterDemo(false);
           send(trimmed);
         }}
       className="relative group w-full"
@@ -654,7 +583,6 @@ export function InlineChat() {
             e.preventDefault();
             if (input.trim() && !loading) {
               setSuggestions([]);
-              setShowSuggestionsAfterDemo(false);
               send(input);
             }
           }
@@ -673,28 +601,7 @@ export function InlineChat() {
     </form>
   );
 
-  // DEMO LOADING STATE: Show loading indicator while demo initializes
-  // This bridges the gap between demo trigger and API response arriving
-  if (messages.length === 0 && isDemoMode) {
-    return (
-      <section
-        aria-label="Chat loading"
-        className="w-full flex-1 flex flex-col items-center justify-center"
-      >
-        <div className="flex flex-col items-center gap-4">
-          <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: '0ms' }} />
-            <div className="w-2 h-2 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: '150ms' }} />
-            <div className="w-2 h-2 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: '300ms' }} />
-          </div>
-          <p className="text-sm text-muted-foreground/70">Getting things ready...</p>
-        </div>
-      </section>
-    );
-  }
-
-  // EMPTY STATE: Centered layout like Grok
-  // Only show if demo hasn't been triggered yet (not in demo mode and demo hasn't been shown)
+  // EMPTY STATE: Centered layout
   if (messages.length === 0) {
     return (
       <section
@@ -712,7 +619,6 @@ export function InlineChat() {
                   onClick={() => {
                     setInput("");
                     setSuggestions([]);
-                    setShowSuggestionsAfterDemo(false);
                     send(s);
                   }}
                   className="p-3 text-center text-sm rounded-xl border border-border bg-card/50 hover:bg-muted/50 hover:border-foreground/20 transition-all duration-200"
@@ -816,28 +722,6 @@ export function InlineChat() {
           </div>
         )}
       </div>
-
-      {/* Suggestions after demo - fade in below messages */}
-      {showSuggestionsAfterDemo && suggestions.length > 0 && (
-        <div className="px-4 pb-4 animate-fade-in">
-          <div className="grid grid-cols-2 gap-2">
-            {suggestions.slice(1).map((s, i) => (
-              <button
-                key={s}
-                onClick={() => {
-                  setInput("");
-                  setShowSuggestionsAfterDemo(false);
-                  send(s);
-                }}
-                className="p-3 text-center text-sm rounded-xl border border-border bg-card/50 hover:bg-muted/50 hover:border-foreground/20 transition-all duration-200"
-                style={{ animationDelay: `${i * 50}ms` }}
-              >
-                <span className="line-clamp-2">{s}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Input Area - pinned at bottom */}
       <div className={cn(
