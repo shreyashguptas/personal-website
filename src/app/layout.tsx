@@ -1,7 +1,8 @@
 import { HOME_OG_IMAGE_URL } from "@/lib/constants";
 import { getSiteUrl } from "@/lib/seo";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Geist } from "next/font/google";
+import { Playfair_Display } from "next/font/google";
 import cn from "classnames";
 import dynamic from "next/dynamic";
 import { SiteNavigation } from "./_components/site-navigation";
@@ -10,8 +11,6 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SiteFooter } from "./_components/footer";
 import { PosthogInit } from "./_components/posthog-init";
 import { KeyboardShortcutsProvider } from "./_components/keyboard-shortcuts-provider";
-import { ThemeProvider } from "./_components/theme-provider";
-import { createThemeInitializerScript } from "@/lib/theme";
 
 import "./globals.css";
 
@@ -22,7 +21,12 @@ const CustomCursor = dynamic(
   { loading: () => null }
 );
 
-const inter = Inter({ subsets: ["latin"] });
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-serif",
+  weight: ["400", "500", "600", "700"],
+});
 
 export const metadata: Metadata = {
   title: "Shreyash Gupta",
@@ -57,13 +61,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: createThemeInitializerScript({
-              debug: process.env.NODE_ENV !== "production",
-            }),
-          }}
-        />
         <link
           rel="apple-touch-icon"
           sizes="180x180"
@@ -98,14 +95,14 @@ export default function RootLayout({
       </head>
       <body
         className={cn(
-          inter.className,
-          "bg-background text-foreground transition-colors duration-200 min-h-screen flex flex-col"
+          geist.variable,
+          playfair.variable,
+          "font-sans bg-background text-foreground transition-colors duration-200 min-h-screen flex flex-col"
         )}
       >
         <PosthogInit />
         <CustomCursor />
         <KeyboardShortcutsProvider />
-        <ThemeProvider />
         <SiteNavigation />
         <main className="flex-1">{children}</main>
         <SiteFooter />

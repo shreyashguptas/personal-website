@@ -33,7 +33,7 @@ export default async function ResumePage() {
       <main className="relative min-h-screen overflow-hidden">
         <Container>
           <div className="mt-16 relative z-10">
-            <h1 className="text-5xl md:text-8xl font-bold tracking-tighter leading-tight">
+            <h1 className="text-5xl md:text-8xl font-bold tracking-tighter leading-tight font-serif">
               Resume.
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 mt-8">
@@ -55,10 +55,10 @@ export default async function ResumePage() {
     <main className="relative min-h-screen overflow-hidden">
       <Container>
         <div className="mt-16 relative z-10">
-          <h1 className="text-5xl md:text-8xl font-bold tracking-tighter leading-tight">
+          <h1 className="text-5xl md:text-8xl font-bold tracking-tighter leading-tight font-serif">
             Resume.
           </h1>
-          
+
           <div className="mt-12">
             <PostBody content={htmlContent} />
           </div>

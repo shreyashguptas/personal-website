@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { capture, AnalyticsEvent } from "@/lib/analytics";
 import DOMPurify from "dompurify";
-import { Kbd } from "./kbd";
 import { User, ArrowRight, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { cn } from "./utils/cn";
@@ -222,7 +221,7 @@ export function InlineChat() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const [focusUrls, setFocusUrls] = useState<string[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -234,6 +233,11 @@ export function InlineChat() {
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [showSuggestionsAfterDemo, setShowSuggestionsAfterDemo] = useState(false);
   const demoTriggeredRef = useRef(false);
+
+  // Track mounted state for hydration-safe rendering
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -338,15 +342,6 @@ export function InlineChat() {
     console.info("[inline-chat] greeting_context", { period, returningVisitor: isReturning, suggestions: built });
   }, []);
 
-  // Detect touch-capable devices to tailor UI hints (e.g., hide keyboard shortcuts on phones)
-  useEffect(() => {
-    try {
-      const hasTouch = matchMedia("(any-pointer: coarse)").matches || 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-      setIsTouchDevice(hasTouch);
-    } catch {
-      setIsTouchDevice(false);
-    }
-  }, []);
 
   // Handle keyboard shortcuts (e.g., "/" to focus input)
   useEffect(() => {
@@ -666,69 +661,73 @@ export function InlineChat() {
         }}
         disabled={loading}
         placeholder="Type a message..."
-        className="w-full bg-card/90 border border-border/60 rounded-full pl-5 pr-14 py-3.5 text-sm shadow-premium-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all placeholder:text-muted-foreground/60 disabled:opacity-60 backdrop-blur-sm"
+        className="w-full bg-card border border-border rounded-xl pl-5 pr-14 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all placeholder:text-muted-foreground/60 disabled:opacity-60"
       />
       <button
         type="submit"
         disabled={!input.trim() || loading}
-        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-primary text-primary-foreground shadow-premium-md hover:shadow-premium-lg hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 disabled:shadow-none transition-all duration-200 glow-green"
+        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-foreground text-background hover:bg-foreground/90 disabled:opacity-50 disabled:hover:bg-foreground transition-all duration-200"
       >
         {loading ? <Loader2 size={18} className="animate-spin" /> : <ArrowRight size={18} />}
       </button>
     </form>
   );
 
+  // DEMO LOADING STATE: Show loading indicator while demo initializes
+  // This bridges the gap between demo trigger and API response arriving
+  if (messages.length === 0 && isDemoMode) {
+    return (
+      <section
+        aria-label="Chat loading"
+        className="w-full flex-1 flex flex-col items-center justify-center"
+      >
+        <div className="flex flex-col items-center gap-4">
+          <div className="flex items-center gap-1.5">
+            <div className="w-2 h-2 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: '0ms' }} />
+            <div className="w-2 h-2 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: '150ms' }} />
+            <div className="w-2 h-2 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: '300ms' }} />
+          </div>
+          <p className="text-sm text-muted-foreground/70">Getting things ready...</p>
+        </div>
+      </section>
+    );
+  }
+
   // EMPTY STATE: Centered layout like Grok
   // Only show if demo hasn't been triggered yet (not in demo mode and demo hasn't been shown)
-  if (messages.length === 0 && !isDemoMode) {
+  if (messages.length === 0) {
     return (
       <section
         aria-label="Chat with Shreyash"
         className="w-full flex-1 flex flex-col items-center justify-center"
       >
-        {/* Centered branding - removed since it's now in hero */}
-        <div className="flex flex-col items-center mb-6 animate-fade-in" style={{ animationDelay: '100ms' }}>
-          <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-muted-foreground">
-            Ask me anything
-          </h2>
-          <p className="text-sm text-muted-foreground/70 mt-1">
-            I can answer questions about my work, projects, and experience
-          </p>
-        </div>
 
-        {/* Suggestions - full width above input */}
-        <div className="w-full mb-4 animate-fade-in" style={{ animationDelay: '200ms' }}>
-          <div className="grid grid-cols-2 gap-2">
-            {suggestions.map((s, i) => (
-              <button
-                key={s}
-                onClick={() => {
-                  setInput("");
-                  setSuggestions([]);
-                  setShowSuggestionsAfterDemo(false);
-                  send(s);
-                }}
-                className="p-3 text-center text-sm rounded-xl border border-border/40 bg-card/50 hover:bg-accent/60 hover:border-[hsl(var(--primary))]/30 hover:shadow-premium-sm transition-all duration-200"
-                style={{ animationDelay: `${250 + (i * 50)}ms` }}
-              >
-                <span className="line-clamp-2">{s}</span>
-              </button>
-            ))}
+        {/* Suggestions - full width above input (hydration-safe) */}
+        {mounted && suggestions.length > 0 && (
+          <div className="w-full mb-4 animate-fade-in" style={{ animationDelay: '200ms' }}>
+            <div className="grid grid-cols-2 gap-2">
+              {suggestions.map((s, i) => (
+                <button
+                  key={s}
+                  onClick={() => {
+                    setInput("");
+                    setSuggestions([]);
+                    setShowSuggestionsAfterDemo(false);
+                    send(s);
+                  }}
+                  className="p-3 text-center text-sm rounded-xl border border-border bg-card/50 hover:bg-muted/50 hover:border-foreground/20 transition-all duration-200"
+                  style={{ animationDelay: `${250 + (i * 50)}ms` }}
+                >
+                  <span className="line-clamp-2">{s}</span>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Input */}
         <div className="w-full animate-fade-in" style={{ animationDelay: '300ms' }}>
           {inputForm}
-          <div className="mt-2 flex items-center justify-center gap-3 text-[10px] text-muted-foreground/60">
-            {!isTouchDevice && (
-              <span className="flex items-center gap-1">
-                <Kbd keys={['/']} className="text-[9px] py-0 px-1 min-h-0 h-4" /> to focus
-              </span>
-            )}
-            <span>•</span>
-            <span>AI can make mistakes.</span>
-          </div>
         </div>
       </section>
     );
@@ -756,11 +755,11 @@ export function InlineChat() {
           >
             {/* Avatar */}
             {m.role === "user" ? (
-              <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-premium-sm mt-1 bg-primary text-primary-foreground ring-2 ring-primary/20">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-1 bg-foreground text-background">
                 <User size={14} />
               </div>
             ) : (
-              <div className="w-8 h-8 rounded-full shrink-0 shadow-premium-sm mt-1 overflow-hidden ring-2 ring-[hsl(var(--primary))]/20">
+              <div className="w-8 h-8 rounded-full shrink-0 mt-1 overflow-hidden ring-1 ring-border">
                 <Image
                   src="/headshot/headshot.jpg"
                   alt="Shreyash"
@@ -773,10 +772,10 @@ export function InlineChat() {
 
             {/* Message Bubble */}
             <div className={cn(
-              "max-w-[85%] rounded-2xl px-4 py-2.5 shadow-premium-sm text-sm md:text-base leading-relaxed",
+              "max-w-[85%] rounded-2xl px-4 py-2.5 text-sm md:text-base leading-relaxed",
               m.role === "user"
-                ? "bg-primary text-primary-foreground rounded-tr-sm shadow-premium-md"
-                : "bg-card/80 border border-border/40 rounded-tl-sm backdrop-blur-sm"
+                ? "bg-foreground text-background rounded-br-md"
+                : "bg-muted/30 border border-border/50 rounded-bl-md"
             )}>
               <div
                 dangerouslySetInnerHTML={
@@ -800,7 +799,7 @@ export function InlineChat() {
         {/* Loading Indicator */}
         {loading && (
           <div className="flex gap-3 animate-fade-in">
-            <div className="w-8 h-8 rounded-full shrink-0 shadow-sm mt-1 overflow-hidden ring-1 ring-border/50">
+            <div className="w-8 h-8 rounded-full shrink-0 mt-1 overflow-hidden ring-1 ring-border">
               <Image
                 src="/headshot/headshot.jpg"
                 alt="Shreyash"
@@ -809,7 +808,7 @@ export function InlineChat() {
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="bg-card border border-border/40 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm flex items-center gap-1">
+            <div className="bg-muted/30 border border-border/50 rounded-2xl rounded-bl-md px-4 py-3 flex items-center gap-1">
               <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: '0ms' }} />
               <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: '150ms' }} />
               <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: '300ms' }} />
@@ -830,7 +829,7 @@ export function InlineChat() {
                   setShowSuggestionsAfterDemo(false);
                   send(s);
                 }}
-                className="p-3 text-center text-sm rounded-xl border border-border/40 bg-card/50 hover:bg-accent/60 hover:border-[hsl(var(--primary))]/30 hover:shadow-premium-sm transition-all duration-200"
+                className="p-3 text-center text-sm rounded-xl border border-border bg-card/50 hover:bg-muted/50 hover:border-foreground/20 transition-all duration-200"
                 style={{ animationDelay: `${i * 50}ms` }}
               >
                 <span className="line-clamp-2">{s}</span>
@@ -842,19 +841,10 @@ export function InlineChat() {
 
       {/* Input Area - pinned at bottom */}
       <div className={cn(
-        "p-4 bg-card/90 backdrop-blur-xl",
-        messages.length > 0 && "border-t border-border/30"
+        "p-4 bg-card",
+        messages.length > 0 && "border-t border-border"
       )}>
         {inputForm}
-        <div className="mt-2 flex items-center justify-center gap-3 text-[10px] text-muted-foreground/60">
-          {!isTouchDevice && (
-            <span className="flex items-center gap-1">
-              <Kbd keys={['/']} className="text-[9px] py-0 px-1 min-h-0 h-4" /> to focus
-            </span>
-          )}
-          <span>•</span>
-          <span>AI can make mistakes.</span>
-        </div>
       </div>
     </section>
   );
