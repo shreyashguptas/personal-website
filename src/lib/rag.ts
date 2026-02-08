@@ -424,6 +424,10 @@ export function getResumeInfo(index: RetrievedDoc[]): RetrievedDoc | null {
   return selectRepresentativeChunk(resume);
 }
 
+export function getAllResumeChunks(index: RetrievedDoc[]): RetrievedDoc[] {
+  return index.filter((d) => d.type === "resume");
+}
+
 export function getWorkExperience(index: RetrievedDoc[]): RetrievedDoc | null {
   const resume = getResumeInfo(index);
   if (!resume) return null;

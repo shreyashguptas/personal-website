@@ -15,6 +15,7 @@ import {
   filterByType,
   getPreviousOfSameType,
   getResumeInfo,
+  getAllResumeChunks,
 } from "@/lib/rag";
 import { SYSTEM_PROMPT, PROMPT_CONFIG } from "@/lib/prompts";
 import { cleanupCache } from "@/lib/rag";
@@ -521,7 +522,7 @@ export async function POST(req: NextRequest) {
       (/\b(post|blog|article|write|wrote|writing)\b/i.test(userMessage) && !/\b(project|projects)\b/i.test(userMessage))
     );
     const asksPrevious = /(previous|before\s+that|prior|earlier\s+than\s+that)/i.test(userMessage);
-    const asksResume = /\b(resume|work\s+experience|job|employment|career|background|skills|education)\b/i.test(userMessage);
+    const asksResume = /\b(resume|work\s+experience|job|employment|career|background|skills|education|degree|university|uni|college|school|studied|graduated|graduation|major|minor|where\s+are\s+you\s+(based|from|located)|location|based\s+in|live\s+in|where\s+do\s+you\s+(work|live)|qualifications?|experience)\b/i.test(userMessage);
     const asksContact = /(what(?:'s| is)\s*(your)?\s*email|email\s*address|e-mail|contact\b|reach\s+(you|out)|how\s+can\s+i\s+contact\s+you)/i.test(userMessage);
 
     const earliest = /first\s+blog|first\s+post|earliest\s+blog|earliest\s+post/i.test(userMessage) ? getEarliestPost(index) : null;
@@ -541,11 +542,12 @@ export async function POST(req: NextRequest) {
         }
       }
     } else if (asksResume || asksContact) {
-      // Prioritize resume information for work experience queries
-      const resumeInfo = getResumeInfo(index);
-      if (resumeInfo) {
-        try { console.info("[chat] override_selected", { reason: asksContact ? "contact_resume_priority" : "resume_priority", selected: { type: resumeInfo.type, slug: resumeInfo.slug } }); } catch { void 0; }
-        contextDocs = [resumeInfo, ...contextDocs.filter((d) => d.id !== resumeInfo.id)].slice(0, 5);
+      // Prioritize ALL resume chunks so education, skills, location etc. are available
+      const allResume = getAllResumeChunks(index);
+      if (allResume.length > 0) {
+        const resumeIds = new Set(allResume.map((d) => d.id));
+        try { console.info("[chat] override_selected", { reason: asksContact ? "contact_resume_priority" : "resume_priority", resumeChunks: allResume.length }); } catch { void 0; }
+        contextDocs = [...allResume, ...contextDocs.filter((d) => !resumeIds.has(d.id))].slice(0, 10);
       }
     } else if (asksLatestProject || asksLastProject) {
       const latestProj = getLatestProject(index);

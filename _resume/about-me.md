@@ -36,4 +36,4 @@ This page is a concise, structured profile meant for humans and for the site's A
 
 ## My Contact Information
 - My email address is inbox@shreyashg.com
-- I live in the USA
+- I live in Maryland, USA. I work at the University of Arkansas.
