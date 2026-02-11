@@ -3,15 +3,8 @@ import html from "remark-html";
 import DOMPurify from "dompurify";
 import { JSDOM } from "jsdom";
 
-// Create a server-side DOM environment for DOMPurify
-const createDOMPurify = () => {
-  const window = new JSDOM('').window;
-  const DOMPurifyServer = DOMPurify(window);
-
-  // Configure sanitization to allow necessary HTML elements for blog content
-  // while preventing XSS attacks
-  return DOMPurifyServer;
-};
+// Cache a single DOMPurify instance at module level (avoids recreating JSDOM per call)
+const DOMPurifyServer = DOMPurify(new JSDOM('').window);
 
 export default async function markdownToHtml(markdown: string) {
   // Convert markdown to HTML using remark
@@ -20,7 +13,6 @@ export default async function markdownToHtml(markdown: string) {
 
   // SANITIZE HTML OUTPUT - This is the critical security fix
   // We sanitize BEFORE doing any further processing to ensure no malicious HTML gets through
-  const DOMPurifyServer = createDOMPurify();
   htmlContent = DOMPurifyServer.sanitize(htmlContent, {
     // Allow only safe HTML elements that are needed for blog content
     ALLOWED_TAGS: [

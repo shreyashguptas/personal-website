@@ -21,7 +21,7 @@ export function PostHeader({ title, coverImage, date, author }: Props) {
       {/* Only render cover image if it exists and is not empty */}
       {coverImage && coverImage.trim() !== "" && (
         <div className="mb-8 md:mb-16 sm:mx-0">
-          <CoverImage title={title} src={coverImage} />
+          <CoverImage title={title} src={coverImage} variant="hero" />
         </div>
       )}
       <div className="max-w-2xl mx-auto">
