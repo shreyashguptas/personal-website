@@ -11,3 +11,4 @@ website-data-export/
 .env
 src/data/vector-index.json
 CLAUDE.md
+tsconfig.tsbuildinfo
