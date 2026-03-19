@@ -42,6 +42,10 @@ export function useKeyboardShortcuts() {
             e.preventDefault();
             router.push('/projects');
             break;
+          case '4':
+            e.preventDefault();
+            router.push('/links');
+            break;
         }
       }
       

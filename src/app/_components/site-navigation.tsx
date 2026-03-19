@@ -39,6 +39,14 @@ export function SiteNavigation() {
               </Link>
             </NavigationMenuLink>
           </NavigationMenuItem>
+          <NavigationMenuItem>
+            <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+              <Link href="/links" data-cursor-intent="hover" className="group flex items-center gap-2">
+                Links
+                <Kbd keys={['mod', '4']} className="ml-1" />
+              </Link>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
     </div>
