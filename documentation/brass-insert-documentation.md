@@ -8,7 +8,7 @@ date: "2026-04-14T00:00:00.000Z"
 
 A fully parametric CAD library for generating ISO metric brass heat-set inserts in Shapr3D, covering all 20 sizes from M2×2×3.2 through M6×10×8. Change three input values: thread size, length, and outer diameter, and every dimension of the insert updates automatically, including the helical knurls, internal threads, chamfers, pilot geometry, and necked gap.
 
-![Rendered brass heat-set insert from the Shapr3D parametric library](/blog/content/brass-insert-render.png)
+![Rendered brass heat-set insert from the Shapr3D parametric library](/blog/content/brass-insert-render.webp)
 
 This document describes every variable in the file, the formulas that drive them, the design decisions behind each choice, and the practical limits of the current model. It is intended as a technical reference for using and adapting the released design files.
 
@@ -79,7 +79,7 @@ That's it. You don't need to touch any of the derived variables unless you want 
 
 ## Complete Variable Reference
 
-![Dimensioned Shapr3D model showing the main derived zones and dimensions](/blog/content/brass-insert-dimensioned-model.png)
+![Dimensioned Shapr3D model showing the main derived zones and dimensions](/blog/content/brass-insert-dimensioned-model.webp)
 
 ### Input Variables
 
@@ -122,7 +122,7 @@ The knurl bands themselves are drawn at the full `outerDiameter`. There's no var
 
 The internal threads are real ISO metric coarse helical threads, modeled by revolving a triangular profile up through the bore. The bore starts as a smooth cylinder at the tap drill diameter, and the triangle cuts helical valleys into it.
 
-![Top view of the modeled internal threads and upper knurl band](/blog/content/brass-insert-render-top.png)
+![Top view of the modeled internal threads and upper knurl band](/blog/content/brass-insert-render-top.webp)
 
 | Variable | Formula | Purpose |
 |---|---|---|
@@ -148,7 +148,7 @@ The top and bottom of the bore get 45° chamfers to create a lead-in for screws 
 
 For M6, pitch = 1, this produces a 0.5 mm chamfer that opens the bore mouth from `boreDiameter`, 5 mm, to exactly `threadSize`, 6 mm. This is standard machining practice for tapped holes. The chamfer's wide end equals the nominal screw diameter, providing a clean lead-in without cutting into the threads themselves.
 
-![Bottom view of the insert showing the chamfered bore opening and internal threads](/blog/content/brass-insert-render-bottom.png)
+![Bottom view of the insert showing the chamfered bore opening and internal threads](/blog/content/brass-insert-render-bottom.webp)
 
 ### Knurl Grooves
 
