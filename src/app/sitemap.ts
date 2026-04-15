@@ -11,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/blog`, changeFrequency: "weekly", priority: 0.8 },
     { url: `${base}/projects`, changeFrequency: "monthly", priority: 0.6 },
     { url: `${base}/resume`, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${base}/documentation/parametric-brass-insert-library`, changeFrequency: "monthly", priority: 0.6 },
   ];
 
   const postRoutes: MetadataRoute.Sitemap = posts.map((p) => ({
@@ -22,5 +23,4 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [...staticRoutes, ...postRoutes];
 }
-
 

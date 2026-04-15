@@ -6,6 +6,17 @@ import { JSDOM } from "jsdom";
 // Cache a single DOMPurify instance at module level (avoids recreating JSDOM per call)
 const DOMPurifyServer = DOMPurify(new JSDOM('').window);
 
+function slugifyHeading(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/&amp;/g, "and")
+    .replace(/<[^>]+>/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
 export default async function markdownToHtml(markdown: string) {
   // Convert markdown to HTML using remark
   const result = await remark().use(html).process(markdown);
@@ -31,6 +42,25 @@ export default async function markdownToHtml(markdown: string) {
     ALLOW_DATA_ATTR: false, // No data attributes
     FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed'], // Explicitly forbid dangerous tags
     FORBID_ATTR: ['onload', 'onerror', 'onclick', 'onmouseover'] // Forbid event handlers
+  });
+
+  // Add stable heading IDs so markdown anchor links work.
+  const usedHeadingIds = new Set<string>();
+  htmlContent = htmlContent.replace(/<h([1-6])>(.*?)<\/h\1>/g, (match, level, headingContent) => {
+    const baseSlug = slugifyHeading(headingContent);
+    if (!baseSlug) {
+      return match;
+    }
+
+    let headingId = baseSlug;
+    let duplicateCount = 2;
+    while (usedHeadingIds.has(headingId)) {
+      headingId = `${baseSlug}-${duplicateCount}`;
+      duplicateCount += 1;
+    }
+    usedHeadingIds.add(headingId);
+
+    return `<h${level} id="${headingId}">${headingContent}</h${level}>`;
   });
 
   // AFTER sanitization, safely optimize images
