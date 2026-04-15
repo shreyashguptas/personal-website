@@ -36,7 +36,7 @@ Every one of these features has a reason. The two opposing knurl directions give
 
 I measured one of my M6×10×8 inserts with calipers and wrote down all ten dimensions: five lengths and five diameters. Then I tried to figure out the *ratios*, because I didn't just want to model one size. I wanted one master file that could generate any size I owned by typing in three numbers.
 
-![Dimensioned Shapr3D model of the brass insert showing the five axial zones and derived dimensions](/blog/content/brass-insert-dimensioned-model.png)
+![Dimensioned Shapr3D model of the brass insert showing the five axial zones and derived dimensions](/blog/content/brass-insert-dimensioned-model.webp)
 
 ## The second surprise: ratios are your friend, until they aren't
 
@@ -120,7 +120,7 @@ One Shapr3D file with four input variables: `threadSize`, `length`, `outerDiamet
 
 The file includes modeled knurls, internal threads, the stepped pilot geometry, and pitch-scaled chamfers, all driven from the same variable set. Change the three main dimensions and the whole insert updates cleanly. Everything just works.
 
-![Rendered Shapr3D brass heat-set insert with modeled knurls, gap, pilot, and internal threads](/blog/content/brass-insert-render.png)
+![Rendered Shapr3D brass heat-set insert with modeled knurls, gap, pilot, and internal threads](/blog/content/brass-insert-render.webp)
 
 If you want to study or adapt the file yourself, I also wrote a **[complete technical reference doc](/documentation/parametric-brass-insert-library)** covering the variables, formulas, pitch lookup, and current limitations. The published Shapr3D master file and exports are on [Printables](https://www.printables.com/model/1689827-parametric-brass-threaded-heat-set-insert-library) and [GrabCAD](https://grabcad.com/library/parametric-brass-threaded-heat-set-insert-library-m2-m6-18-sizes-1). The GrabCAD listing currently mirrors 18 of the 20 size combinations as individual files; the full master file is on Printables.
 
