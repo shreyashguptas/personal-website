@@ -157,4 +157,9 @@ If you're trying to model something similar, and it doesn't even have to be bras
 
 ---
 
-*If you found this interesting, the [technical documentation](/documentation/parametric-brass-insert-library) has the full variable reference and design notes. Download the library from [Printables](https://www.printables.com/model/1689827-parametric-brass-threaded-heat-set-insert-library) or [GrabCAD](https://grabcad.com/library/parametric-brass-threaded-heat-set-insert-library-m2-m6-18-sizes-1). You can follow more of my hardware project work at [OffGrid Devices](https://offgriddevices.com/).*
+## Resources
+
+- [Technical Documentation](/documentation/parametric-brass-insert-library) — Full variable reference, formulas, pitch lookup, and design notes
+- [Printables](https://www.printables.com/model/1689827-parametric-brass-threaded-heat-set-insert-library) — Master Shapr3D file and all size exports
+- [GrabCAD](https://grabcad.com/library/parametric-brass-threaded-heat-set-insert-library-m2-m6-18-sizes-1) — Individual STEP/STL files for 18 sizes
+- [OffGrid Devices](https://offgriddevices.com/) — More hardware project work
