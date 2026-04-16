@@ -74,3 +74,21 @@
   @apply pl-6 border-l-4 border-neutral-300 italic;
   color: #555;
 }
+
+/* Links */
+.markdown a {
+  @apply text-blue-600 underline underline-offset-2 decoration-blue-300 font-medium;
+  transition: color 0.15s, text-decoration-color 0.15s;
+}
+
+.markdown a:hover {
+  @apply text-blue-800 decoration-blue-500;
+}
+
+:global(.dark) .markdown a {
+  @apply text-blue-400 decoration-blue-600;
+}
+
+:global(.dark) .markdown a:hover {
+  @apply text-blue-300 decoration-blue-400;
+}
