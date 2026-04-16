@@ -23,7 +23,12 @@ const CoverImage = ({ title, src, slug, variant = "default" }: Props) => {
         className={cn("object-cover", {
           "hover:shadow-lg transition-shadow duration-200": slug,
         })}
-        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        quality={90}
+        sizes={
+          variant === "hero"
+            ? "(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+            : "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 50vw"
+        }
       />
     </div>
   );

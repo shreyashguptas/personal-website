@@ -1,4 +1,5 @@
 import { remark } from "remark";
+import remarkGfm from "remark-gfm";
 import html from "remark-html";
 import DOMPurify from "dompurify";
 import { JSDOM } from "jsdom";
@@ -19,7 +20,7 @@ function slugifyHeading(text: string): string {
 
 export default async function markdownToHtml(markdown: string) {
   // Convert markdown to HTML using remark
-  const result = await remark().use(html).process(markdown);
+  const result = await remark().use(remarkGfm).use(html).process(markdown);
   let htmlContent = result.toString();
 
   // SANITIZE HTML OUTPUT - This is the critical security fix
