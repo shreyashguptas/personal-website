@@ -120,14 +120,13 @@ Another lesson: when a CAD tool throws a weird error, it's usually telling you t
 
 ## What I ended up with
 
-One Shapr3D file with four input variables: `threadSize`, `length`, `outerDiameter`, and `pitch`, which is auto-computed from the first one. Every length and every diameter of every zone is computed. I can model any size from M2×2×3.2 up to M6×10×8 by changing three numbers and hitting enter. Twenty sizes from one master file.
+One Shapr3D file with four input variables: `threadSize`, `length`, `outerDiameter`, and `pitch`, which is auto-computed from the first one. Every length and every diameter of every zone is computed. I can model any size from M2×2×3.2 up to M6×10×8 by changing three numbers and hitting enter. Eighteen sizes from one master file.
 
 The file includes modeled knurls, internal threads, the stepped pilot geometry, and pitch-scaled chamfers, all driven from the same variable set. Change the three main dimensions and the whole insert updates cleanly. Everything just works.
 
 ![Rendered Shapr3D brass heat-set insert with modeled knurls, gap, pilot, and internal threads](/blog/content/brass-insert-render.webp)
 
-If you want to study or adapt the file yourself, I also wrote a **[complete technical reference doc](/documentation/parametric-brass-insert-library)** covering the variables, formulas, pitch lookup, and current limitations. The published Shapr3D master file and exports are on [Printables](https://www.printables.com/model/1689827-parametric-brass-threaded-heat-set-insert-library) and [GrabCAD](https://grabcad.com/library/parametric-brass-threaded-heat-set-insert-library-m2-m6-18-sizes-1). The GrabCAD listing currently mirrors 18 of the 20 size combinations as individual files; the full master file is on Printables.
-
+If you want to study or adapt the file yourself, I also wrote a **[complete technical reference doc](/documentation/parametric-brass-insert-library)** covering the variables, formulas, pitch lookup, and current limitations. The published Shapr3D master file and exports are on [Printables](https://www.printables.com/model/1689827-parametric-brass-threaded-heat-set-insert-library) and [GrabCAD](https://grabcad.com/library/parametric-brass-threaded-heat-set-insert-library-m2-m6-18-sizes-1).
 ## Other brass inserts exist (and they're different)
 
 The inserts I modeled are the "double-knurled" style: two opposing helical knurl bands with a smooth gap in the middle. These are by far the most common type sold for 3D printing, and they're what you'll find in every budget assortment kit on Amazon. But there are other types worth knowing about:
