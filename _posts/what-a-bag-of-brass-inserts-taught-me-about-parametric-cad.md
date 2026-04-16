@@ -143,7 +143,7 @@ grooveAngle    = (grooveAngleRaw + grooveAngleMax
 
 The first line says: the groove angle is proportional to how tall the insert is relative to its width. I calibrated the `60 deg` multiplier so that a perfectly square insert (`length = OD`, ratio = 1.0) gets 60° grooves, and everything else scales from there. The M4×6×6 and M6×8×8 land at exactly 60° — which looks right — and the old M6×10×8 baseline comes out to 75°, which also looks right.
 
-The second and third lines cap the result at 100° using the same `min()` identity from the pitch formula. Without the cap, an M2×8×3.2 (ratio = 2.5) computes to `grooveAngleRaw = 150°`, which wraps the groove so far around the insert that it reverses direction and produces garbage. Six of the nineteen sizes hit the cap — all the tallest variants of the smallest-OD inserts — and the cap just keeps them at a reasonable steep-but-sane 100°.
+The second and third lines cap the result at 100° using the same `min()` identity from the pitch formula. Without the cap, an M2×8×3.2 (ratio = 2.5) computes to `grooveAngleRaw = 150°`, which wraps the groove so far around the insert that it reverses direction and produces garbage. Six of the eighteen sizes hit the cap — all the tallest variants of the smallest-OD inserts — and the cap just keeps them at a reasonable steep-but-sane 100°.
 
 Here's what ends up happening across the library:
 
@@ -156,11 +156,11 @@ Here's what ends up happening across the library:
 | M3×8×4.2 | 1.90 | 100.0° (capped) |
 | M2×8×3.2 | 2.50 | 100.0° (capped) |
 
-Same formula, nineteen different visually appropriate results. This is the moment parametric design starts paying for itself — you pick the hard numbers once (`60`, `100`), and they propagate everywhere.
+Same formula, eighteen different visually appropriate results. This is the moment parametric design starts paying for itself — you pick the hard numbers once (`60`, `100`), and they propagate everywhere.
 
 ## What I ended up with
 
-One Shapr3D file with three input variables — `threadSize_changeMe`, `length_changeMe`, `outerDiameter_changeMe` — plus `pitch`, which is auto-computed from the first one. Every length and every radius of every zone is derived. I can model any size from M2×2×3.2 up to M6×10×8 by changing three numbers and hitting enter. Nineteen sizes from one master file.
+One Shapr3D file with three input variables — `threadSize_changeMe`, `length_changeMe`, `outerDiameter_changeMe` — plus `pitch`, which is auto-computed from the first one. Every length and every radius of every zone is derived. I can model any size from M2×2×3.2 up to M6×10×8 by changing three numbers and hitting enter. Eighteen sizes from one master file.
 
 The file includes modeled knurls (with angle-scaling), internal threads, the stepped pilot geometry, and pitch-scaled chamfers, all driven from the same variable set. Change the three main dimensions and the whole insert updates cleanly. Everything just works.
 
@@ -189,7 +189,7 @@ If you're trying to model something similar, and it doesn't even have to be bras
 
 **Measure the real thing with calipers first.** I wasted time early on trying to work from product listings and Amazon descriptions. The actual part in your hand has information no spec sheet captures. Measure it, write the numbers down, and don't trust anything until you've verified it physically.
 
-**Work in ratios, not absolute values.** The moment I wrote `lowerKnurlLength = length_changeMe × 0.33` instead of `lowerKnurlLength = 3.3 mm`, the model became reusable. One formula, nineteen sizes. That's the whole point of parametric design.
+**Work in ratios, not absolute values.** The moment I wrote `lowerKnurlLength = length_changeMe × 0.33` instead of `lowerKnurlLength = 3.3 mm`, the model became reusable. One formula, eighteen sizes. That's the whole point of parametric design.
 
 **Name variables for what they *are*, not what they look like.** A radius should be called a radius, not a diameter. A raw intermediate value should read as intermediate. Good names make wrong math visible; bad names hide it.
 
@@ -209,5 +209,5 @@ If you're trying to model something similar, and it doesn't even have to be bras
 
 - [Technical Documentation](/documentation/parametric-brass-insert-library) — Full variable reference, formulas, pitch lookup, and design notes
 - [Printables](https://www.printables.com/model/1689827-parametric-brass-threaded-heat-set-insert-library) — Master Shapr3D file and all size exports
-- [GrabCAD](https://grabcad.com/library/parametric-brass-threaded-heat-set-insert-library-m2-m6-18-sizes-1) — Individual STEP/STL files for 19 sizes
+- [GrabCAD](https://grabcad.com/library/parametric-brass-threaded-heat-set-insert-library-m2-m6-18-sizes-1) — Individual STEP/STL files for 18 sizes
 - [OffGrid Devices](https://offgriddevices.com/) — More hardware project work
