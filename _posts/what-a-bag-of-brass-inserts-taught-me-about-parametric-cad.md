@@ -34,6 +34,8 @@ A real heat-set insert has at least five distinct zones stacked along its length
 
 Every one of these features has a reason. The two opposing knurl directions give the insert both pull-out resistance and torque-out resistance when it's melted into plastic: one direction keeps it from being yanked out, the other keeps it from spinning when you drive a screw into it. The necked gap lets molten plastic flow into it during installation and mechanically lock the insert in place. The pilot lip at the tip is a locating shoulder that helps the insert self-align as it enters the printed hole.
 
+![Proportional zone diagram of a double-knurled brass insert showing the five axial zones and their length and diameter ratios](/blog/content/brass-insert-zone-proportions.png)
+
 I measured one of my M6×10×8 inserts with calipers and wrote down all ten dimensions: five lengths and five diameters. Then I tried to figure out the *ratios*, because I didn't just want to model one size. I wanted one master file that could generate any size I owned by typing in three numbers.
 
 ![Dimensioned Shapr3D model of the brass insert showing the five axial zones and derived dimensions](/blog/content/brass-insert-dimensioned-model.webp)
@@ -60,6 +62,8 @@ ISO metric screw threads have a 60° flank angle. Everyone knows this. It's in e
 
 **69.4266°.**
 
+![Shapr3D sketch measurement showing the 69.4266° apex angle on a thread profile with depth = 0.5413 mm and base = 0.75 mm](/blog/content/brass-insert-69-degree-shapr3d.webp)
+
 I sat there staring at it. The math *looked* right. The formulas were the ones CAD tutorials use. But the geometry was wrong.
 
 Here's the trap: `depth = 0.5413 × pitch` is the truncated working depth, which assumes the triangle has a flat apex, making it a trapezoid, not a sharp point. If you use the truncated depth value on a sharp triangle, you've changed the geometry without knowing it, and the angle widens. For a sharp 60° triangle with a base of `pitch`, you actually need a depth of `0.866 × pitch`. That's `√3/2`, the full height of an equilateral triangle.
@@ -68,7 +72,7 @@ I had two choices: use a proper trapezoid with the flat apex (ISO-accurate), or 
 
 The lesson: when you pull a formula off the internet, know what geometric assumption it was written for. `0.5413` and `0.866` aren't interchangeable. They describe different triangles.
 
-![Side-by-side comparison of the 69.4266° apex triangle accidentally drawn with base = pitch × 0.75 and depth = pitch × 0.5413, next to the correct 60° sharp triangle with base = pitch and depth = pitch × 0.866](/blog/content/brass-insert-apex-angle-comparison.svg)
+![Side-by-side comparison of the 69.4° apex triangle drawn with depth = 0.5413 next to the correct 60° sharp triangle with depth = 0.866 × pitch](/blog/content/brass-insert-apex-angle-diagram.png)
 
 ## The parametric workaround I was told wouldn't work
 
@@ -112,7 +116,7 @@ The fix was obvious once I understood it: a real ISO thread isn't a pure triangl
 
 Another lesson: when a CAD tool throws a weird error, it's usually telling you the real geometry has a subtle constraint that your simplified version doesn't respect. The error isn't the bug. The simplification is.
 
-![Two thread-profile stack-ups along the bore wall: the left panel shows baseWidth = pitch with adjacent triangle corners touching at the pitch boundary (the invalid-contact failure case), the right panel shows baseWidth = pitch × 0.75 with a crest flat of pitch × 0.25 between profiles](/blog/content/brass-insert-thread-spacing.svg)
+![Thread profile cross-section showing the bore wall, brass body, baseWidth = pitch × 0.75, crest flats of pitch × 0.125 on each side, 60° apex angle, and axis of revolution](/blog/content/brass-insert-thread-profile-anatomy.png)
 
 ## What I ended up with
 
@@ -145,7 +149,7 @@ If you're trying to model something similar, and it doesn't even have to be bras
 
 **Measure the real thing with calipers first.** I wasted time early on trying to work from product listings and Amazon descriptions. The actual part in your hand has information no spec sheet captures. Measure it, write the numbers down, and don't trust anything until you've verified it physically.
 
-**Work in ratios, not absolute values.** The moment I wrote `upperKnurlLength = length × 0.33` instead of `upperKnurlLength = 3.3 mm`, the model became reusable. One formula, twenty sizes. That's the whole point of parametric design.
+**Work in ratios, not absolute values.** The moment I wrote `lowerKnurlLength = length × 0.33` instead of `lowerKnurlLength = 3.3 mm`, the model became reusable. One formula, twenty sizes. That's the whole point of parametric design.
 
 **When a CAD error is confusing, the geometry probably has a subtlety you're missing.** Don't fight the error. Read it, believe it, and go figure out what real-world constraint it's pointing at. It's almost always right.
 
