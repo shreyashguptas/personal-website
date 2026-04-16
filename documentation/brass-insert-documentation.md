@@ -6,7 +6,7 @@ date: "2026-04-14T00:00:00.000Z"
 
 **Technical Documentation & Variable Reference**
 
-A fully parametric CAD library for generating ISO metric brass heat-set inserts in Shapr3D, covering all 20 sizes from M2×2×3.2 through M6×10×8. Change three input values: thread size, length, and outer diameter, and every dimension of the insert updates automatically, including the helical knurls, internal threads, chamfers, pilot geometry, and necked gap.
+A fully parametric CAD library for generating ISO metric brass heat-set inserts in Shapr3D, covering all 18 sizes from M2×2×3.2 through M6×10×8. Change three input values: thread size, length, and outer diameter, and every dimension of the insert updates automatically, including the helical knurls, internal threads, chamfers, pilot geometry, and necked gap.
 
 ![Rendered brass heat-set insert from the Shapr3D parametric library](/blog/content/brass-insert-render.webp)
 
@@ -53,7 +53,7 @@ The library is calibrated for these nominal sizes:
 |---|---|
 | M2 | 2×3.2, 4×3.2, 6×3.2, 8×3.2 |
 | M2.5 | 2.5×3.5, 4×3.5, 6×3.5 |
-| M3 | 3×4.2, 4×4.2, 6×4.2, 8×4.2, 10×4.2 |
+| M3 | 4×4.2, 6×4.2, 8×4.2, 10×4.2 |
 | M4 | 6×6, 8×6, 10×6 |
 | M5 | 6×7, 8×7 |
 | M6 | 8×8, 10×8 |
@@ -266,8 +266,8 @@ If the file is slow on very small inserts or you do not need internal threads fo
 Published packages (see [Printables](https://www.printables.com/model/1689827-parametric-brass-threaded-heat-set-insert-library) or [GrabCAD](https://grabcad.com/library/parametric-brass-threaded-heat-set-insert-library-m2-m6-18-sizes-1)) typically ship:
 
 - `brass-insert-master.shapr` — the master Shapr3D file with all variables and history
-- `brass-insert-[size].step` — individual STEP exports for each of the 20 common sizes
-- `brass-insert-[size].stl` — individual STL exports for each of the 20 common sizes
+- `brass-insert-[size].step` — individual STEP exports for each of the 18 common sizes
+- `brass-insert-[size].stl` — individual STL exports for each of the 18 common sizes
 - `README.md` — a condensed version of this documentation for quick reference
 - `pitch-lookup-table.png` — optional visual reference for the six ISO pitches (when included in a given release archive)
 
