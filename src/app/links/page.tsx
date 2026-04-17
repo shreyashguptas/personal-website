@@ -6,7 +6,7 @@ import Link from "next/link";
 
 const LINKS = {
   offgridDevices: {
-    site: "https://offgriddevices.com",
+    site: "https://offgridevices.com",
     etsy: "https://www.etsy.com/shop/OffGridDevices",
   },
   content: {
@@ -267,7 +267,7 @@ export default function LinksPage() {
             label="OffGrid Devices"
             description="MagSafe accessories for Meshtastic & MeshCore. Designed in Shapr3D, printed to order."
             icon={<ShopIcon />}
-            badge="offgriddevices.com"
+            badge="offgridevices.com"
             gradientFrom="#1a5c2e"
             gradientTo="#2d8a4e"
           />
