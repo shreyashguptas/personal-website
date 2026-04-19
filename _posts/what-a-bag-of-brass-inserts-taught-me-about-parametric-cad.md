@@ -211,7 +211,7 @@ If you're trying to model something similar, and it doesn't even have to be bras
 - [Printables](https://www.printables.com/model/1689827-parametric-brass-threaded-heat-set-insert-library) — Master Shapr3D file and all size exports
 - [GrabCAD](https://grabcad.com/library/parametric-brass-threaded-heat-set-insert-library-m2-m6-18-sizes-1) — Individual STEP/STL files for 18 sizes
 - [440-piece INCLY brass insert kit on Amazon](https://amzn.to/4mFt8M8) — the exact kit I measured for this library (affiliate link)
-- [OffGrid Devices](https://offgriddevices.com/) — More hardware project work
+- [OffGrid Devices](https://offgridevices.com/) — More hardware project work
 
 ---
 
