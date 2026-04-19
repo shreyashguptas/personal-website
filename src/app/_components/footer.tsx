@@ -6,14 +6,13 @@ type FooterLink = { href: string; label: string; external?: boolean };
 const WRITING: FooterLink[] = [
   { href: "/blog", label: "All Writing" },
   { href: "/feed.xml", label: "RSS Feed" },
-  { href: "/resume", label: "Resume" },
 ];
 
 const ELSEWHERE: FooterLink[] = [
   { href: "https://github.com/shreyashguptas", label: "GitHub", external: true },
   { href: "https://x.com/ShreyashGuptas", label: "X (Twitter)", external: true },
   { href: "https://www.youtube.com/@ShreyashGuptas", label: "YouTube", external: true },
-  { href: "https://www.printables.com/@ShreyashGuptas", label: "Printables", external: true },
+  { href: "https://www.printables.com/@shreyashgupta", label: "Printables", external: true },
 ];
 
 export function SiteFooter() {
