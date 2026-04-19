@@ -10,19 +10,22 @@ type Props = {
 };
 
 const CoverImage = ({ title, src, slug, variant = "default" }: Props) => {
-  // Use aspect-ratio instead of fixed heights for CLS prevention
   const aspectClass = variant === "hero" ? "aspect-[16/9]" : "aspect-[3/2]";
 
   const image = (
-    <div className={cn("relative w-full overflow-hidden rounded-lg shadow-sm", aspectClass)}>
+    <div
+      className={cn(
+        "relative w-full overflow-hidden border border-border",
+        aspectClass
+      )}
+      style={{ borderRadius: "var(--radius)" }}
+    >
       <Image
         src={src}
-        alt={`Cover Image for ${title}`}
+        alt={`Cover image — ${title}`}
         fill
         priority={variant === "hero"}
-        className={cn("object-cover", {
-          "hover:shadow-lg transition-shadow duration-200": slug,
-        })}
+        className="object-cover"
         quality={90}
         sizes={
           variant === "hero"
@@ -32,16 +35,13 @@ const CoverImage = ({ title, src, slug, variant = "default" }: Props) => {
       />
     </div>
   );
-  return (
-    <div className="sm:mx-0">
-      {slug ? (
-        <Link href={`/posts/${slug}`} aria-label={title} data-cursor-intent="hover">
-          {image}
-        </Link>
-      ) : (
-        image
-      )}
-    </div>
+
+  return slug ? (
+    <Link href={`/posts/${slug}`} aria-label={title} data-cursor-intent="hover">
+      {image}
+    </Link>
+  ) : (
+    image
   );
 };
 

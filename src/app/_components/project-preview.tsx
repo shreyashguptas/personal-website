@@ -9,64 +9,88 @@ type Props = {
 
 export function ProjectPreview({ project }: Props) {
   const hasImage = project.image && project.image.trim() !== "";
+  const hasUrl = Boolean(project.projectUrl && project.projectUrl.trim() !== "");
 
   return (
-    <div className={`group flex flex-col ${hasImage ? 'md:flex-row' : ''} items-start gap-8 md:gap-12 py-10 md:py-12`}>
-      {/* Left side - Project info */}
-      <div className="flex-1">
-        <div className="inline-flex items-center justify-center px-3 py-1 rounded-md bg-black text-white text-xs font-semibold mb-4">
+    <article className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 py-10 md:py-12">
+      {/* Eyebrow: tabular year */}
+      <div className="md:col-span-2">
+        <p className="label-eyebrow tabular">
           {extractYearFromDate(project.date)}
-        </div>
-        {project.projectUrl && project.projectUrl.trim() !== "" ? (
-          <Link
-            href={project.projectUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-2xl md:text-3xl font-bold tracking-tight mb-4 group-hover:text-muted-foreground transition-colors duration-200 block"
-          >
-            {project.title}
-          </Link>
-        ) : (
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-4">
-            {project.title}
-          </h2>
-        )}
-        <p className="text-foreground/80 leading-relaxed text-base md:text-lg">
-          {project.description}
         </p>
       </div>
-      
-      {/* Right side - Project image (only if image exists) */}
-      {hasImage && (
-        project.projectUrl && project.projectUrl.trim() !== "" ? (
+
+      {/* Title + description */}
+      <div className={hasImage ? "md:col-span-6" : "md:col-span-10"}>
+        {hasUrl ? (
           <Link
-            href={project.projectUrl}
+            href={project.projectUrl!}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full md:w-[600px] rounded-xl overflow-hidden shadow-premium-md group-hover:shadow-premium-lg transition-shadow duration-300 ring-1 ring-border/50 block"
+            data-cursor-intent="hover"
+            className="block hover:text-muted-foreground transition-colors"
           >
-            <Image
-              src={project.image}
-              alt={project.title}
-              width={600}
-              height={400}
-              className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-[1.02]"
-              sizes="(max-width: 768px) 100vw, 600px"
-            />
+            <h2 className="display-md">
+              {project.title}
+            </h2>
           </Link>
         ) : (
-          <div className="w-full md:w-[600px] rounded-xl overflow-hidden shadow-premium-md group-hover:shadow-premium-lg transition-shadow duration-300 ring-1 ring-border/50">
-            <Image
-              src={project.image}
-              alt={project.title}
-              width={600}
-              height={400}
-              className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-[1.02]"
-              sizes="(max-width: 768px) 100vw, 600px"
-            />
-          </div>
-        )
+          <h2 className="display-md">{project.title}</h2>
+        )}
+        <p className="mt-4 font-serif text-lg leading-relaxed text-muted-foreground max-w-xl">
+          {project.description}
+        </p>
+        {hasUrl && (
+          <a
+            href={project.projectUrl!}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex items-center text-sm font-medium underline decoration-border hover:decoration-foreground underline-offset-4"
+            data-cursor-intent="hover"
+          >
+            Visit project →
+          </a>
+        )}
+      </div>
+
+      {/* Image */}
+      {hasImage && (
+        <div className="md:col-span-4">
+          {hasUrl ? (
+            <Link
+              href={project.projectUrl!}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-cursor-intent="hover"
+              className="block overflow-hidden border border-border"
+              style={{ borderRadius: "var(--radius)" }}
+            >
+              <Image
+                src={project.image}
+                alt={project.title}
+                width={600}
+                height={400}
+                className="w-full h-auto object-contain"
+                sizes="(max-width: 768px) 100vw, 400px"
+              />
+            </Link>
+          ) : (
+            <div
+              className="overflow-hidden border border-border"
+              style={{ borderRadius: "var(--radius)" }}
+            >
+              <Image
+                src={project.image}
+                alt={project.title}
+                width={600}
+                height={400}
+                className="w-full h-auto object-contain"
+                sizes="(max-width: 768px) 100vw, 400px"
+              />
+            </div>
+          )}
+        </div>
       )}
-    </div>
+    </article>
   );
-} 
+}

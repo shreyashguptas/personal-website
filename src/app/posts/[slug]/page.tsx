@@ -22,35 +22,35 @@ export default async function Post(props: Params) {
   const content = await markdownToHtml(post.content || "");
 
   return (
-    <main className="relative min-h-screen overflow-hidden">
-      <Container>
-        <Header />
-        <article className="mb-32">
-          {post && (
-            <Script id="post-jsonld" type="application/ld+json" strategy="afterInteractive">
-              {JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "BlogPosting",
-                headline: post.title,
-                datePublished: post.date,
-                dateModified: post.date,
-                author: {
-                  "@type": "Person",
-                  name: post.author?.name || "Shreyash Gupta",
-                },
-              })}
-            </Script>
-          )}
-          <PostHeader
-            title={post.title}
-            coverImage={post.coverImage}
-            date={post.date}
-            author={post.author}
-          />
+    <Container className="animate-fade-in">
+      <Header />
+      <article className="py-10 md:py-14">
+        <Script id="post-jsonld" type="application/ld+json" strategy="afterInteractive">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            headline: post.title,
+            datePublished: post.date,
+            dateModified: post.date,
+            author: {
+              "@type": "Person",
+              name: post.author?.name || "Shreyash Gupta",
+            },
+          })}
+        </Script>
+
+        <PostHeader
+          title={post.title}
+          coverImage={post.coverImage}
+          date={post.date}
+          author={post.author}
+        />
+
+        <div className="mt-10 md:mt-14">
           <PostBody content={content} />
-        </article>
-      </Container>
-    </main>
+        </div>
+      </article>
+    </Container>
   );
 }
 

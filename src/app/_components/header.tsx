@@ -2,12 +2,15 @@ import Link from "next/link";
 
 const Header = () => {
   return (
-    <h2 className="text-2xl md:text-4xl font-bold tracking-tight md:tracking-tighter leading-tight mb-20 mt-8 flex items-center">
-      <Link href="/" className="hover:underline">
-        Blog
+    <div className="py-6 border-b border-border">
+      <Link
+        href="/blog"
+        data-cursor-intent="hover"
+        className="label-eyebrow inline-flex items-center gap-2 hover:text-foreground transition-colors"
+      >
+        ← Back to Writing
       </Link>
-      .
-    </h2>
+    </div>
   );
 };
 

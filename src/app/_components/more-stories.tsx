@@ -7,11 +7,14 @@ type Props = {
 
 export function MoreStories({ posts }: Props) {
   return (
-    <section>
-      <h2 className="mb-8 text-5xl md:text-7xl font-bold tracking-tighter leading-tight">
-        More Stories
-      </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 md:gap-x-16 lg:gap-x-32 gap-y-20 md:gap-y-32 mb-32">
+    <section className="py-10 md:py-14">
+      <header className="flex items-baseline justify-between mb-2 border-b border-border pb-4">
+        <h2 className="label-eyebrow">Archive</h2>
+        <p className="label-eyebrow tabular">
+          {posts.length} {posts.length === 1 ? "essay" : "essays"}
+        </p>
+      </header>
+      <div className="divide-y divide-border">
         {posts.map((post) => (
           <PostPreview
             key={post.slug}

@@ -1,113 +1,114 @@
 interface ThemeScriptOptions {
   debug?: boolean;
+  storageKey?: string;
 }
 
+export const THEME_STORAGE_KEY = "sg-theme";
+
 /**
- * Generates a script that applies the system color scheme immediately during SSR hydration.
- * The script exposes helpers on the window for later subscribers so client code can observe
- * theme changes without duplicating application logic.
+ * Inline script — runs before paint to prevent theme flash. Reads the user's
+ * stored preference ("light" | "dark" | "system") from localStorage and
+ * applies a .dark class on <html> if appropriate. Exposes helpers on window
+ * so a segmented toggle can re-apply and subscribe to changes.
  */
 export function createThemeInitializerScript(options: ThemeScriptOptions = {}): string {
   const debug = options.debug === true;
+  const storageKey = options.storageKey ?? THEME_STORAGE_KEY;
 
-  // Inline script string. Keep it self-contained – do not rely on bundler helpers.
   return `;(function(){
     var DEBUG = ${debug ? "true" : "false"};
-    var DARK = 'dark';
-    var LIGHT = 'light';
-    var mediaQuery;
+    var KEY = ${JSON.stringify(storageKey)};
     var subscribers = new Set();
+    var mediaQuery;
 
-    function ensureMediaQuery(){
+    function ensureMedia(){
       if (mediaQuery) return mediaQuery;
       if (typeof window === 'undefined' || !window.matchMedia) return undefined;
-      try {
-        mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      } catch (error) {
-        if (DEBUG) console.warn('[theme] matchMedia unavailable', error);
-        mediaQuery = undefined;
-      }
+      try { mediaQuery = window.matchMedia('(prefers-color-scheme: dark)'); }
+      catch(e){ mediaQuery = undefined; }
       return mediaQuery;
+    }
+
+    function readPref(){
+      try {
+        var v = window.localStorage.getItem(KEY);
+        if (v === 'light' || v === 'dark' || v === 'system') return v;
+      } catch(e){}
+      return 'system';
+    }
+
+    function writePref(v){
+      try { window.localStorage.setItem(KEY, v); } catch(e){}
+    }
+
+    function resolve(pref){
+      if (pref === 'light') return false;
+      if (pref === 'dark') return true;
+      var mq = ensureMedia();
+      return mq ? mq.matches : false;
     }
 
     function notify(detail){
       try {
         document.documentElement.dispatchEvent(new CustomEvent('sg-theme:change', { detail: detail }));
-      } catch (error) {
-        if (DEBUG) console.warn('[theme] dispatch failed', error);
-      }
-      subscribers.forEach(function(callback){
-        try { callback(detail); }
-        catch (error) { if (DEBUG) console.error('[theme] subscriber error', error); }
-      });
+      } catch(e){}
+      subscribers.forEach(function(cb){ try { cb(detail); } catch(e){} });
     }
 
-    function applyTheme(reason){
+    function apply(reason){
       var html = document.documentElement;
-      if (!html) return { isDark: false, reason: reason, applied: false };
-
-      var mq = ensureMediaQuery();
-      var isDark = mq ? mq.matches : false;
-
-      html.classList.remove(DARK, LIGHT);
-      html.classList.add(isDark ? DARK : LIGHT);
-      html.setAttribute('data-theme', isDark ? DARK : LIGHT);
-
-      var detail = {
-        isDark: isDark,
-        reason: reason,
-        applied: true,
-        timestamp: Date.now()
-      };
-
+      if (!html) return { isDark:false, pref:'system', applied:false };
+      var pref = readPref();
+      var isDark = resolve(pref);
+      html.classList.remove('dark','light');
+      html.classList.add(isDark ? 'dark' : 'light');
+      html.setAttribute('data-theme', isDark ? 'dark' : 'light');
+      html.style.colorScheme = isDark ? 'dark' : 'light';
+      var detail = { isDark: isDark, pref: pref, applied: true, reason: reason, timestamp: Date.now() };
       if (DEBUG) console.info('[theme] applied', detail);
-
       notify(detail);
       return detail;
     }
 
-    function handleChange(){
-      applyTheme('media-change');
+    function setPref(pref){
+      if (pref !== 'light' && pref !== 'dark' && pref !== 'system') pref = 'system';
+      writePref(pref);
+      return apply('set-pref');
     }
 
-    function attachListener(){
-      var mq = ensureMediaQuery();
-      if (!mq) return;
-      if (typeof mq.addEventListener === 'function') {
-        mq.addEventListener('change', handleChange);
-      } else if (typeof mq.addListener === 'function') {
-        mq.addListener(handleChange);
-      }
+    function handleMediaChange(){
+      if (readPref() === 'system') apply('media-change');
+    }
+
+    var mq = ensureMedia();
+    if (mq) {
+      if (typeof mq.addEventListener === 'function') mq.addEventListener('change', handleMediaChange);
+      else if (typeof mq.addListener === 'function') mq.addListener(handleMediaChange);
     }
 
     if (typeof window !== 'undefined') {
-      window.__sgApplyTheme = function(reason){
-        return applyTheme(reason || 'manual-call');
-      };
-      window.__sgOnThemeChange = function(callback){
-        if (typeof callback !== 'function') {
-          if (DEBUG) console.warn('[theme] invalid subscriber provided');
-          return function(){};
+      window.__sgTheme = {
+        apply: function(reason){ return apply(reason || 'manual'); },
+        get: readPref,
+        set: setPref,
+        subscribe: function(cb){
+          if (typeof cb !== 'function') return function(){};
+          subscribers.add(cb);
+          return function(){ subscribers.delete(cb); };
         }
-        subscribers.add(callback);
-        return function(){ subscribers.delete(callback); };
       };
     }
 
-    // Initial application sequence
-    applyTheme('script-init');
-    attachListener();
-
-    // Re-apply after hydration to verify no flashes occur
-    setTimeout(function(){ applyTheme('post-hydration-check'); }, 50);
+    apply('script-init');
   })();`;
 }
 
-export type ThemeScriptDetail = {
+export type ThemePref = "light" | "dark" | "system";
+
+export type ThemeDetail = {
   isDark: boolean;
-  reason: string;
+  pref: ThemePref;
   applied: boolean;
+  reason?: string;
   timestamp: number;
 };
-
-

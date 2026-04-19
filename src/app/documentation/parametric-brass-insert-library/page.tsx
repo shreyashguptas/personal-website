@@ -74,14 +74,22 @@ export default async function ParametricBrassInsertLibraryPage() {
   const htmlContent = await markdownToHtml(documentation.content);
 
   return (
-    <main className="relative min-h-screen overflow-hidden">
-      <Container>
-        <Header />
-        <article className="mb-32">
+    <Container className="animate-fade-in">
+      <Header />
+      <article className="py-10 md:py-14">
+        <header className="border-b border-border pb-8 md:pb-12">
+          <p className="label-eyebrow mb-5">Documentation</p>
           <PostTitle>{documentation.title}</PostTitle>
+          {documentation.description && (
+            <p className="mt-4 font-serif text-lg leading-relaxed text-muted-foreground max-w-2xl">
+              {documentation.description}
+            </p>
+          )}
+        </header>
+        <div className="mt-10 md:mt-14">
           <PostBody content={htmlContent} />
-        </article>
-      </Container>
-    </main>
+        </div>
+      </article>
+    </Container>
   );
 }

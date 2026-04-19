@@ -1,94 +1,204 @@
 @reference "tailwindcss";
 
+/* Serif prose for article-grade reading. */
 .markdown {
-  @apply text-lg leading-relaxed;
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: hsl(var(--foreground));
+  font-feature-settings: "kern", "liga", "onum";
 }
 
-.markdown p,
-.markdown ul,
-.markdown ol,
-.markdown blockquote {
-  @apply my-6;
+.markdown > p,
+.markdown > ul,
+.markdown > ol,
+.markdown > blockquote {
+  margin-block: 1.5rem;
+}
+
+/* Dropped initial on first paragraph */
+.markdown > p:first-of-type::first-letter {
+  font-family: var(--font-serif);
+  font-size: 4.5em;
+  font-weight: 500;
+  float: left;
+  line-height: 0.85;
+  margin: 0.05em 0.08em 0 0;
+  color: hsl(var(--foreground));
 }
 
 .markdown h2 {
-  @apply text-3xl mt-12 mb-4 leading-snug;
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  line-height: 1.15;
+  letter-spacing: -0.018em;
+  font-weight: 500;
+  margin-top: 3.5rem;
+  margin-bottom: 1rem;
+  font-feature-settings: "onum", "kern", "liga";
 }
 
 .markdown h3 {
-  @apply text-2xl mt-8 mb-4 leading-snug;
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  font-weight: 500;
+  margin-top: 2.5rem;
+  margin-bottom: 0.75rem;
 }
 
+.markdown h4 {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-weight: 600;
+  color: hsl(var(--muted-foreground));
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Unordered & ordered lists */
+.markdown ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+}
+
+.markdown ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
+}
+
+.markdown li {
+  margin-block: 0.25rem;
+}
+
+.markdown li::marker {
+  color: hsl(var(--muted-foreground));
+}
+
+/* Images — hairline-bordered, 4px radius, no shadow */
 .markdown img {
-  @apply rounded-lg w-full h-auto object-contain my-6;
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  margin-block: 2rem;
 }
 
-/* Tables (GFM pipe tables) */
+/* Tables — hairline dividers, tabular monospace numbers. */
 .markdown table {
-  @apply w-full my-8 text-base border-collapse;
+  width: 100%;
+  margin-block: 2.5rem;
+  border-collapse: collapse;
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
 }
 
 .markdown thead {
-  @apply border-b-2 border-neutral-300 dark:border-neutral-600;
+  border-bottom: 1px solid hsl(var(--border));
 }
 
 .markdown th {
-  @apply py-3 px-4 text-left font-semibold text-sm uppercase tracking-wide;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: hsl(var(--muted-foreground));
 }
 
 .markdown td {
-  @apply py-2.5 px-4 border-b border-neutral-200 dark:border-neutral-700;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid hsl(var(--border));
+  vertical-align: top;
+  line-height: 1.5;
 }
 
-.markdown tbody tr:last-child td {
-  @apply border-b-0;
+.markdown tbody tr:hover td {
+  background-color: hsl(var(--secondary) / 0.5);
 }
 
-/* Code blocks — formula callout style */
+/* Numeric alignment in last column heuristic — users who want tabular numbers
+   can rely on font-variant-numeric applied globally to the mono. */
+.markdown td:has(> code),
+.markdown td.tabular {
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono);
+}
+
+/* Code blocks — muted, hairline border */
 .markdown pre {
-  @apply my-8 p-6 rounded-lg border-l-4 border-amber-500 overflow-x-auto;
-  background-color: #fefce8;
+  margin-block: 2rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid hsl(var(--border));
+  background-color: hsl(var(--secondary));
+  border-radius: var(--radius);
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.6;
 }
 
 .markdown pre code {
-  @apply text-base leading-relaxed;
-  color: #422006;
-  font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
+  background-color: transparent;
+  padding: 0;
+  color: hsl(var(--foreground));
+  font-family: var(--font-mono);
+  font-size: inherit;
 }
 
 /* Inline code */
 .markdown code {
-  @apply px-1.5 py-0.5 rounded text-base;
-  background-color: #f5f5f5;
-  font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  padding: 0.125rem 0.375rem;
+  background-color: hsl(var(--secondary));
+  border-radius: 2px;
+  color: hsl(var(--foreground));
 }
 
-/* Don't double-style code inside pre */
-.markdown pre code {
-  @apply p-0 rounded-none;
-  background-color: transparent;
-}
-
-/* Blockquotes */
+/* Blockquotes — single hairline, italic, muted */
 .markdown blockquote {
-  @apply pl-6 border-l-4 border-neutral-300 italic;
-  color: #555;
+  border-left: 1px solid hsl(var(--foreground));
+  padding-left: 1.5rem;
+  font-style: italic;
+  color: hsl(var(--muted-foreground));
 }
 
-/* Links */
+/* Links — underline in accent, thickens on hover */
 .markdown a {
-  @apply text-blue-600 underline underline-offset-2 decoration-blue-300 font-medium;
-  transition: color 0.15s, text-decoration-color 0.15s;
+  color: hsl(var(--foreground));
+  text-decoration: underline;
+  text-decoration-color: hsl(var(--accent));
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: text-decoration-thickness 0.15s, text-decoration-color 0.15s;
 }
 
 .markdown a:hover {
-  @apply text-blue-800 decoration-blue-500;
+  text-decoration-thickness: 2px;
+  text-decoration-color: hsl(var(--accent));
 }
 
-:global(.dark) .markdown a {
-  @apply text-blue-400 decoration-blue-600;
+/* Horizontal rule */
+.markdown hr {
+  border: 0;
+  border-top: 1px solid hsl(var(--border));
+  margin-block: 3rem;
 }
 
-:global(.dark) .markdown a:hover {
-  @apply text-blue-300 decoration-blue-400;
+/* Strong / emphasis */
+.markdown strong {
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.markdown em {
+  font-style: italic;
 }

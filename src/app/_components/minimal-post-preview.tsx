@@ -8,22 +8,16 @@ type Props = {
 
 export function MinimalPostPreview({ post }: Props) {
   return (
-    <div className="group">
-      <div className="flex items-center gap-3 mb-2">
-        <div className="text-sm text-gray-500 dark:text-gray-400">Latest Blog</div>
-        <div className="h-px bg-gray-200 dark:bg-gray-700 flex-1"></div>
-      </div>
-      
+    <article className="group">
+      <p className="label-eyebrow mb-3">Latest Essay</p>
       <Link href={`/posts/${post.slug}`} className="block" data-cursor-intent="hover">
-        <div className="space-y-2 py-3 group-hover:translate-x-1 transition-transform duration-200">
-          <h3 className="text-lg font-medium leading-snug group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
-            {post.title}
-          </h3>
-          <div className="text-sm text-gray-500 dark:text-gray-400">
-            <DateFormatter dateString={post.date} />
-          </div>
-        </div>
+        <h3 className="display-sm group-hover:text-muted-foreground transition-colors">
+          {post.title}
+        </h3>
       </Link>
-    </div>
+      <p className="tabular mt-3 text-xs uppercase tracking-wider text-muted-foreground">
+        <DateFormatter dateString={post.date} />
+      </p>
+    </article>
   );
-} 
+}

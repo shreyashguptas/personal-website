@@ -22,28 +22,32 @@ export function HeroPost({
   slug,
 }: Props) {
   return (
-    <section>
-      {/* Only render cover image if it exists and is not empty */}
-      {coverImage && coverImage.trim() !== "" && (
-        <div className="mb-8 md:mb-16">
-          <CoverImage title={title} src={coverImage} slug={slug} variant="hero" />
-        </div>
-      )}
-      <div className="md:grid md:grid-cols-2 md:gap-x-16 lg:gap-x-8 mb-20 md:mb-28">
-        <div>
-          <h3 className="mb-4 text-4xl lg:text-5xl leading-tight">
-            <Link href={`/posts/${slug}`} className="hover:underline" data-cursor-intent="hover">
+    <section className="py-10 md:py-14 border-b border-border">
+      <p className="label-eyebrow mb-5">Featured · Latest Essay</p>
+      <div className="grid grid-cols-1 md:grid-cols-12 md:gap-10">
+        <div className="md:col-span-7">
+          <h2 className="display-xl">
+            <Link href={`/posts/${slug}`} data-cursor-intent="hover" className="hover:text-muted-foreground transition-colors">
               {title}
             </Link>
-          </h3>
-          <div className="mb-4 md:mb-0 text-lg">
-            <DateFormatter dateString={date} />
+          </h2>
+          <p className="mt-6 font-serif text-lg leading-relaxed text-muted-foreground">
+            {excerpt}
+          </p>
+          <div className="mt-6 flex items-center gap-4 flex-wrap">
+            <Avatar name={author.name} picture={author.picture} />
+            <span aria-hidden="true" className="text-border">│</span>
+            <span className="tabular text-xs uppercase tracking-wider text-muted-foreground">
+              <DateFormatter dateString={date} />
+            </span>
           </div>
         </div>
-        <div>
-          <p className="text-lg leading-relaxed mb-4">{excerpt}</p>
-          <Avatar name={author.name} picture={author.picture} />
-        </div>
+
+        {coverImage && coverImage.trim() !== "" && (
+          <div className="md:col-span-5 mt-8 md:mt-2">
+            <CoverImage title={title} src={coverImage} slug={slug} variant="hero" />
+          </div>
+        )}
       </div>
     </section>
   );

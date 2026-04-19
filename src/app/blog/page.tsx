@@ -7,33 +7,35 @@ import { absoluteUrl } from "@/lib/seo";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Blog | Shreyash Gupta",
-  description: "Articles and notes by Shreyash Gupta.",
+  title: "Writing | Shreyash Gupta",
+  description: "Essays and notes by Shreyash Gupta.",
   alternates: { canonical: absoluteUrl("/blog") },
   openGraph: {
     type: "website",
     url: absoluteUrl("/blog"),
-    title: "Blog | Shreyash Gupta",
-    description: "Articles and notes by Shreyash Gupta.",
+    title: "Writing | Shreyash Gupta",
+    description: "Essays and notes by Shreyash Gupta.",
   },
   twitter: {
     card: "summary",
-    title: "Blog | Shreyash Gupta",
-    description: "Articles and notes by Shreyash Gupta.",
+    title: "Writing | Shreyash Gupta",
+    description: "Essays and notes by Shreyash Gupta.",
   },
 };
 
 export default function BlogPage() {
   const allPosts = getAllPosts();
-
   const heroPost = allPosts[0];
-
   const morePosts = allPosts.slice(1);
 
   return (
-    <main className="relative min-h-screen overflow-hidden">
-      <Container>
-        <Intro />
+    <Container className="animate-fade-in">
+      <Intro
+        eyebrow="The Writing"
+        title="Essays, notes, and slow ideas."
+        description="Long-form on software, data, tools, and the craft of building things. No newsletters, no popups — just the words."
+      />
+      {heroPost && (
         <HeroPost
           title={heroPost.title}
           coverImage={heroPost.coverImage}
@@ -42,8 +44,8 @@ export default function BlogPage() {
           slug={heroPost.slug}
           excerpt={heroPost.excerpt}
         />
-        {morePosts.length > 0 && <MoreStories posts={morePosts} />}
-      </Container>
-    </main>
+      )}
+      {morePosts.length > 0 && <MoreStories posts={morePosts} />}
+    </Container>
   );
-} 
+}

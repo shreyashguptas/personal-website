@@ -1,6 +1,7 @@
 import Container from "@/app/_components/container";
 import type { Metadata } from "next";
 import { PostBody } from "@/app/_components/post-body";
+import { Intro } from "@/app/_components/intro";
 import markdownToHtml from "@/lib/markdownToHtml";
 import { absoluteUrl } from "@/lib/seo";
 import fs from "fs";
@@ -25,45 +26,34 @@ export const metadata: Metadata = {
 };
 
 export default async function ResumePage() {
-  // Read the resume markdown file directly
   const resumePath = path.join(process.cwd(), "_resume", "resume.md");
-  
+
   if (!fs.existsSync(resumePath)) {
     return (
-      <main className="relative min-h-screen overflow-hidden">
-        <Container>
-          <div className="mt-16 relative z-10">
-            <h1 className="text-5xl md:text-8xl font-bold tracking-tighter leading-tight font-serif">
-              Resume.
-            </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300 mt-8">
-              Resume file not found. Please check back later.
-            </p>
-          </div>
-        </Container>
-      </main>
+      <Container className="animate-fade-in">
+        <Intro
+          eyebrow="Resume"
+          title="Resume"
+          description="Resume file not found. Please check back later."
+        />
+      </Container>
     );
   }
 
   const resumeContent = fs.readFileSync(resumePath, "utf8");
   const { content } = matter(resumeContent);
-
-  // Convert markdown content to HTML
   const htmlContent = await markdownToHtml(content);
 
   return (
-    <main className="relative min-h-screen overflow-hidden">
-      <Container>
-        <div className="mt-16 relative z-10">
-          <h1 className="text-5xl md:text-8xl font-bold tracking-tighter leading-tight font-serif">
-            Resume.
-          </h1>
-
-          <div className="mt-12">
-            <PostBody content={htmlContent} />
-          </div>
-        </div>
-      </Container>
-    </main>
+    <Container className="animate-fade-in">
+      <Intro
+        eyebrow="Resume"
+        title="The working résumé."
+        description="Roles, tools, and the shape of the work. Last updated as of this build."
+      />
+      <div className="py-10 md:py-14">
+        <PostBody content={htmlContent} />
+      </div>
+    </Container>
   );
 }

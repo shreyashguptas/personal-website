@@ -7,17 +7,17 @@ type Props = {
 
 const Avatar = ({ name, picture }: Props) => {
   return (
-    <div className="flex items-center">
-      <div className="rounded-full mr-4 overflow-hidden">
+    <div className="flex items-center gap-3">
+      <div className="overflow-hidden rounded-full">
         <Image
           src={picture}
           alt={name}
-          width={48}
-          height={48}
-          className="object-cover w-12 h-12"
+          width={32}
+          height={32}
+          className="object-cover w-8 h-8"
         />
       </div>
-      <div className="text-xl font-bold">{name}</div>
+      <div className="text-sm font-medium text-foreground">{name}</div>
     </div>
   );
 };

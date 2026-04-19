@@ -1,4 +1,5 @@
 import Container from "@/app/_components/container";
+import { Intro } from "@/app/_components/intro";
 import { ProjectsList } from "@/app/_components/projects-list";
 import { getAllProjects } from "@/lib/api";
 import { absoluteUrl } from "@/lib/seo";
@@ -25,17 +26,17 @@ export default function ProjectsPage() {
   const allProjects = getAllProjects();
 
   return (
-    <main className="relative min-h-screen overflow-hidden">
-      <Container>
-        <div className="mt-16 relative z-10">
-          <h1 className="text-5xl md:text-8xl font-bold tracking-tighter leading-tight font-serif">
-            <span className="text-foreground">Project</span>
-            <span className="text-gradient-green">.</span>
-          </h1>
-        </div>
-        
-        {allProjects.length > 0 && <ProjectsList projects={allProjects} />}
-      </Container>
-    </main>
+    <Container className="animate-fade-in">
+      <Intro
+        eyebrow="The Projects"
+        title="Work, selected."
+        description="Software and hardware I've built — shipped tools, experiments, dashboards, and the OffGrid Devices line of MagSafe-compatible Meshtastic gear."
+      />
+      {allProjects.length > 0 && (
+        <section className="py-6 md:py-10">
+          <ProjectsList projects={allProjects} />
+        </section>
+      )}
+    </Container>
   );
-} 
+}
