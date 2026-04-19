@@ -64,17 +64,6 @@ function readMarkdownDirectory(dirPath: string, type: SourceType): RawDoc[] {
     }
     const url = type === "post" ? `/posts/${slug}` : type === "project" ? `/projects#${slug}` : `/resume`;
     const content = String(parsed.content || "");
-    // For projects with no content, use the description as content
-    let normalized: string;
-    if (type === "project" && content.trim().length === 0) {
-      const description = String((fmRecord?.description as string | undefined) || "");
-      normalized = description.trim();
-    } else {
-      normalized = normalizeMarkdown(content);
-    }
-
-    // Keep only a reasonable amount per source to control index size
-    const limited = normalized.slice(0, PROMPT_CONFIG.embeddings.maxContentLength);
 
     const fm = (parsed.data || {}) as Record<string, unknown>;
     const summary = type === "post"
@@ -86,24 +75,35 @@ function readMarkdownDirectory(dirPath: string, type: SourceType): RawDoc[] {
     const projectUrl: string | undefined = type === "project" && typeof fm.projectUrl === "string" ? (fm.projectUrl as string) : undefined;
     const lastUpdated: string | undefined = type === "resume" && typeof fm.lastUpdated === "string" ? fm.lastUpdated : undefined;
 
+    // Projects with no body: embed the frontmatter description as a single chunk
+    let sectionChunks: { section: string; text: string }[];
+    if (type === "project" && content.trim().length === 0) {
+      const description = String((fmRecord?.description as string | undefined) || "").trim();
+      sectionChunks = description ? [{ section: "", text: description }] : [];
+    } else {
+      sectionChunks = chunkBySection(
+        content,
+        PROMPT_CONFIG.embeddings.chunkSize,
+        PROMPT_CONFIG.embeddings.chunkOverlap,
+        PROMPT_CONFIG.embeddings.maxContentLength,
+      );
+    }
 
-    const chunks = chunkText(limited, PROMPT_CONFIG.embeddings.chunkSize, PROMPT_CONFIG.embeddings.chunkOverlap);
-    chunks.forEach((text, idx) => {
-      // CRITICAL FIX: Add metadata to ALL chunks, not just the first one
-      // This prevents content type confusion in RAG retrieval
+    sectionChunks.forEach(({ section, text }, idx) => {
       const chunkMetaLines = [
         `Type: ${type}`,
         `Title: ${title}`,
         `ChunkIndex: ${idx}`,
+        section ? `Section: ${section}` : undefined,
         date ? `Date: ${date}` : undefined,
         summary ? `Summary: ${summary}` : undefined,
         technologies && technologies.length ? `Technologies: ${technologies.join(", ")}` : undefined,
         projectUrl ? `ProjectURL: ${projectUrl}` : undefined,
         lastUpdated ? `LastUpdated: ${lastUpdated}` : undefined,
       ].filter(Boolean).join("\n");
-      
+
       const textWithMeta = `${chunkMetaLines}\n\n${text}`;
-      
+
       docs.push({
         id: `${type}:${slug}:${idx}`,
         type,
@@ -244,6 +244,68 @@ function chunkText(text: string, chunkSize: number, overlap: number): string[] {
     return overlapChunks;
   }
   
+  return chunks;
+}
+
+function chunkBySection(
+  rawContent: string,
+  chunkSize: number,
+  overlap: number,
+  maxContentLength: number,
+): { section: string; text: string }[] {
+  if (!rawContent.trim()) return [];
+
+  // No section headings? Fall back to the existing paragraph/semantic chunker.
+  if (!/^#{2,3}\s+/m.test(rawContent)) {
+    const normalized = normalizeMarkdown(rawContent).slice(0, maxContentLength);
+    return chunkText(normalized, chunkSize, overlap).map((t) => ({ section: "", text: t }));
+  }
+
+  // Split at ^## / ^### boundaries, keeping each heading with its body.
+  const lines = rawContent.split("\n");
+  const sections: { heading: string; body: string }[] = [];
+  let current: { heading: string; body: string } = { heading: "", body: "" };
+  for (const line of lines) {
+    if (/^#{2,3}\s+/.test(line)) {
+      if (current.body.trim() || current.heading) sections.push(current);
+      current = { heading: line.replace(/^#{2,3}\s+/, "").trim(), body: "" };
+    } else {
+      current.body += line + "\n";
+    }
+  }
+  if (current.body.trim() || current.heading) sections.push(current);
+
+  // Fold tiny sections (<200 chars of body) into the preceding one so we don't
+  // embed slivers that lose context on their own.
+  const minSize = 200;
+  const merged: { heading: string; body: string }[] = [];
+  for (const s of sections) {
+    if (merged.length > 0 && s.body.trim().length < minSize) {
+      const prev = merged[merged.length - 1];
+      prev.body += (s.heading ? `\n\n${s.heading}\n` : "") + s.body;
+    } else {
+      merged.push({ heading: s.heading, body: s.body });
+    }
+  }
+
+  // Normalize each section; keep as one chunk if it fits, otherwise sub-chunk.
+  const chunks: { section: string; text: string }[] = [];
+  let budget = maxContentLength;
+  for (const s of merged) {
+    if (budget <= 0) break;
+    const normalized = normalizeMarkdown(s.body);
+    if (!normalized) continue;
+    const slice = normalized.slice(0, budget);
+    budget -= slice.length;
+    if (slice.length <= chunkSize) {
+      chunks.push({ section: s.heading, text: slice });
+    } else {
+      for (const sub of chunkText(slice, chunkSize, overlap)) {
+        chunks.push({ section: s.heading, text: sub });
+      }
+    }
+  }
+
   return chunks;
 }
 

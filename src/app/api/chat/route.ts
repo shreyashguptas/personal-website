@@ -5,9 +5,8 @@ import { getRateLimiter, localRateLimit } from "@/lib/rateLimit";
 import { logSecurityEvent, sanitizeClientKey } from "@/lib/security";
 import {
   buildContext,
-  lexicalFallback,
+  hybridRetrieve,
   loadIndex,
-  topKSimilar,
   getEarliestPost,
   getLatestProject,
   getLatestPost,
@@ -488,10 +487,7 @@ export async function POST(req: NextRequest) {
       const isTechQuery = /\b(pytorch|tensorflow|react|next\.js|python|machine learning|ml|ai|nlp|data analysis)\b/i.test(userMessage.toLowerCase());
       const k = isTechQuery ? PROMPT_CONFIG.search.techQueryResults : PROMPT_CONFIG.search.defaultResults;
       
-      retrieved = topKSimilar(index, queryEmbedding, k);
-      if (retrieved.length === 0) {
-        retrieved = lexicalFallback(index, userMessage, k);
-      }
+      retrieved = hybridRetrieve(index, queryEmbedding, userMessage, k);
       
       // Calculate similarity scores for logging
       if (retrieved.length > 0) {

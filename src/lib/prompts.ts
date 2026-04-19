@@ -55,16 +55,17 @@ Output:
 
 // You can add more prompt configurations here in the future
 export const PROMPT_CONFIG = {
-  maxTokens: 1200, // Maximum tokens for completion
-  model: "llama-3.3-70b-versatile", // GROQ's Llama 3.3 70B - 128K context, excellent quality, ultra-fast inference
-  temperature: 0.7, // Controls randomness (0-1, higher = more creative)
-  
-  // Search and retrieval settings
+  maxTokens: 1200,
+  model: "groq/compound",
+  temperature: 0.7,
+
+  // Retrieval: hybrid (dense + lexical, RRF fused). Send more chunks to the LLM
+  // and let compound's large context filter, rather than aggressively pre-filtering.
   search: {
-    defaultResults: 5,
-    techQueryResults: 10, // More results for technology queries
-    defaultContextSize: 8000, // Increased from 3500 to use more of 128K context window
-    techQueryContextSize: 12000, // Increased from 5000 for better tech query answers
+    defaultResults: 15,
+    techQueryResults: 25,
+    defaultContextSize: 16000,
+    techQueryContextSize: 24000,
   },
   
   // Rate limiting and history

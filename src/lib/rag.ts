@@ -236,6 +236,42 @@ export function topKSimilar(index: RetrievedDoc[], queryEmbedding: number[], k: 
   return results;
 }
 
+// Hybrid retrieval: run dense (cosine) and lexical (BM25-ish) in parallel, then
+// combine with Reciprocal Rank Fusion. Proper nouns and rare terms get caught by
+// lexical; paraphrases get caught by dense. Cheap at this corpus size (~80 docs).
+export function hybridRetrieve(
+  index: RetrievedDoc[],
+  queryEmbedding: number[],
+  queryText: string,
+  k: number
+): RetrievedDoc[] {
+  if (index.length === 0) return [];
+
+  const candidatePool = Math.min(index.length, Math.max(k * 2, 20));
+  const dense = topKSimilar(index, queryEmbedding, candidatePool);
+  const lexical = lexicalFallback(index, queryText, candidatePool);
+
+  const RRF_K = 60;
+  const fused = new Map<string, { doc: RetrievedDoc; score: number }>();
+
+  dense.forEach((doc, rank) => {
+    fused.set(doc.id, { doc, score: 1 / (RRF_K + rank) });
+  });
+  lexical.forEach((doc, rank) => {
+    const existing = fused.get(doc.id);
+    const contribution = 1 / (RRF_K + rank);
+    if (existing) {
+      existing.score += contribution;
+    } else {
+      fused.set(doc.id, { doc, score: contribution });
+    }
+  });
+
+  const merged = Array.from(fused.values()).sort((a, b) => b.score - a.score);
+  console.info(`[rag] Hybrid retrieval: dense=${dense.length}, lexical=${lexical.length}, fused=${merged.length}, keep=${k}`);
+  return merged.slice(0, k).map((item) => item.doc);
+}
+
 export function buildContext(
   docs: RetrievedDoc[],
   tokenLimitChars = 6000, // This can stay as a parameter since it's configurable per call
