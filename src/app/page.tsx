@@ -4,7 +4,6 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { getAllPosts, getAllProjects } from "@/lib/api";
 import DateFormatter from "@/app/_components/date-formatter";
-import { extractYearFromDate } from "@/lib/utils";
 
 const InlineChat = dynamic(
   () => import("@/app/_components/inline-chat").then((mod) => ({ default: mod.InlineChat })),
@@ -21,72 +20,55 @@ export default function HomePage() {
   const posts = getAllPosts();
   const projects = getAllProjects();
 
-  const latestPost = posts[0];
-  const secondaryPosts = posts.slice(1, 4);
+  const writingEntries = posts.slice(0, 2);
   const featuredProject = projects[0];
-
-  const earliestYear = posts.length
-    ? posts.reduce((y, p) => {
-        const year = Number(extractYearFromDate(p.date));
-        return isNaN(year) ? y : Math.min(y, year);
-      }, Number.POSITIVE_INFINITY)
-    : new Date().getFullYear();
-
-  const metrics: { label: string; value: string; sub?: string }[] = [
-    { label: "Essays Published", value: String(posts.length) },
-    { label: "Projects Shipped", value: String(projects.length) },
-    { label: "Writing Since", value: Number.isFinite(earliestYear) ? String(earliestYear) : "—" },
-    { label: "Day Job", value: "Data Sci." },
-  ];
 
   return (
     <Container className="animate-fade-in">
-      {/* ── Lead story ──────────────────────────────────────────── */}
+      {/* ── Zone A · The Column ─────────────────────────────────── */}
       <section className="py-12 md:py-20 border-b border-border">
-        <p className="label-eyebrow mb-5">The Lead</p>
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
           <div className="lg:col-span-8">
-            <h1 className="display-2xl">
-              Data, software, and the quiet craft of building things
+            <p className="label-eyebrow mb-5">The Column · Ask Shrey</p>
+            <h1 className="display-xl">
+              What do you want to know
               <span aria-hidden="true" style={{ color: "hsl(var(--accent))" }}>
-                .
+                ?
               </span>
             </h1>
-            <p className="mt-8 font-serif text-lg leading-[1.7] text-foreground max-w-2xl">
-              I&apos;m <strong className="font-medium">Shreyash Gupta</strong> — a data
-              scientist and software engineer writing about the tools I use, the
-              projects I ship, and the hardware I design under OffGrid Devices. Ask
-              anything below, or read the essays.
+            <p className="mt-6 font-serif text-lg leading-[1.7] text-foreground max-w-2xl">
+              A conversational index of everything I&apos;ve written and built. Ask
+              about the essays, OffGrid Devices, the tools I use, or how I got here —
+              answers are grounded in my own writing.
             </p>
-            <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
-              <Link
-                href="/blog"
-                data-cursor-intent="hover"
-                className="inline-flex items-center text-sm font-medium text-foreground underline decoration-border hover:decoration-foreground underline-offset-4"
-              >
-                Read the writing →
-              </Link>
-              <Link
-                href="/projects"
-                data-cursor-intent="hover"
-                className="inline-flex items-center text-sm font-medium text-foreground underline decoration-border hover:decoration-foreground underline-offset-4"
-              >
-                Browse the projects →
-              </Link>
+
+            <div
+              className="mt-8 border border-border bg-card p-5 md:p-6"
+              style={{ borderRadius: "var(--radius)" }}
+            >
+              <InlineChat variant="editorial" />
             </div>
           </div>
 
-          <aside className="lg:col-span-4 lg:pl-8 lg:border-l lg:border-border">
-            <div className="overflow-hidden border border-border" style={{ borderRadius: "var(--radius)" }}>
+          <aside className="lg:col-span-4 lg:pl-10 lg:border-l lg:border-border">
+            <div
+              className="overflow-hidden border border-border"
+              style={{ borderRadius: "var(--radius)" }}
+            >
               <Image
                 src="/headshot/headshot.jpg"
                 alt="Shreyash Gupta portrait"
-                width={480}
-                height={480}
+                width={512}
+                height={512}
                 className="w-full h-auto object-cover"
                 priority
               />
             </div>
+            <p className="mt-5 font-serif text-base leading-relaxed text-foreground">
+              <strong className="font-medium">Shreyash Gupta</strong> — data
+              scientist and software engineer. Builds OffGrid Devices on the side.
+              Writes about the tools, the code, and the craft.
+            </p>
             <dl className="mt-5 space-y-3 text-sm">
               <div className="flex items-baseline gap-3">
                 <dt className="label-eyebrow shrink-0 w-16">Role</dt>
@@ -105,140 +87,120 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Metrics row ─────────────────────────────────────────── */}
-      <section className="py-10 md:py-12 border-b border-border">
-        <dl className="grid grid-cols-2 md:grid-cols-4">
-          {metrics.map((m, i) => (
-            <div
-              key={m.label}
-              className={[
-                "px-4 md:px-6 py-4",
-                i !== metrics.length - 1 ? "md:border-r md:border-border" : "",
-                i < metrics.length - 2 ? "border-b md:border-b-0 border-border" : "",
-              ].join(" ")}
-            >
-              <dt className="label-eyebrow">{m.label}</dt>
-              <dd className="mt-3 tabular text-2xl md:text-3xl font-medium text-foreground">
-                {m.value}
-              </dd>
-            </div>
-          ))}
-        </dl>
-      </section>
-
-      {/* ── Featured + Ask ──────────────────────────────────────── */}
-      <section className="py-12 md:py-16 border-b border-border grid grid-cols-1 lg:grid-cols-12 gap-10">
-        {latestPost && (
-          <div className="lg:col-span-7">
-            <p className="label-eyebrow mb-4">Latest Essay</p>
-            <h2 className="display-lg">
-              <Link
-                href={`/posts/${latestPost.slug}`}
-                data-cursor-intent="hover"
-                className="hover:text-muted-foreground transition-colors"
-              >
-                {latestPost.title}
-              </Link>
-            </h2>
-            <p className="mt-5 font-serif text-lg leading-relaxed text-muted-foreground">
-              {latestPost.excerpt}
-            </p>
-            <p className="mt-5 tabular text-xs uppercase tracking-wider text-muted-foreground">
-              <DateFormatter dateString={latestPost.date} />
-            </p>
-          </div>
-        )}
-
-        <div className="lg:col-span-5 lg:border-l lg:border-border lg:pl-10">
-          <p className="label-eyebrow mb-4">Ask Anything</p>
-          <div
-            className="border border-border bg-card p-5"
-            style={{ borderRadius: "var(--radius)" }}
-          >
-            <InlineChat />
-          </div>
-        </div>
-      </section>
-
-      {/* ── Featured project ────────────────────────────────────── */}
-      {featuredProject && (
-        <section className="py-12 md:py-16 border-b border-border">
-          <p className="label-eyebrow mb-4">Featured Project</p>
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10">
-            <div className="md:col-span-2">
-              <p className="label-eyebrow tabular">
-                {extractYearFromDate(featuredProject.date)}
-              </p>
-            </div>
-            <div className="md:col-span-10">
-              <h2 className="display-md">
-                {featuredProject.projectUrl ? (
-                  <a
-                    href={featuredProject.projectUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
+      {/* ── Zone B · The Index ──────────────────────────────────── */}
+      <section className="py-12 md:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 md:divide-x md:divide-border">
+          {/* Writing */}
+          <div className="md:pr-8 pb-8 md:pb-0 border-b md:border-b-0 border-border">
+            <p className="label-eyebrow mb-5">Writing</p>
+            <ul className="space-y-5">
+              {writingEntries.map((p) => (
+                <li key={p.slug}>
+                  <Link
+                    href={`/posts/${p.slug}`}
                     data-cursor-intent="hover"
-                    className="hover:text-muted-foreground transition-colors"
+                    className="block group"
                   >
-                    {featuredProject.title}
-                  </a>
-                ) : (
-                  featuredProject.title
-                )}
-              </h2>
-              <p className="mt-4 font-serif text-lg leading-relaxed text-muted-foreground max-w-2xl">
-                {featuredProject.description}
-              </p>
-              <Link
-                href="/projects"
-                data-cursor-intent="hover"
-                className="mt-5 inline-flex items-center text-sm font-medium underline decoration-border hover:decoration-foreground underline-offset-4"
-              >
-                All projects →
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* ── Recent essays list ─────────────────────────────────── */}
-      {secondaryPosts.length > 0 && (
-        <section className="py-12 md:py-16">
-          <header className="flex items-baseline justify-between border-b border-border pb-4 mb-2">
-            <h2 className="label-eyebrow">From the Archive</h2>
+                    <h3 className="display-sm text-xl group-hover:text-muted-foreground transition-colors">
+                      {p.title}
+                    </h3>
+                    <p className="mt-2 label-eyebrow tabular">
+                      <DateFormatter dateString={p.date} />
+                    </p>
+                  </Link>
+                </li>
+              ))}
+            </ul>
             <Link
               href="/blog"
               data-cursor-intent="hover"
-              className="label-eyebrow hover:text-foreground transition-colors"
+              className="mt-6 inline-flex items-center text-sm font-medium underline decoration-border hover:decoration-foreground underline-offset-4"
             >
-              See all →
+              All essays →
             </Link>
-          </header>
-          <ul className="divide-y divide-border">
-            {secondaryPosts.map((p) => (
-              <li key={p.slug} className="py-6 md:py-7 grid grid-cols-1 md:grid-cols-12 gap-4">
-                <p className="md:col-span-3 label-eyebrow tabular self-start md:pt-2">
-                  <DateFormatter dateString={p.date} />
-                </p>
-                <div className="md:col-span-9">
-                  <h3 className="display-sm">
-                    <Link
-                      href={`/posts/${p.slug}`}
+          </div>
+
+          {/* Building */}
+          <div className="md:px-8 py-8 md:py-0 border-b md:border-b-0 border-border">
+            <p className="label-eyebrow mb-5">Building</p>
+            {featuredProject && (
+              <div>
+                <h3 className="display-sm text-xl">
+                  {featuredProject.projectUrl ? (
+                    <a
+                      href={featuredProject.projectUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       data-cursor-intent="hover"
                       className="hover:text-muted-foreground transition-colors"
                     >
-                      {p.title}
-                    </Link>
+                      {featuredProject.title}
+                    </a>
+                  ) : (
+                    featuredProject.title
+                  )}
+                </h3>
+                <p className="mt-2 font-serif text-base leading-relaxed text-muted-foreground">
+                  {featuredProject.description}
+                </p>
+              </div>
+            )}
+            <Link
+              href="/projects"
+              data-cursor-intent="hover"
+              className="mt-6 inline-flex items-center text-sm font-medium underline decoration-border hover:decoration-foreground underline-offset-4"
+            >
+              All projects →
+            </Link>
+          </div>
+
+          {/* Elsewhere */}
+          <div className="md:pl-8 pt-8 md:pt-0">
+            <p className="label-eyebrow mb-5">Elsewhere</p>
+            <ul className="space-y-4">
+              <li>
+                <a
+                  href="https://offgridevices.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-cursor-intent="hover"
+                  className="block group"
+                >
+                  <h3 className="display-sm text-xl group-hover:text-muted-foreground transition-colors">
+                    OffGrid Devices
                   </h3>
-                  <p className="mt-2 font-serif text-base leading-relaxed text-muted-foreground max-w-xl">
-                    {p.excerpt}
+                  <p className="mt-1 font-serif text-sm text-muted-foreground">
+                    MagSafe accessories for Meshtastic and MeshCore.
                   </p>
-                </div>
+                </a>
               </li>
-            ))}
-          </ul>
-        </section>
-      )}
+              <li>
+                <a
+                  href="https://www.youtube.com/@ShreyashGuptas"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-cursor-intent="hover"
+                  className="block group"
+                >
+                  <h3 className="display-sm text-xl group-hover:text-muted-foreground transition-colors">
+                    YouTube
+                  </h3>
+                  <p className="mt-1 font-serif text-sm text-muted-foreground">
+                    Build-in-public videos, CAD, and 3D printing.
+                  </p>
+                </a>
+              </li>
+            </ul>
+            <Link
+              href="/links"
+              data-cursor-intent="hover"
+              className="mt-6 inline-flex items-center text-sm font-medium underline decoration-border hover:decoration-foreground underline-offset-4"
+            >
+              Everything →
+            </Link>
+          </div>
+        </div>
+      </section>
     </Container>
   );
 }

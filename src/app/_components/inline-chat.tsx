@@ -217,7 +217,12 @@ function renderMarkdown(md: string) {
   return sanitized;
 }
 
-export function InlineChat() {
+type InlineChatProps = {
+  variant?: "default" | "editorial";
+};
+
+export function InlineChat({ variant = "default" }: InlineChatProps = {}) {
+  const editorial = variant === "editorial";
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -589,12 +594,18 @@ export function InlineChat() {
         }}
         disabled={loading}
         placeholder="Type a message..."
-        className="w-full bg-card border border-border rounded-xl pl-5 pr-14 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all placeholder:text-muted-foreground/60 disabled:opacity-60"
+        className={cn(
+          "w-full bg-card border border-border pl-5 pr-14 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all placeholder:text-muted-foreground/60 disabled:opacity-60",
+          editorial ? "rounded-[var(--radius)]" : "rounded-xl"
+        )}
       />
       <button
         type="submit"
         disabled={!input.trim() || loading}
-        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-foreground text-background hover:bg-foreground/90 disabled:opacity-50 disabled:hover:bg-foreground transition-all duration-200"
+        className={cn(
+          "absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-foreground text-background hover:bg-foreground/90 disabled:opacity-50 disabled:hover:bg-foreground transition-all duration-200",
+          editorial ? "rounded-[var(--radius)]" : "rounded-lg"
+        )}
       >
         {loading ? <Loader2 size={18} className="animate-spin" /> : <ArrowRight size={18} />}
       </button>
@@ -609,32 +620,55 @@ export function InlineChat() {
         className="w-full flex-1 flex flex-col items-center justify-center"
       >
 
-        {/* Suggestions - full width above input (hydration-safe) */}
-        {mounted && suggestions.length > 0 && (
-          <div className="w-full mb-4 animate-fade-in" style={{ animationDelay: '200ms' }}>
-            <div className="grid grid-cols-2 gap-2">
-              {suggestions.map((s, i) => (
-                <button
-                  key={s}
-                  onClick={() => {
-                    setInput("");
-                    setSuggestions([]);
-                    send(s);
-                  }}
-                  className="p-3 text-center text-sm rounded-xl border border-border bg-card/50 hover:bg-muted/50 hover:border-foreground/20 transition-all duration-200"
-                  style={{ animationDelay: `${250 + (i * 50)}ms` }}
-                >
-                  <span className="line-clamp-2">{s}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Input */}
         <div className="w-full animate-fade-in" style={{ animationDelay: '300ms' }}>
           {inputForm}
         </div>
+
+        {/* Suggestions */}
+        {mounted && suggestions.length > 0 && (
+          editorial ? (
+            <div className="w-full mt-4 animate-fade-in" style={{ animationDelay: '200ms' }}>
+              <p className="label-eyebrow mb-2">Try asking</p>
+              <p className="font-serif text-base leading-relaxed text-muted-foreground">
+                {suggestions.map((s, i) => (
+                  <span key={s}>
+                    <button
+                      onClick={() => {
+                        setInput("");
+                        setSuggestions([]);
+                        send(s);
+                      }}
+                      className="text-left underline decoration-border hover:decoration-foreground hover:text-foreground underline-offset-4 transition-colors"
+                    >
+                      {s}
+                    </button>
+                    {i < suggestions.length - 1 && <span aria-hidden="true"> · </span>}
+                  </span>
+                ))}
+              </p>
+            </div>
+          ) : (
+            <div className="w-full mt-4 animate-fade-in" style={{ animationDelay: '200ms' }}>
+              <div className="grid grid-cols-2 gap-2">
+                {suggestions.map((s, i) => (
+                  <button
+                    key={s}
+                    onClick={() => {
+                      setInput("");
+                      setSuggestions([]);
+                      send(s);
+                    }}
+                    className="p-3 text-center text-sm rounded-xl border border-border bg-card/50 hover:bg-muted/50 hover:border-foreground/20 transition-all duration-200"
+                    style={{ animationDelay: `${250 + (i * 50)}ms` }}
+                  >
+                    <span className="line-clamp-2">{s}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )
+        )}
       </section>
     );
   }
