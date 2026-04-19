@@ -14,3 +14,4 @@ CLAUDE.md
 tsconfig.tsbuildinfo
 .vercel
 .claude/
+next-env.d.ts
