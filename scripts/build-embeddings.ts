@@ -9,7 +9,6 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
-import OpenAI from "openai";
 import 'dotenv/config';
 import { PROMPT_CONFIG } from "../src/lib/prompts";
 import { captureAiEmbedding, flushPosthog } from "../src/lib/analytics-server";
@@ -249,17 +248,16 @@ function chunkText(text: string, chunkSize: number, overlap: number): string[] {
 }
 
 async function main() {
-  const key = process.env.OPENAI_API_KEY;
+  const embedUrl = process.env.EMBED_URL;
+  const embedSecret = process.env.EMBED_SECRET;
   const outDir = path.join(process.cwd(), "src", "data");
   const outPath = path.join(outDir, "vector-index.json");
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
-  if (!key) {
-    console.warn("[build-embeddings] OPENAI_API_KEY not set. Writing empty index for dev builds.");
+  if (!embedUrl || !embedSecret) {
+    console.warn("[build-embeddings] EMBED_URL or EMBED_SECRET not set. Writing empty index for dev builds.");
     fs.writeFileSync(outPath, JSON.stringify([]), "utf8");
     return;
   }
-
-  const openai = new OpenAI({ apiKey: key });
 
   const posts = readMarkdownDirectory("_posts", "post");
   const projects = readMarkdownDirectory("_projects", "project");
@@ -310,24 +308,31 @@ async function main() {
   const embedded: EmbeddedChunk[] = [];
   const model = PROMPT_CONFIG.embeddings.model;
 
-  // Batch in small groups for reliability
+  // Batch in small groups — Ollama /api/embed accepts an input array
   const batchSize = PROMPT_CONFIG.embeddings.batchSize;
   for (let i = 0; i < all.length; i += batchSize) {
     const batch = all.slice(i, i + batchSize);
     const input = batch.map((d) => d.text);
     const embStart = Date.now();
-    const res = await openai.embeddings.create({ model, input });
+    const res = await fetch(`${embedUrl}/api/embed`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "authorization": `Bearer ${embedSecret}`,
+      },
+      body: JSON.stringify({ model, input }),
+    });
+    if (!res.ok) {
+      throw new Error(`embed upstream ${res.status}: ${await res.text()}`);
+    }
+    const payload = (await res.json()) as { embeddings: number[][] };
     const embEnd = Date.now();
     try {
       await captureAiEmbedding({ model, latencyMs: embEnd - embStart, input: input.slice(0, 1) });
     } catch {
-      // no-op analytics
       void 0;
     }
-    res.data.forEach((item, idx: number) => {
-      const embedding = Array.isArray((item as { embedding: unknown }).embedding)
-        ? ((item as { embedding: number[] }).embedding)
-        : [];
+    payload.embeddings.forEach((embedding, idx: number) => {
       embedded.push({ ...batch[idx], embedding });
     });
     console.info(`Embedded ${Math.min(i + batchSize, all.length)} / ${all.length}`);

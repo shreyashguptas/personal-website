@@ -12,3 +12,4 @@ website-data-export/
 src/data/vector-index.json
 CLAUDE.md
 tsconfig.tsbuildinfo
+.vercel

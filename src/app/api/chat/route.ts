@@ -1,5 +1,4 @@
 import { NextRequest } from "next/server";
-import OpenAI from "openai";
 import Groq from "groq-sdk";
 import { z } from "zod";
 import { getRateLimiter, localRateLimit } from "@/lib/rateLimit";
@@ -308,10 +307,15 @@ export async function POST(req: NextRequest) {
     const history = (parsed.data.history || []).slice(-PROMPT_CONFIG.chat.maxHistoryLength); // limit context size
 
     const groqKey = process.env.GROQ_API_KEY;
-    const openaiKey = process.env.OPENAI_API_KEY;
+    const embedUrl = process.env.EMBED_URL;
+    const embedSecret = process.env.EMBED_SECRET;
 
-    if (!groqKey || !openaiKey) {
-      console.error('[chat] API keys not configured', { hasGroq: !!groqKey, hasOpenAI: !!openaiKey });
+    if (!groqKey || !embedUrl || !embedSecret) {
+      console.error('[chat] API keys not configured', {
+        hasGroq: !!groqKey,
+        hasEmbedUrl: !!embedUrl,
+        hasEmbedSecret: !!embedSecret,
+      });
       return new Response(JSON.stringify({
         error: "server_configuration",
         message: "Service temporarily unavailable"
@@ -321,8 +325,6 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // OpenAI for embeddings, GROQ for chat completions (hybrid approach)
-    const openai = new OpenAI({ apiKey: openaiKey });
     const groq = new Groq({ apiKey: groqKey });
 
     // Load index early for vague question detection
@@ -397,14 +399,30 @@ export async function POST(req: NextRequest) {
         embedInput = `${lastUser.content}\nFollow-up: ${userMessage}`;
       }
       
-      // Add timeout to embedding request (30 seconds)
-      const embedPromise = openai.embeddings.create({ model: "text-embedding-3-small", input: embedInput });
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Embedding timeout')), 30000)
-      );
-      
-      const embed = await Promise.race([embedPromise, timeoutPromise]) as OpenAI.Embeddings.CreateEmbeddingResponse;
-      queryEmbedding = embed.data[0].embedding as unknown as number[];
+      const ac = new AbortController();
+      const timer = setTimeout(() => ac.abort(), 30000);
+      let embedRes: Response;
+      try {
+        embedRes = await fetch(`${embedUrl}/api/embed`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "authorization": `Bearer ${embedSecret}`,
+          },
+          body: JSON.stringify({ model: PROMPT_CONFIG.embeddings.model, input: embedInput }),
+          signal: ac.signal,
+        });
+      } finally {
+        clearTimeout(timer);
+      }
+      if (!embedRes.ok) {
+        throw new Error(`embed upstream ${embedRes.status}`);
+      }
+      const embedJson = (await embedRes.json()) as { embeddings: number[][] };
+      if (!Array.isArray(embedJson.embeddings) || embedJson.embeddings.length === 0) {
+        throw new Error("embed upstream returned no embeddings");
+      }
+      queryEmbedding = embedJson.embeddings[0];
     } catch (error) {
       // Embedding failure should return a controlled error
       const errorMessage = error instanceof Error ? error.message : 'Unknown embedding error';
@@ -788,7 +806,7 @@ export async function POST(req: NextRequest) {
         setTimeout(() => reject(new Error('Chat completion timeout')), 60000)
       );
       
-      const response = await Promise.race([chatPromise, timeoutPromise]) as unknown as AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>;
+      const response = await Promise.race([chatPromise, timeoutPromise]) as unknown as AsyncIterable<Groq.Chat.Completions.ChatCompletionChunk>;
       const encoder = new TextEncoder();
       const stream = new ReadableStream<Uint8Array>({
         start(controller) {

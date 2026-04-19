@@ -76,8 +76,8 @@ export const PROMPT_CONFIG = {
   
   // Embedding and build settings
   embeddings: {
-    model: "text-embedding-3-small",
-    batchSize: 64,
+    model: "bge-m3",
+    batchSize: 8,
     chunkSize: 2500, // Increased from 1200 - better context preservation
     chunkOverlap: 400, // Increased overlap for better continuity
     maxContentLength: 24000, // Increased from 16K - capture more content
