@@ -1,20 +1,18 @@
 import Container from "@/app/_components/container";
 import { Intro } from "@/app/_components/intro";
+import {
+  ApplePodcastsIcon,
+  EtsyIcon,
+  PrintablesIcon,
+  SpotifyIcon,
+  XIcon,
+  YoutubeIcon,
+} from "@/app/_components/brand-icons";
 import { absoluteUrl } from "@/lib/seo";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ShoppingBag,
-  Youtube,
-  Printer,
-  Store,
-  Twitter,
-  Headphones,
-  Podcast,
-  Award,
-  ArrowUpRight,
-} from "lucide-react";
+import { Award, ArrowUpRight } from "lucide-react";
 
 const LINKS = {
   offgridDevices: {
@@ -62,7 +60,9 @@ type Row = {
   label: string;
   description: string;
   tag?: string;
-  Icon: typeof ShoppingBag;
+  Icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  imageSrc?: string;
+  imageAlt?: string;
 };
 
 function SectionHeading({ children, count }: { children: React.ReactNode; count?: number }) {
@@ -78,7 +78,7 @@ function SectionHeading({ children, count }: { children: React.ReactNode; count?
   );
 }
 
-function LinkRow({ href, label, description, tag, Icon }: Row) {
+function LinkRow({ href, label, description, tag, Icon, imageSrc, imageAlt }: Row) {
   return (
     <a
       href={href}
@@ -87,8 +87,18 @@ function LinkRow({ href, label, description, tag, Icon }: Row) {
       data-cursor-intent="hover"
       className="group grid grid-cols-[auto_1fr_auto] items-center gap-5 py-5 md:py-6 border-b border-border last:border-b-0 hover:bg-secondary/40 transition-colors"
     >
-      <span className="shrink-0 w-10 h-10 inline-flex items-center justify-center border border-border text-foreground">
-        <Icon className="w-4 h-4" strokeWidth={1.5} aria-hidden="true" />
+      <span className="shrink-0 w-10 h-10 inline-flex items-center justify-center border border-border text-foreground overflow-hidden">
+        {imageSrc ? (
+          <Image
+            src={imageSrc}
+            alt={imageAlt ?? ""}
+            width={40}
+            height={40}
+            className="w-full h-full object-cover"
+          />
+        ) : Icon ? (
+          <Icon className="w-4 h-4" aria-hidden="true" />
+        ) : null}
       </span>
       <span className="min-w-0">
         <span className="flex items-baseline gap-3 flex-wrap">
@@ -116,14 +126,15 @@ export default function LinksPage() {
       description:
         "MagSafe accessories for Meshtastic and MeshCore. Designed in Shapr3D, printed to order.",
       tag: "offgridevices.com",
-      Icon: ShoppingBag,
+      imageSrc: "/brand/offgrid-devices-logo.png",
+      imageAlt: "OffGrid Devices logo",
     },
     {
       href: LINKS.offgridDevices.etsy,
       label: "Etsy Shop",
       description: "Order handcrafted gear directly.",
       tag: "OffGridDevices",
-      Icon: Store,
+      Icon: EtsyIcon,
     },
   ];
 
@@ -134,21 +145,21 @@ export default function LinksPage() {
       description:
         "Build-in-public videos — Shapr3D CAD, 3D printing, and maker business storytelling.",
       tag: "@ShreyashGuptas",
-      Icon: Youtube,
+      Icon: YoutubeIcon,
     },
     {
       href: LINKS.content.printables,
       label: "Printables",
       description: "Free and paid 3D printable files. Download and remix my designs.",
       tag: "printables.com",
-      Icon: Printer,
+      Icon: PrintablesIcon,
     },
     {
       href: LINKS.content.twitter,
       label: "X (Twitter)",
       description: "Maker updates, build logs, and thoughts on hardware and design.",
       tag: "@ShreyashGuptas",
-      Icon: Twitter,
+      Icon: XIcon,
     },
   ];
 
@@ -158,14 +169,14 @@ export default function LinksPage() {
       label: "Spotify",
       description: "The Federalist Papers: Explained — Spotify.",
       tag: "Podcast",
-      Icon: Headphones,
+      Icon: SpotifyIcon,
     },
     {
       href: LINKS.podcast.apple,
       label: "Apple Podcasts",
       description: "The Federalist Papers: Explained — Apple Podcasts.",
       tag: "Podcast",
-      Icon: Podcast,
+      Icon: ApplePodcastsIcon,
     },
   ];
 
