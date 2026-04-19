@@ -2,7 +2,7 @@
 title: "I Moved My AI Chat's Embeddings From OpenAI to a Raspberry Pi in One Afternoon"
 excerpt: "How I replaced a paid OpenAI API call with an open-source model running on a $80 Raspberry Pi 5 in my house — what I picked, how it's wired, and what the tradeoffs actually are."
 date: "2026-04-19T00:00:00.000Z"
-coverImage: "/blog/content/raspberry-pi-cluster.jpg"
+coverImage: "/blog/content/self-hosted-embeddings-raspberry-pi.jpeg"
 author:
   name: Shreyash Gupta
   picture: "/blog/authors/shreyash.png"
@@ -19,7 +19,7 @@ I was already using [Groq](https://groq.com) for step 2 (fast, cheap, and the cu
 
 Spoiler: it can. And it took about one afternoon to wire up end-to-end, with a genuinely reasonable security model. Here's what I did, what I learned, and the architecture that any of you could copy in an evening.
 
-![Raspberry Pi hardware — this is an old photo from my homelab, but a Pi 5 8GB works great for this use case](/blog/content/raspberry-pi-cluster.jpg)
+![The Raspberry Pi 5 running bge-m3 and the auth proxy — 8 GB of RAM, four ARM cores, zero recurring cost](/blog/content/self-hosted-embeddings-raspberry-pi.jpeg)
 
 ## The high-level picture
 
