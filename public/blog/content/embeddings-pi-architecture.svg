@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" font-family="ui-sans-serif, -apple-system, Inter, sans-serif">
+  <style>
+    .box { fill: #fbfaf6; stroke: #1f2430; stroke-width: 1.5; }
+    .box-accent { fill: #fbfaf6; stroke: #a42b2b; stroke-width: 2; }
+    .title { font-size: 14px; font-weight: 600; fill: #1f2430; }
+    .sub { font-size: 11px; fill: #5a6273; }
+    .mono { font-family: ui-monospace, JetBrains Mono, Menlo, monospace; font-size: 11px; fill: #1f2430; }
+    .eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; fill: #8a8f9c; text-transform: uppercase; }
+    .arrow { stroke: #1f2430; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+    .arrow-dim { stroke: #9ba1ad; stroke-width: 1.25; fill: none; marker-end: url(#arrow-dim); stroke-dasharray: 4 3; }
+    .label { font-size: 10px; fill: #5a6273; }
+    .bg { fill: #f4efe4; }
+  </style>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2430"/>
+    </marker>
+    <marker id="arrow-dim" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#9ba1ad"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="900" height="420" />
+
+  <!-- Vercel -->
+  <rect class="box" x="30" y="150" width="180" height="120" rx="4"/>
+  <text class="eyebrow" x="120" y="175" text-anchor="middle">CLOUD</text>
+  <text class="title" x="120" y="200" text-anchor="middle">Vercel</text>
+  <text class="sub" x="120" y="220" text-anchor="middle">Next.js chat route</text>
+  <text class="mono" x="120" y="245" text-anchor="middle">/api/chat</text>
+
+  <!-- Cloudflare -->
+  <rect class="box" x="290" y="150" width="180" height="120" rx="4"/>
+  <text class="eyebrow" x="380" y="175" text-anchor="middle">EDGE</text>
+  <text class="title" x="380" y="200" text-anchor="middle">Cloudflare Tunnel</text>
+  <text class="sub" x="380" y="220" text-anchor="middle">TLS + DDoS + DNS</text>
+  <text class="mono" x="380" y="245" text-anchor="middle">embed.example.com</text>
+
+  <!-- Pi container -->
+  <rect class="box-accent" x="550" y="90" width="320" height="240" rx="4"/>
+  <text class="eyebrow" x="710" y="115" text-anchor="middle">HOME · RASPBERRY PI 5</text>
+
+  <!-- cloudflared on pi -->
+  <rect class="box" x="570" y="135" width="280" height="44" rx="3"/>
+  <text class="mono" x="710" y="162" text-anchor="middle">cloudflared (outbound tunnel)</text>
+
+  <!-- proxy on pi -->
+  <rect class="box" x="570" y="195" width="280" height="52" rx="3"/>
+  <text class="title" x="710" y="217" text-anchor="middle">Python auth proxy</text>
+  <text class="sub" x="710" y="234" text-anchor="middle">bearer · rate limit · allowlist</text>
+
+  <!-- ollama on pi -->
+  <rect class="box" x="570" y="263" width="280" height="52" rx="3"/>
+  <text class="title" x="710" y="284" text-anchor="middle">Ollama · bge-m3</text>
+  <text class="sub" x="710" y="301" text-anchor="middle">1024-dim vectors · 127.0.0.1:11434</text>
+
+  <!-- Arrows -->
+  <path class="arrow" d="M 210 210 L 286 210" />
+  <path class="arrow" d="M 470 210 L 566 210" />
+
+  <!-- Small labels on arrows -->
+  <text class="label" x="248" y="202" text-anchor="middle">HTTPS</text>
+  <text class="label" x="248" y="226" text-anchor="middle">Bearer token</text>
+  <text class="label" x="518" y="202" text-anchor="middle">Tunnel</text>
+
+  <!-- Title banner -->
+  <text class="eyebrow" x="30" y="40">DIAGRAM</text>
+  <text class="title" x="30" y="66" font-size="18">How a chat message reaches the Pi</text>
+  <text class="sub" x="30" y="86" font-size="13">Nothing inbound on the home router. All traffic is outbound-initiated from the Pi.</text>
+</svg>
