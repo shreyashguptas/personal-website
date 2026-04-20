@@ -35,7 +35,7 @@ export function SiteFooter() {
               </span>
             </Link>
             <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-              Data scientist and software engineer. Writing about tools, software, and
+              Data analyst and software engineer. Writing about tools, software, and
               the hardware I design under OffGrid Devices.
             </p>
           </div>

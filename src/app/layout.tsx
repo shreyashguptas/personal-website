@@ -44,7 +44,7 @@ const mono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Shreyash Gupta",
   description:
-    "Personal website and blog of Shreyash Gupta — Data Scientist, Software Engineer, and Tech Enthusiast.",
+    "Personal website and blog of Shreyash Gupta — Data Analyst, Software Engineer, and Tech Enthusiast.",
   metadataBase: new URL(getSiteUrl()),
   alternates: {
     canonical: getSiteUrl(),

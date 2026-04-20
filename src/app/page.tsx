@@ -72,7 +72,7 @@ export default function HomePage() {
             <dl className="mt-5 space-y-3 text-sm">
               <div className="flex items-baseline gap-3">
                 <dt className="label-eyebrow shrink-0 w-16">Role</dt>
-                <dd className="text-foreground">Data Scientist</dd>
+                <dd className="text-foreground">Data Analyst</dd>
               </div>
               <div className="flex items-baseline gap-3">
                 <dt className="label-eyebrow shrink-0 w-16">Building</dt>

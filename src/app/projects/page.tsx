@@ -30,7 +30,7 @@ export default function ProjectsPage() {
       <Intro
         eyebrow="The Projects"
         title="Work, selected."
-        description="Software and hardware I've built — shipped tools, experiments, dashboards, and the OffGrid Devices line of MagSafe-compatible Meshtastic gear."
+        description="Software and hardware I've built — shipped tools and experiments."
       />
       {allProjects.length > 0 && (
         <section className="py-6 md:py-10">

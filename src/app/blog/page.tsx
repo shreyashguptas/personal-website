@@ -32,8 +32,8 @@ export default function BlogPage() {
     <Container className="animate-fade-in">
       <Intro
         eyebrow="The Writing"
-        title="Essays, notes, and slow ideas."
-        description="Long-form on software, data, tools, and the craft of building things. No newsletters, no popups — just the words."
+        title="Essays and notes."
+        description="Writing on software, data, and the craft of building things."
       />
       {heroPost && (
         <HeroPost

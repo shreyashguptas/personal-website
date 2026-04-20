@@ -10,7 +10,7 @@ lastUpdated: "2025-01-27"
 - **GitHub**: https://github.com/shreyashguptas
 
 ## Professional Summary
-Experienced data scientist and software engineer with expertise in analytics, machine learning, and full-stack development. Proven track record of leading technical teams, building scalable applications, and driving data-driven decision making across Fortune 100 companies and startups. Specialized in Python, JavaScript, cloud infrastructure, and emerging technologies.
+Experienced data analyst and software engineer with expertise in analytics, machine learning, and full-stack development. Proven track record of leading technical teams, building scalable applications, and driving data-driven decision making across Fortune 100 companies and startups. Specialized in Python, JavaScript, cloud infrastructure, and emerging technologies.
 
 ## Work Experience
 
