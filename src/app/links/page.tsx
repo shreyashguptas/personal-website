@@ -85,9 +85,9 @@ function LinkRow({ href, label, description, tag, Icon, imageSrc, imageAlt }: Ro
       target="_blank"
       rel="noopener noreferrer"
       data-cursor-intent="hover"
-      className="group grid grid-cols-[auto_1fr_auto] items-center gap-5 py-5 md:py-6 border-b border-border last:border-b-0 hover:bg-secondary/40 transition-colors"
+      className="group grid grid-cols-[auto_1fr] md:grid-cols-[auto_1fr_auto] items-center gap-3 md:gap-5 py-5 md:py-6 border-b border-border last:border-b-0 hover:bg-secondary/40 transition-colors"
     >
-      <span className="shrink-0 w-10 h-10 inline-flex items-center justify-center border border-border text-foreground overflow-hidden">
+      <span className="shrink-0 w-9 h-9 md:w-10 md:h-10 inline-flex items-center justify-center border border-border text-foreground overflow-hidden">
         {imageSrc ? (
           <Image
             src={imageSrc}
@@ -212,16 +212,16 @@ export default function LinksPage() {
       <section className="py-10 md:py-14 border-b border-border">
         <SectionHeading count={podcastLinks.length}>Podcast</SectionHeading>
         <div className="border border-border p-5 md:p-6 mb-4">
-          <div className="flex items-start gap-5">
+          <div className="flex items-start gap-4 md:gap-5">
             <Image
               src="/project/federalist-papers-podcast.png"
               alt="The Federalist Papers: Explained podcast cover art"
               width={72}
               height={72}
-              className="shrink-0 border border-border"
+              className="shrink-0 w-14 h-14 md:w-[72px] md:h-[72px] border border-border"
               style={{ borderRadius: "var(--radius)" }}
             />
-            <div>
+            <div className="min-w-0">
               <h3 className="display-sm text-xl md:text-2xl">
                 The Federalist Papers: Explained
               </h3>
@@ -243,15 +243,15 @@ export default function LinksPage() {
       <section className="py-10 md:py-14">
         <SectionHeading count={1}>Creator Affiliations</SectionHeading>
         <article className="border border-border p-5 md:p-6">
-          <div className="flex items-start gap-5">
+          <div className="flex items-start gap-4 md:gap-5">
             <Image
               src="/badges/badge-shapr3d.png"
               alt="Official Shapr3D Creator badge"
               width={56}
               height={56}
-              className="shrink-0 rounded-full"
+              className="shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-full"
             />
-            <div>
+            <div className="min-w-0">
               <div className="flex items-baseline gap-3 flex-wrap">
                 <h3 className="display-sm text-xl md:text-2xl">Shapr3D</h3>
                 <span className="label-eyebrow inline-flex items-center gap-1.5">

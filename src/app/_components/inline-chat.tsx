@@ -650,7 +650,7 @@ export function InlineChat({ variant = "default" }: InlineChatProps = {}) {
             </div>
           ) : (
             <div className="w-full mt-4 animate-fade-in" style={{ animationDelay: '200ms' }}>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {suggestions.map((s, i) => (
                   <button
                     key={s}
@@ -712,7 +712,7 @@ export function InlineChat({ variant = "default" }: InlineChatProps = {}) {
 
             {/* Message Bubble */}
             <div className={cn(
-              "max-w-[85%] rounded-2xl px-4 py-2.5 text-sm md:text-base leading-relaxed",
+              "max-w-[85%] min-w-0 rounded-2xl px-4 py-2.5 text-sm md:text-base leading-relaxed break-words [overflow-wrap:anywhere]",
               m.role === "user"
                 ? "bg-foreground text-background rounded-br-md"
                 : "bg-muted/30 border border-border/50 rounded-bl-md"

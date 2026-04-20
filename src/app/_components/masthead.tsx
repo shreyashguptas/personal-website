@@ -45,27 +45,27 @@ export function Masthead() {
       </div>
 
       {/* Main row — wordmark left, nav right. */}
-      <div className="container-editorial flex items-baseline justify-between py-4">
+      <div className="container-editorial flex items-baseline justify-between gap-3 py-4">
         <Link
           href="/"
           aria-label="Shreyash Gupta — home"
           data-cursor-intent="hover"
-          className="inline-flex items-baseline"
+          className="inline-flex items-baseline min-w-0 shrink"
         >
-          <span className="display-sm tracking-tight font-medium">
+          <span className="display-sm tracking-tight font-medium text-lg sm:text-2xl md:text-[1.625rem] truncate">
             Shreyash Gupta
           </span>
           <span
             aria-hidden="true"
-            className="display-sm font-medium"
+            className="display-sm font-medium text-lg sm:text-2xl md:text-[1.625rem]"
             style={{ color: "hsl(var(--accent))" }}
           >
             .
           </span>
         </Link>
 
-        <nav aria-label="Primary">
-          <ul className="flex items-center gap-5 sm:gap-7">
+        <nav aria-label="Primary" className="shrink-0">
+          <ul className="flex items-center gap-3 sm:gap-5 md:gap-7">
             {NAV_LINKS.map(({ href, label }) => {
               const active = isActive(href);
               return (

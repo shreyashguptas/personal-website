@@ -125,6 +125,7 @@
 
   html {
     -webkit-text-size-adjust: 100%;
+    overflow-x: clip;
   }
 
   body {
@@ -136,6 +137,12 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+  }
+
+  img, video, svg {
+    max-width: 100%;
+    height: auto;
   }
 
   :focus-visible {

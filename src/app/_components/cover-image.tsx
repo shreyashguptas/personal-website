@@ -29,8 +29,8 @@ const CoverImage = ({ title, src, slug, variant = "default" }: Props) => {
         quality={90}
         sizes={
           variant === "hero"
-            ? "(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-            : "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 50vw"
+            ? "(max-width: 640px) calc(100vw - 2rem), (max-width: 1024px) calc(100vw - 3rem), (max-width: 1200px) 60vw, 700px"
+            : "(max-width: 640px) calc(100vw - 2rem), (max-width: 1024px) calc(50vw - 2rem), 500px"
         }
       />
     </div>

@@ -7,6 +7,22 @@
   line-height: 1.7;
   color: hsl(var(--foreground));
   font-feature-settings: "kern", "liga", "onum";
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+/* Long URLs / inline code shouldn't push the page wider than the viewport */
+.markdown a,
+.markdown code {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Tables scroll horizontally if wider than container, rather than stretching it */
+.markdown table {
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
 }
 
 .markdown > p,
