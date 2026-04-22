@@ -11,8 +11,8 @@ export function MinimalPostPreview({ post }: Props) {
     <article className="group">
       <p className="label-eyebrow mb-3">Latest Essay</p>
       <Link href={`/posts/${post.slug}`} className="block" data-cursor-intent="hover">
-        <h3 className="display-sm group-hover:text-muted-foreground transition-colors">
-          {post.title}
+        <h3 className="display-sm transition-smooth group-hover:text-muted-foreground">
+          <span className="text-tug">{post.title}</span>
         </h3>
       </Link>
       <p className="tabular mt-3 text-xs uppercase tracking-wider text-muted-foreground">

@@ -15,9 +15,13 @@ type Props = {
 export function PostHeader({ title, coverImage, date, author, eyebrow = "Essay" }: Props) {
   return (
     <header className="border-b border-border pb-8 md:pb-12">
-      <p className="label-eyebrow mb-5">{eyebrow}</p>
-      <PostTitle>{title}</PostTitle>
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-3 mt-4">
+      <p className="label-eyebrow mb-5 stagger-child" style={{ ["--stagger-index" as string]: 0 }}>
+        {eyebrow}
+      </p>
+      <div className="stagger-child" style={{ ["--stagger-index" as string]: 1 }}>
+        <PostTitle>{title}</PostTitle>
+      </div>
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-3 mt-4 stagger-child" style={{ ["--stagger-index" as string]: 2 }}>
         <Avatar name={author.name} picture={author.picture} />
         <span aria-hidden="true" className="text-border">│</span>
         <span className="tabular text-xs uppercase tracking-wider text-muted-foreground">
@@ -25,7 +29,7 @@ export function PostHeader({ title, coverImage, date, author, eyebrow = "Essay" 
         </span>
       </div>
       {coverImage && coverImage.trim() !== "" && (
-        <div className="mt-10">
+        <div className="mt-10 stagger-child" style={{ ["--stagger-index" as string]: 3 }}>
           <CoverImage title={title} src={coverImage} variant="hero" />
         </div>
       )}

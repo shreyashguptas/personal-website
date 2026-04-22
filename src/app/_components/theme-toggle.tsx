@@ -54,14 +54,18 @@ export function ThemeToggle() {
             aria-label={label}
             onClick={() => handleSelect(value)}
             className={[
-              "h-8 w-10 inline-flex items-center justify-center transition-colors",
+              "group h-8 w-10 inline-flex items-center justify-center transition-smooth",
               "border-r border-border last:border-r-0",
               isActive
                 ? "bg-foreground text-background"
                 : "bg-transparent text-muted-foreground hover:text-foreground",
             ].join(" ")}
           >
-            <Icon className="w-3.5 h-3.5" strokeWidth={1.75} aria-hidden="true" />
+            <Icon
+              className="w-3.5 h-3.5 transition-transform duration-[320ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-110 group-active:scale-95"
+              strokeWidth={1.75}
+              aria-hidden="true"
+            />
           </button>
         );
       })}

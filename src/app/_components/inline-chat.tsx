@@ -595,19 +595,30 @@ export function InlineChat({ variant = "default" }: InlineChatProps = {}) {
         disabled={loading}
         placeholder="Type a message..."
         className={cn(
-          "w-full bg-card border border-border pl-5 pr-14 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all placeholder:text-muted-foreground/60 disabled:opacity-60",
+          "w-full bg-card border border-border pl-5 pr-14 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 focus-glow placeholder:text-muted-foreground/60 disabled:opacity-60",
+          "transition-[border-color,box-shadow,background-color] duration-[280ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
           editorial ? "rounded-[var(--radius)]" : "rounded-xl"
         )}
       />
       <button
         type="submit"
         disabled={!input.trim() || loading}
+        aria-label="Send message"
         className={cn(
-          "absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-foreground text-background hover:bg-foreground/90 disabled:opacity-50 disabled:hover:bg-foreground transition-all duration-200",
+          "group absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-foreground text-background hover:bg-foreground/90 disabled:opacity-50 disabled:hover:bg-foreground",
+          "transition-[transform,background-color,opacity] duration-[280ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
+          "hover:-translate-y-1/2 hover:scale-[1.06] active:scale-[0.96] disabled:hover:scale-100",
           editorial ? "rounded-[var(--radius)]" : "rounded-lg"
         )}
       >
-        {loading ? <Loader2 size={18} className="animate-spin" /> : <ArrowRight size={18} />}
+        {loading ? (
+          <Loader2 size={18} className="animate-spin" />
+        ) : (
+          <ArrowRight
+            size={18}
+            className="transition-transform duration-[280ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0.5"
+          />
+        )}
       </button>
     </form>
   );
@@ -632,14 +643,14 @@ export function InlineChat({ variant = "default" }: InlineChatProps = {}) {
               <p className="label-eyebrow mb-2">Try asking</p>
               <p className="font-serif text-base leading-relaxed text-muted-foreground">
                 {suggestions.map((s, i) => (
-                  <span key={s}>
+                  <span key={s} className="stagger-child" style={{ ["--stagger-index" as string]: i }}>
                     <button
                       onClick={() => {
                         setInput("");
                         setSuggestions([]);
                         send(s);
                       }}
-                      className="text-left underline decoration-border hover:decoration-foreground hover:text-foreground underline-offset-4 transition-colors"
+                      className="text-left underline decoration-border hover:decoration-foreground hover:text-foreground underline-offset-4 transition-smooth"
                     >
                       {s}
                     </button>
@@ -659,8 +670,8 @@ export function InlineChat({ variant = "default" }: InlineChatProps = {}) {
                       setSuggestions([]);
                       send(s);
                     }}
-                    className="p-3 text-center text-sm rounded-xl border border-border bg-card/50 hover:bg-muted/50 hover:border-foreground/20 transition-all duration-200"
-                    style={{ animationDelay: `${250 + (i * 50)}ms` }}
+                    className="stagger-child p-3 text-center text-sm rounded-xl border border-border bg-card/50 hover:bg-muted/50 hover:border-foreground/25 transition-smooth hover:-translate-y-0.5"
+                    style={{ ["--stagger-index" as string]: i }}
                   >
                     <span className="line-clamp-2">{s}</span>
                   </button>

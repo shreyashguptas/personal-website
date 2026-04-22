@@ -24,11 +24,11 @@ export function SiteFooter() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-12">
           {/* Brand blurb (2 col) */}
           <div className="md:col-span-2 max-w-md">
-            <Link href="/" className="inline-flex items-baseline" data-cursor-intent="hover">
+            <Link href="/" className="group inline-flex items-baseline transition-smooth hover:text-muted-foreground" data-cursor-intent="hover">
               <span className="display-sm font-medium">Shreyash Gupta</span>
               <span
                 aria-hidden="true"
-                className="display-sm font-medium"
+                className="display-sm font-medium animate-breathe"
                 style={{ color: "hsl(var(--accent))" }}
               >
                 .
@@ -67,7 +67,7 @@ function FooterColumn({ title, links }: { title: string; links: FooterLink[] }) 
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-foreground hover:text-muted-foreground transition-colors"
+                className="group inline-flex items-center text-sm text-foreground transition-smooth hover:text-muted-foreground hover:translate-x-0.5"
                 data-cursor-intent="hover"
               >
                 {link.label}
@@ -75,7 +75,7 @@ function FooterColumn({ title, links }: { title: string; links: FooterLink[] }) 
             ) : (
               <Link
                 href={link.href}
-                className="text-sm text-foreground hover:text-muted-foreground transition-colors"
+                className="group inline-flex items-center text-sm text-foreground transition-smooth hover:text-muted-foreground hover:translate-x-0.5"
                 data-cursor-intent="hover"
               >
                 {link.label}

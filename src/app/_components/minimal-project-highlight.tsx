@@ -17,8 +17,8 @@ export function MinimalProjectHighlight({ project }: Props) {
           data-cursor-intent="hover"
           className="group block"
         >
-          <h3 className="display-sm group-hover:text-muted-foreground transition-colors">
-            {project.title}
+          <h3 className="display-sm transition-smooth group-hover:text-muted-foreground">
+            <span className="text-tug">{project.title}</span>
           </h3>
         </Link>
       ) : (

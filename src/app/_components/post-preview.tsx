@@ -36,10 +36,10 @@ export function PostPreview({
           <h3 className="display-md">
             <Link
               href={`/posts/${slug}`}
-              className="hover:text-muted-foreground transition-colors"
+              className="group inline-flex transition-smooth hover:text-muted-foreground"
               data-cursor-intent="hover"
             >
-              {title}
+              <span className="text-tug">{title}</span>
             </Link>
           </h3>
           <p className="mt-4 font-serif text-lg leading-relaxed text-muted-foreground max-w-2xl">
@@ -47,10 +47,10 @@ export function PostPreview({
           </p>
           <Link
             href={`/posts/${slug}`}
-            className="mt-5 inline-flex items-center text-sm font-medium text-foreground underline decoration-border hover:decoration-foreground underline-offset-4"
+            className="group mt-5 inline-flex items-center gap-1 text-sm font-medium text-foreground underline decoration-border underline-offset-4 transition-smooth hover:decoration-foreground"
             data-cursor-intent="hover"
           >
-            Read essay →
+            Read essay <span aria-hidden="true" className="link-arrow">→</span>
           </Link>
         </div>
 

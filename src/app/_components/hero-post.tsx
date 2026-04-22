@@ -27,8 +27,8 @@ export function HeroPost({
       <div className="grid grid-cols-1 md:grid-cols-12 md:gap-10">
         <div className="md:col-span-7">
           <h2 className="display-xl">
-            <Link href={`/posts/${slug}`} data-cursor-intent="hover" className="hover:text-muted-foreground transition-colors">
-              {title}
+            <Link href={`/posts/${slug}`} data-cursor-intent="hover" className="group inline-flex transition-smooth hover:text-muted-foreground">
+              <span className="text-tug">{title}</span>
             </Link>
           </h2>
           <p className="mt-6 font-serif text-lg leading-relaxed text-muted-foreground">

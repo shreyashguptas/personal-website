@@ -28,10 +28,10 @@ export function ProjectPreview({ project }: Props) {
             target="_blank"
             rel="noopener noreferrer"
             data-cursor-intent="hover"
-            className="block hover:text-muted-foreground transition-colors"
+            className="group inline-flex transition-smooth hover:text-muted-foreground"
           >
             <h2 className="display-md">
-              {project.title}
+              <span className="text-tug">{project.title}</span>
             </h2>
           </Link>
         ) : (
@@ -45,10 +45,10 @@ export function ProjectPreview({ project }: Props) {
             href={project.projectUrl!}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-4 inline-flex items-center text-sm font-medium underline decoration-border hover:decoration-foreground underline-offset-4"
+            className="group mt-4 inline-flex items-center gap-1 text-sm font-medium underline decoration-border underline-offset-4 transition-smooth hover:decoration-foreground"
             data-cursor-intent="hover"
           >
-            Visit project →
+            Visit project <span aria-hidden="true" className="link-arrow">→</span>
           </a>
         )}
       </div>
@@ -62,7 +62,7 @@ export function ProjectPreview({ project }: Props) {
               target="_blank"
               rel="noopener noreferrer"
               data-cursor-intent="hover"
-              className="block overflow-hidden border border-border"
+              className="img-zoom group block border border-border transition-smooth"
               style={{ borderRadius: "var(--radius)" }}
             >
               <Image

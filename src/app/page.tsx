@@ -28,11 +28,11 @@ export default function HomePage() {
       {/* ── Zone A · The Column ─────────────────────────────────── */}
       <section className="py-12 md:py-20 border-b border-border">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
-          <div className="lg:col-span-8">
+          <div className="lg:col-span-8 stagger-child" style={{ ["--stagger-index" as string]: 0 }}>
             <p className="label-eyebrow mb-5">The Column · Ask Shrey</p>
             <h1 className="display-xl">
               What do you want to know
-              <span aria-hidden="true" style={{ color: "hsl(var(--accent))" }}>
+              <span aria-hidden="true" className="animate-breathe inline-block" style={{ color: "hsl(var(--accent))" }}>
                 ?
               </span>
             </h1>
@@ -43,16 +43,16 @@ export default function HomePage() {
             </p>
 
             <div
-              className="mt-8 border border-border bg-card p-5 md:p-6"
+              className="mt-8 border border-border bg-card p-5 md:p-6 transition-smooth focus-glow hover:border-foreground/25"
               style={{ borderRadius: "var(--radius)" }}
             >
               <InlineChat variant="editorial" />
             </div>
           </div>
 
-          <aside className="lg:col-span-4 lg:pl-10 lg:border-l lg:border-border">
+          <aside className="lg:col-span-4 lg:pl-10 lg:border-l lg:border-border stagger-child" style={{ ["--stagger-index" as string]: 1 }}>
             <div
-              className="overflow-hidden border border-border"
+              className="img-zoom border border-border"
               style={{ borderRadius: "var(--radius)" }}
             >
               <Image
@@ -91,7 +91,7 @@ export default function HomePage() {
       <section className="py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-3 md:divide-x md:divide-border">
           {/* Writing */}
-          <div className="md:pr-8 pb-8 md:pb-0 border-b md:border-b-0 border-border">
+          <div className="md:pr-8 pb-8 md:pb-0 border-b md:border-b-0 border-border stagger-child" style={{ ["--stagger-index" as string]: 2 }}>
             <p className="label-eyebrow mb-5">Writing</p>
             <ul className="space-y-5">
               {writingEntries.map((p) => (
@@ -101,8 +101,8 @@ export default function HomePage() {
                     data-cursor-intent="hover"
                     className="block group"
                   >
-                    <h3 className="display-sm text-xl group-hover:text-muted-foreground transition-colors">
-                      {p.title}
+                    <h3 className="display-sm text-xl transition-smooth group-hover:text-muted-foreground">
+                      <span className="text-tug">{p.title}</span>
                     </h3>
                     <p className="mt-2 label-eyebrow tabular">
                       <DateFormatter dateString={p.date} />
@@ -114,14 +114,14 @@ export default function HomePage() {
             <Link
               href="/blog"
               data-cursor-intent="hover"
-              className="mt-6 inline-flex items-center text-sm font-medium underline decoration-border hover:decoration-foreground underline-offset-4"
+              className="group mt-6 inline-flex items-center gap-1 text-sm font-medium underline decoration-border underline-offset-4 transition-smooth hover:decoration-foreground"
             >
-              All essays →
+              All essays <span aria-hidden="true" className="link-arrow">→</span>
             </Link>
           </div>
 
           {/* Building */}
-          <div className="md:px-8 py-8 md:py-0 border-b md:border-b-0 border-border">
+          <div className="md:px-8 py-8 md:py-0 border-b md:border-b-0 border-border stagger-child" style={{ ["--stagger-index" as string]: 3 }}>
             <p className="label-eyebrow mb-5">Building</p>
             {featuredProject && (
               <div>
@@ -132,9 +132,9 @@ export default function HomePage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       data-cursor-intent="hover"
-                      className="hover:text-muted-foreground transition-colors"
+                      className="group inline-flex transition-smooth hover:text-muted-foreground"
                     >
-                      {featuredProject.title}
+                      <span className="text-tug">{featuredProject.title}</span>
                     </a>
                   ) : (
                     featuredProject.title
@@ -148,14 +148,14 @@ export default function HomePage() {
             <Link
               href="/projects"
               data-cursor-intent="hover"
-              className="mt-6 inline-flex items-center text-sm font-medium underline decoration-border hover:decoration-foreground underline-offset-4"
+              className="group mt-6 inline-flex items-center gap-1 text-sm font-medium underline decoration-border underline-offset-4 transition-smooth hover:decoration-foreground"
             >
-              All projects →
+              All projects <span aria-hidden="true" className="link-arrow">→</span>
             </Link>
           </div>
 
           {/* Elsewhere */}
-          <div className="md:pl-8 pt-8 md:pt-0">
+          <div className="md:pl-8 pt-8 md:pt-0 stagger-child" style={{ ["--stagger-index" as string]: 4 }}>
             <p className="label-eyebrow mb-5">Elsewhere</p>
             <ul className="space-y-4">
               <li>
@@ -166,8 +166,8 @@ export default function HomePage() {
                   data-cursor-intent="hover"
                   className="block group"
                 >
-                  <h3 className="display-sm text-xl group-hover:text-muted-foreground transition-colors">
-                    OffGrid Devices
+                  <h3 className="display-sm text-xl transition-smooth group-hover:text-muted-foreground">
+                    <span className="text-tug">OffGrid Devices</span>
                   </h3>
                   <p className="mt-1 font-serif text-sm text-muted-foreground">
                     MagSafe accessories for Meshtastic and MeshCore.
@@ -182,8 +182,8 @@ export default function HomePage() {
                   data-cursor-intent="hover"
                   className="block group"
                 >
-                  <h3 className="display-sm text-xl group-hover:text-muted-foreground transition-colors">
-                    YouTube
+                  <h3 className="display-sm text-xl transition-smooth group-hover:text-muted-foreground">
+                    <span className="text-tug">YouTube</span>
                   </h3>
                   <p className="mt-1 font-serif text-sm text-muted-foreground">
                     Build-in-public videos, CAD, and 3D printing.
@@ -194,9 +194,9 @@ export default function HomePage() {
             <Link
               href="/links"
               data-cursor-intent="hover"
-              className="mt-6 inline-flex items-center text-sm font-medium underline decoration-border hover:decoration-foreground underline-offset-4"
+              className="group mt-6 inline-flex items-center gap-1 text-sm font-medium underline decoration-border underline-offset-4 transition-smooth hover:decoration-foreground"
             >
-              Everything →
+              Everything <span aria-hidden="true" className="link-arrow">→</span>
             </Link>
           </div>
         </div>

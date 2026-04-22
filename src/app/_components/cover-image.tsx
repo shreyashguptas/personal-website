@@ -15,7 +15,7 @@ const CoverImage = ({ title, src, slug, variant = "default" }: Props) => {
   const image = (
     <div
       className={cn(
-        "relative w-full overflow-hidden border border-border",
+        "img-zoom relative w-full border border-border transition-smooth",
         aspectClass
       )}
       style={{ borderRadius: "var(--radius)" }}
@@ -37,7 +37,7 @@ const CoverImage = ({ title, src, slug, variant = "default" }: Props) => {
   );
 
   return slug ? (
-    <Link href={`/posts/${slug}`} aria-label={title} data-cursor-intent="hover">
+    <Link href={`/posts/${slug}`} aria-label={title} data-cursor-intent="hover" className="group block">
       {image}
     </Link>
   ) : (

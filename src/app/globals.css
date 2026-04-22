@@ -87,6 +87,13 @@
     --border: 35 15% 85%;
     --input: 35 15% 85%;
     --ring: 220 15% 12%;
+
+    /* Motion tokens — shared easing + durations for editorial-calm animations. */
+    --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-out-soft: cubic-bezier(0.33, 1, 0.68, 1);
+    --dur-fast: 180ms;
+    --dur-base: 280ms;
+    --dur-slow: 520ms;
   }
 
   .dark {
@@ -261,8 +268,117 @@
   }
 
   .animate-fade-in {
-    animation: fade-in 0.4s ease-out forwards;
+    animation: fade-in 0.4s var(--ease-out-expo) forwards;
     opacity: 0;
+  }
+
+  /* Soft float-in — slightly more travel, slower settle, used for hero content. */
+  @keyframes float-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-float-in {
+    animation: float-in var(--dur-slow) var(--ease-out-expo) forwards;
+    opacity: 0;
+  }
+
+  /* Stagger helper: set style={{ "--stagger-index": n }} on children. */
+  .stagger-child {
+    animation: float-in var(--dur-slow) var(--ease-out-expo) both;
+    animation-delay: calc(var(--stagger-index, 0) * 70ms);
+    opacity: 0;
+  }
+
+  /* Accent breath — ultra-slow, ~5s cycle. Draws a quiet heartbeat on the sparing red accent. */
+  @keyframes breathe {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.6; }
+  }
+
+  .animate-breathe {
+    animation: breathe 5s ease-in-out infinite;
+    will-change: opacity;
+  }
+
+  /* Underline wipe — used as the masthead active-page indicator. */
+  @keyframes underline-in {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+  }
+
+  .animate-underline-in {
+    animation: underline-in var(--dur-base) var(--ease-out-expo) forwards;
+    transform-origin: left;
+  }
+
+  /* Hover lift — 1px nudge, used on cards/rows. */
+  .hover-lift {
+    transition: transform var(--dur-base) var(--ease-out-expo), color var(--dur-base) var(--ease-out-soft);
+    will-change: transform;
+  }
+  .hover-lift:hover {
+    transform: translateY(-1px);
+  }
+
+  /* Smooth transition default for any mix of colors/transform/opacity. */
+  .transition-smooth {
+    transition-property: color, background-color, border-color, text-decoration-color, transform, opacity, box-shadow;
+    transition-duration: var(--dur-base);
+    transition-timing-function: var(--ease-out-expo);
+  }
+
+  /* Arrow nudge — for "→" style trailing indicators. Parent uses .group or :hover. */
+  .link-arrow {
+    display: inline-block;
+    transition: transform var(--dur-base) var(--ease-out-expo);
+    will-change: transform;
+  }
+  .group:hover .link-arrow,
+  a:hover > .link-arrow {
+    transform: translateX(3px);
+  }
+
+  /* Slow image zoom on hover — preserves cropping via overflow-hidden on the wrapper. */
+  .img-zoom {
+    overflow: hidden;
+  }
+  .img-zoom img {
+    transition: transform 700ms var(--ease-out-expo);
+    will-change: transform;
+  }
+  .img-zoom:hover img,
+  .group:hover .img-zoom img {
+    transform: scale(1.025);
+  }
+
+  /* Row sweep — subtle horizontal shift on list rows. Pair with transition-smooth. */
+  .row-sweep {
+    transition: transform var(--dur-base) var(--ease-out-expo), background-color var(--dur-base) var(--ease-out-soft), color var(--dur-base) var(--ease-out-soft);
+  }
+  .group:hover > .row-sweep,
+  .group:hover .row-sweep,
+  .row-sweep:hover {
+    transform: translateX(2px);
+  }
+
+  /* Text tug — title slides ever so slightly on hover, mimicking print-lift. */
+  .text-tug {
+    display: inline-block;
+    transition: transform var(--dur-base) var(--ease-out-expo), color var(--dur-base) var(--ease-out-soft);
+  }
+  .group:hover .text-tug,
+  a:hover .text-tug {
+    transform: translateX(2px);
+  }
+
+  /* Focus glow — gentle shadow pulse for inputs on focus. */
+  .focus-glow {
+    transition: box-shadow var(--dur-base) var(--ease-out-expo), border-color var(--dur-base) var(--ease-out-expo), transform var(--dur-base) var(--ease-out-expo);
+  }
+  .focus-glow:focus-within,
+  .focus-glow:focus {
+    box-shadow: 0 0 0 4px hsl(var(--foreground) / 0.06);
   }
 
   @media (prefers-reduced-motion: reduce) {

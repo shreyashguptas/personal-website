@@ -85,22 +85,22 @@ function LinkRow({ href, label, description, tag, Icon, imageSrc, imageAlt }: Ro
       target="_blank"
       rel="noopener noreferrer"
       data-cursor-intent="hover"
-      className="group grid grid-cols-[auto_1fr] md:grid-cols-[auto_1fr_auto] items-center gap-3 md:gap-5 py-5 md:py-6 border-b border-border last:border-b-0 hover:bg-secondary/40 transition-colors"
+      className="group grid grid-cols-[auto_1fr] md:grid-cols-[auto_1fr_auto] items-center gap-3 md:gap-5 py-5 md:py-6 border-b border-border last:border-b-0 transition-smooth hover:bg-secondary/40"
     >
-      <span className="shrink-0 w-9 h-9 md:w-10 md:h-10 inline-flex items-center justify-center border border-border text-foreground overflow-hidden">
+      <span className="shrink-0 w-9 h-9 md:w-10 md:h-10 inline-flex items-center justify-center border border-border text-foreground overflow-hidden transition-smooth group-hover:border-foreground/40">
         {imageSrc ? (
           <Image
             src={imageSrc}
             alt={imageAlt ?? ""}
             width={40}
             height={40}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
           />
         ) : Icon ? (
-          <Icon className="w-4 h-4" aria-hidden="true" />
+          <Icon className="w-4 h-4 transition-transform duration-[320ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-110" aria-hidden="true" />
         ) : null}
       </span>
-      <span className="min-w-0">
+      <span className="min-w-0 transition-transform duration-[280ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0.5">
         <span className="flex items-baseline gap-3 flex-wrap">
           <span className="display-sm text-xl md:text-2xl">{label}</span>
           {tag && <span className="label-eyebrow tabular">{tag}</span>}
@@ -110,7 +110,7 @@ function LinkRow({ href, label, description, tag, Icon, imageSrc, imageAlt }: Ro
         </span>
       </span>
       <ArrowUpRight
-        className="hidden md:block w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors"
+        className="hidden md:block w-4 h-4 text-muted-foreground transition-[transform,color] duration-[320ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:text-foreground group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
         strokeWidth={1.5}
         aria-hidden="true"
       />
@@ -269,9 +269,9 @@ export default function LinksPage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 data-cursor-intent="hover"
-                className="mt-4 inline-flex items-center text-sm font-medium underline decoration-border hover:decoration-foreground underline-offset-4"
+                className="group mt-4 inline-flex items-center gap-1 text-sm font-medium underline decoration-border underline-offset-4 transition-smooth hover:decoration-foreground"
               >
-                Visit Shapr3D →
+                Visit Shapr3D <span aria-hidden="true" className="link-arrow">→</span>
               </Link>
             </div>
           </div>

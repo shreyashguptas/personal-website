@@ -50,14 +50,14 @@ export function Masthead() {
           href="/"
           aria-label="Shreyash Gupta — home"
           data-cursor-intent="hover"
-          className="inline-flex items-baseline min-w-0 shrink"
+          className="group inline-flex items-baseline min-w-0 shrink"
         >
-          <span className="display-sm tracking-tight font-medium text-lg sm:text-2xl md:text-[1.625rem] truncate">
+          <span className="display-sm tracking-tight font-medium text-lg sm:text-2xl md:text-[1.625rem] truncate transition-smooth group-hover:text-muted-foreground">
             Shreyash Gupta
           </span>
           <span
             aria-hidden="true"
-            className="display-sm font-medium text-lg sm:text-2xl md:text-[1.625rem]"
+            className="display-sm font-medium text-lg sm:text-2xl md:text-[1.625rem] animate-breathe"
             style={{ color: "hsl(var(--accent))" }}
           >
             .
@@ -75,19 +75,21 @@ export function Masthead() {
                     data-cursor-intent="hover"
                     aria-current={active ? "page" : undefined}
                     className={[
-                      "relative inline-block py-1 text-sm font-medium transition-colors",
+                      "group relative inline-block py-1 text-sm font-medium transition-smooth",
                       active
                         ? "text-foreground"
                         : "text-muted-foreground hover:text-foreground",
                     ].join(" ")}
                   >
                     <span>{label}</span>
-                    {active && (
-                      <span
-                        aria-hidden="true"
-                        className="absolute left-0 right-0 -bottom-0.5 h-px bg-foreground"
-                      />
-                    )}
+                    <span
+                      aria-hidden="true"
+                      className={[
+                        "absolute left-0 right-0 -bottom-0.5 h-px bg-foreground origin-left",
+                        "transition-transform duration-[280ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
+                        active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100",
+                      ].join(" ")}
+                    />
                   </Link>
                 </li>
               );

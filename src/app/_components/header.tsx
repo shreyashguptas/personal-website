@@ -6,9 +6,15 @@ const Header = () => {
       <Link
         href="/blog"
         data-cursor-intent="hover"
-        className="label-eyebrow inline-flex items-center gap-2 hover:text-foreground transition-colors"
+        className="group label-eyebrow inline-flex items-center gap-2 transition-smooth hover:text-foreground"
       >
-        ← Back to Writing
+        <span
+          aria-hidden="true"
+          className="inline-block transition-transform duration-[280ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-x-0.5"
+        >
+          ←
+        </span>
+        Back to Writing
       </Link>
     </div>
   );
