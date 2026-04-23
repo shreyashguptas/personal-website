@@ -370,24 +370,56 @@ async function main() {
   const embedded: EmbeddedChunk[] = [];
   const model = PROMPT_CONFIG.embeddings.model;
 
-  // Batch in small groups — Ollama /api/embed accepts an input array
+  // Batch in small groups — Ollama /api/embed accepts an input array.
+  // Cloudflare Tunnel (and most proxies) will reset idle keep-alive connections,
+  // so any single fetch can hit ECONNRESET. Retry transient network errors and
+  // 5xx responses with exponential backoff.
   const batchSize = PROMPT_CONFIG.embeddings.batchSize;
+  const maxAttempts = 5;
+  const isTransient = (err: unknown) => {
+    const code = (err as { cause?: { code?: string }; code?: string } | null)?.cause?.code
+      ?? (err as { code?: string } | null)?.code;
+    return code === "ECONNRESET" || code === "UND_ERR_SOCKET" || code === "ETIMEDOUT"
+      || code === "ECONNREFUSED" || code === "EAI_AGAIN";
+  };
   for (let i = 0; i < all.length; i += batchSize) {
     const batch = all.slice(i, i + batchSize);
     const input = batch.map((d) => d.text);
     const embStart = Date.now();
-    const res = await fetch(`${embedUrl}/api/embed`, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "authorization": `Bearer ${embedSecret}`,
-      },
-      body: JSON.stringify({ model, input }),
-    });
-    if (!res.ok) {
-      throw new Error(`embed upstream ${res.status}: ${await res.text()}`);
+    let payload: { embeddings: number[][] } | null = null;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        const res = await fetch(`${embedUrl}/api/embed`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "authorization": `Bearer ${embedSecret}`,
+          },
+          body: JSON.stringify({ model, input }),
+        });
+        if (!res.ok) {
+          const body = await res.text();
+          if (res.status >= 500 && attempt < maxAttempts) {
+            const wait = 500 * 2 ** (attempt - 1);
+            console.warn(`[build-embeddings] upstream ${res.status}, retry ${attempt}/${maxAttempts - 1} in ${wait}ms`);
+            await new Promise((r) => setTimeout(r, wait));
+            continue;
+          }
+          throw new Error(`embed upstream ${res.status}: ${body}`);
+        }
+        payload = (await res.json()) as { embeddings: number[][] };
+        break;
+      } catch (err) {
+        if (attempt < maxAttempts && isTransient(err)) {
+          const wait = 500 * 2 ** (attempt - 1);
+          console.warn(`[build-embeddings] transient fetch error (${(err as Error).message}), retry ${attempt}/${maxAttempts - 1} in ${wait}ms`);
+          await new Promise((r) => setTimeout(r, wait));
+          continue;
+        }
+        throw err;
+      }
     }
-    const payload = (await res.json()) as { embeddings: number[][] };
+    if (!payload) throw new Error("embed: no payload after retries");
     const embEnd = Date.now();
     try {
       await captureAiEmbedding({ model, latencyMs: embEnd - embStart, input: input.slice(0, 1) });
