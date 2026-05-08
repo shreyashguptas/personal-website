@@ -382,54 +382,77 @@ async function main() {
     return code === "ECONNRESET" || code === "UND_ERR_SOCKET" || code === "ETIMEDOUT"
       || code === "ECONNREFUSED" || code === "EAI_AGAIN";
   };
-  for (let i = 0; i < all.length; i += batchSize) {
-    const batch = all.slice(i, i + batchSize);
-    const input = batch.map((d) => d.text);
-    const embStart = Date.now();
-    let payload: { embeddings: number[][] } | null = null;
-    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-      try {
-        const res = await fetch(`${embedUrl}/api/embed`, {
-          method: "POST",
-          headers: {
-            "content-type": "application/json",
-            "authorization": `Bearer ${embedSecret}`,
-          },
-          body: JSON.stringify({ model, input }),
-        });
-        if (!res.ok) {
-          const body = await res.text();
-          if (res.status >= 500 && attempt < maxAttempts) {
+
+  // If the embed upstream is unreachable (e.g. self-hosted Pi tunnel down), don't
+  // fail the entire build — fall back to whatever index already exists so the site
+  // still ships. Chat may serve stale results until the next successful build.
+  const handleEmbedFailure = (err: unknown) => {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`[build-embeddings] embed upstream unreachable after ${maxAttempts} attempts: ${msg}`);
+    if (fs.existsSync(outPath)) {
+      const stats = fs.statSync(outPath);
+      const sizeMB = (stats.size / 1024 / 1024).toFixed(2);
+      console.warn(`[build-embeddings] keeping existing index at ${outPath} (${sizeMB} MB) — chat may be stale until next successful build`);
+    } else {
+      console.warn(`[build-embeddings] no existing index found — writing empty index so build can proceed; chat will be unavailable until next successful build`);
+      fs.writeFileSync(outPath, JSON.stringify([]), "utf8");
+    }
+  };
+
+  try {
+    for (let i = 0; i < all.length; i += batchSize) {
+      const batch = all.slice(i, i + batchSize);
+      const input = batch.map((d) => d.text);
+      const embStart = Date.now();
+      let payload: { embeddings: number[][] } | null = null;
+      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+          const res = await fetch(`${embedUrl}/api/embed`, {
+            method: "POST",
+            headers: {
+              "content-type": "application/json",
+              "authorization": `Bearer ${embedSecret}`,
+            },
+            body: JSON.stringify({ model, input }),
+          });
+          if (!res.ok) {
+            const body = await res.text();
+            if (res.status >= 500 && attempt < maxAttempts) {
+              const wait = 500 * 2 ** (attempt - 1);
+              console.warn(`[build-embeddings] upstream ${res.status}, retry ${attempt}/${maxAttempts - 1} in ${wait}ms`);
+              await new Promise((r) => setTimeout(r, wait));
+              continue;
+            }
+            throw new Error(`embed upstream ${res.status}: ${body}`);
+          }
+          payload = (await res.json()) as { embeddings: number[][] };
+          break;
+        } catch (err) {
+          if (attempt < maxAttempts && isTransient(err)) {
             const wait = 500 * 2 ** (attempt - 1);
-            console.warn(`[build-embeddings] upstream ${res.status}, retry ${attempt}/${maxAttempts - 1} in ${wait}ms`);
+            console.warn(`[build-embeddings] transient fetch error (${(err as Error).message}), retry ${attempt}/${maxAttempts - 1} in ${wait}ms`);
             await new Promise((r) => setTimeout(r, wait));
             continue;
           }
-          throw new Error(`embed upstream ${res.status}: ${body}`);
+          throw err;
         }
-        payload = (await res.json()) as { embeddings: number[][] };
-        break;
-      } catch (err) {
-        if (attempt < maxAttempts && isTransient(err)) {
-          const wait = 500 * 2 ** (attempt - 1);
-          console.warn(`[build-embeddings] transient fetch error (${(err as Error).message}), retry ${attempt}/${maxAttempts - 1} in ${wait}ms`);
-          await new Promise((r) => setTimeout(r, wait));
-          continue;
-        }
-        throw err;
       }
+      if (!payload) throw new Error("embed: no payload after retries");
+      const embEnd = Date.now();
+      try {
+        await captureAiEmbedding({ model, latencyMs: embEnd - embStart, input: input.slice(0, 1) });
+      } catch {
+        void 0;
+      }
+      payload.embeddings.forEach((embedding, idx: number) => {
+        embedded.push({ ...batch[idx], embedding });
+      });
+      console.info(`Embedded ${Math.min(i + batchSize, all.length)} / ${all.length}`);
     }
-    if (!payload) throw new Error("embed: no payload after retries");
-    const embEnd = Date.now();
-    try {
-      await captureAiEmbedding({ model, latencyMs: embEnd - embStart, input: input.slice(0, 1) });
-    } catch {
-      void 0;
-    }
-    payload.embeddings.forEach((embedding, idx: number) => {
-      embedded.push({ ...batch[idx], embedding });
-    });
-    console.info(`Embedded ${Math.min(i + batchSize, all.length)} / ${all.length}`);
+  } catch (err) {
+    handleEmbedFailure(err);
+    try { await flushPosthog(); } catch { void 0; }
+    return;
   }
 
   fs.writeFileSync(outPath, JSON.stringify(embedded), "utf8");
