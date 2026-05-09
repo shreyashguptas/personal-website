@@ -310,13 +310,12 @@ function chunkBySection(
 }
 
 async function main() {
-  const embedUrl = process.env.EMBED_URL;
-  const embedSecret = process.env.EMBED_SECRET;
+  const openRouterKey = process.env.OPENROUTER_API_KEY;
   const outDir = path.join(process.cwd(), "src", "data");
   const outPath = path.join(outDir, "vector-index.json");
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
-  if (!embedUrl || !embedSecret) {
-    console.warn("[build-embeddings] EMBED_URL or EMBED_SECRET not set. Writing empty index for dev builds.");
+  if (!openRouterKey) {
+    console.warn("[build-embeddings] OPENROUTER_API_KEY not set. Writing empty index for dev builds.");
     fs.writeFileSync(outPath, JSON.stringify([]), "utf8");
     return;
   }
@@ -370,10 +369,9 @@ async function main() {
   const embedded: EmbeddedChunk[] = [];
   const model = PROMPT_CONFIG.embeddings.model;
 
-  // Batch in small groups — Ollama /api/embed accepts an input array.
-  // Cloudflare Tunnel (and most proxies) will reset idle keep-alive connections,
-  // so any single fetch can hit ECONNRESET. Retry transient network errors and
-  // 5xx responses with exponential backoff.
+  // Batch in small groups — OpenRouter /v1/embeddings accepts an input array.
+  // Network can hit transient ECONNRESET / 5xx; retry with exponential backoff.
+  // Pinned to DeepInfra so embeddings always run on US infrastructure.
   const batchSize = PROMPT_CONFIG.embeddings.batchSize;
   const maxAttempts = 5;
   const isTransient = (err: unknown) => {
@@ -386,16 +384,21 @@ async function main() {
     const batch = all.slice(i, i + batchSize);
     const input = batch.map((d) => d.text);
     const embStart = Date.now();
-    let payload: { embeddings: number[][] } | null = null;
+    let payload: { data: { embedding: number[]; index: number }[] } | null = null;
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
-        const res = await fetch(`${embedUrl}/api/embed`, {
+        const res = await fetch("https://openrouter.ai/api/v1/embeddings", {
           method: "POST",
           headers: {
             "content-type": "application/json",
-            "authorization": `Bearer ${embedSecret}`,
+            "authorization": `Bearer ${openRouterKey}`,
           },
-          body: JSON.stringify({ model, input }),
+          body: JSON.stringify({
+            model,
+            input,
+            encoding_format: "float",
+            provider: { only: ["deepinfra"], allow_fallbacks: false },
+          }),
         });
         if (!res.ok) {
           const body = await res.text();
@@ -407,7 +410,23 @@ async function main() {
           }
           throw new Error(`embed upstream ${res.status}: ${body}`);
         }
-        payload = (await res.json()) as { embeddings: number[][] };
+        // OpenRouter wraps upstream provider errors inside a 200 OK as { error: { code, message } }.
+        // Retry the upstream-busy / rate-limit class; surface anything else.
+        const json = (await res.json()) as
+          | { data: { embedding: number[]; index: number }[] }
+          | { error: { code?: number; message?: string } };
+        if ("error" in json && json.error) {
+          const code = json.error.code ?? 0;
+          const msg = json.error.message ?? "unknown";
+          if ((code === 429 || code >= 500) && attempt < maxAttempts) {
+            const wait = 1000 * 2 ** (attempt - 1);
+            console.warn(`[build-embeddings] provider error ${code} (${msg}), retry ${attempt}/${maxAttempts - 1} in ${wait}ms`);
+            await new Promise((r) => setTimeout(r, wait));
+            continue;
+          }
+          throw new Error(`embed provider error ${code}: ${msg}`);
+        }
+        payload = json as { data: { embedding: number[]; index: number }[] };
         break;
       } catch (err) {
         if (attempt < maxAttempts && isTransient(err)) {
@@ -426,8 +445,10 @@ async function main() {
     } catch {
       void 0;
     }
-    payload.embeddings.forEach((embedding, idx: number) => {
-      embedded.push({ ...batch[idx], embedding });
+    // OpenRouter returns data ordered by `index`; sort defensively then map.
+    const sorted = [...payload.data].sort((a, b) => a.index - b.index);
+    sorted.forEach((item, idx: number) => {
+      embedded.push({ ...batch[idx], embedding: item.embedding });
     });
     console.info(`Embedded ${Math.min(i + batchSize, all.length)} / ${all.length}`);
   }

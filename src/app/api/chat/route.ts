@@ -306,14 +306,12 @@ export async function POST(req: NextRequest) {
     const history = (parsed.data.history || []).slice(-PROMPT_CONFIG.chat.maxHistoryLength); // limit context size
 
     const groqKey = process.env.GROQ_API_KEY;
-    const embedUrl = process.env.EMBED_URL;
-    const embedSecret = process.env.EMBED_SECRET;
+    const openRouterKey = process.env.OPENROUTER_API_KEY;
 
-    if (!groqKey || !embedUrl || !embedSecret) {
+    if (!groqKey || !openRouterKey) {
       console.error('[chat] API keys not configured', {
         hasGroq: !!groqKey,
-        hasEmbedUrl: !!embedUrl,
-        hasEmbedSecret: !!embedSecret,
+        hasOpenRouter: !!openRouterKey,
       });
       return new Response(JSON.stringify({
         error: "server_configuration",
@@ -402,13 +400,18 @@ export async function POST(req: NextRequest) {
       const timer = setTimeout(() => ac.abort(), 30000);
       let embedRes: Response;
       try {
-        embedRes = await fetch(`${embedUrl}/api/embed`, {
+        embedRes = await fetch("https://openrouter.ai/api/v1/embeddings", {
           method: "POST",
           headers: {
             "content-type": "application/json",
-            "authorization": `Bearer ${embedSecret}`,
+            "authorization": `Bearer ${openRouterKey}`,
           },
-          body: JSON.stringify({ model: PROMPT_CONFIG.embeddings.model, input: embedInput }),
+          body: JSON.stringify({
+            model: PROMPT_CONFIG.embeddings.model,
+            input: embedInput,
+            encoding_format: "float",
+            provider: { only: ["deepinfra"], allow_fallbacks: false },
+          }),
           signal: ac.signal,
         });
       } finally {
@@ -417,11 +420,18 @@ export async function POST(req: NextRequest) {
       if (!embedRes.ok) {
         throw new Error(`embed upstream ${embedRes.status}`);
       }
-      const embedJson = (await embedRes.json()) as { embeddings: number[][] };
-      if (!Array.isArray(embedJson.embeddings) || embedJson.embeddings.length === 0) {
+      // OpenRouter wraps upstream provider errors inside a 200 OK as { error: { code, message } }.
+      const embedJson = (await embedRes.json()) as
+        | { data: { embedding: number[]; index: number }[] }
+        | { error: { code?: number; message?: string } };
+      if ("error" in embedJson && embedJson.error) {
+        throw new Error(`embed provider error ${embedJson.error.code ?? "?"}: ${embedJson.error.message ?? "unknown"}`);
+      }
+      const data = (embedJson as { data: { embedding: number[]; index: number }[] }).data;
+      if (!Array.isArray(data) || data.length === 0 || !Array.isArray(data[0]?.embedding)) {
         throw new Error("embed upstream returned no embeddings");
       }
-      queryEmbedding = embedJson.embeddings[0];
+      queryEmbedding = data[0].embedding;
     } catch (error) {
       // Embedding failure should return a controlled error
       const errorMessage = error instanceof Error ? error.message : 'Unknown embedding error';
