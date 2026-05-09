@@ -77,7 +77,7 @@ export const PROMPT_CONFIG = {
   
   // Embedding and build settings
   embeddings: {
-    model: "bge-m3",
+    model: "qwen/qwen3-embedding-8b",
     batchSize: 8,
     chunkSize: 2500, // Increased from 1200 - better context preservation
     chunkOverlap: 400, // Increased overlap for better continuity
