@@ -267,6 +267,21 @@ export function hybridRetrieve(
     }
   });
 
+  // Recency boost for project documents. Calibrated to RRF score gaps
+  // (~0.001–0.005) so a recent project ranked ~10 beats an old project
+  // ranked ~1 on vague queries, but a tech-specific query that only
+  // matches old projects still surfaces them (no recent competition).
+  const now = Date.now();
+  for (const item of fused.values()) {
+    if (item.doc.type !== "project" || !item.doc.date) continue;
+    const ageDays = Math.max(0, (now - new Date(item.doc.date).getTime()) / 86400000);
+    let bonus = 0;
+    if (ageDays <= 90) bonus = 0.005;
+    else if (ageDays <= 180) bonus = 0.003;
+    else if (ageDays <= 365) bonus = 0.001;
+    item.score += bonus;
+  }
+
   const merged = Array.from(fused.values()).sort((a, b) => b.score - a.score);
   console.info(`[rag] Hybrid retrieval: dense=${dense.length}, lexical=${lexical.length}, fused=${merged.length}, keep=${k}`);
   return merged.slice(0, k).map((item) => item.doc);
