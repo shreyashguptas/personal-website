@@ -255,15 +255,18 @@ export function InlineChat({ variant = "default" }: InlineChatProps = {}) {
     return () => clearTimeout(timer);
   }, []); // Empty deps - only runs on mount
 
-  // Re-focus input when messages exist
+  // Keep the input focused after each message and after streaming ends.
+  // The input is disabled while `loading` is true, so a focus() call during
+  // streaming is a no-op — re-running this effect when loading flips back to
+  // false restores the cursor so the user can keep typing without clicking.
   useEffect(() => {
-    if (inputRef.current && messages.length > 0) {
+    if (inputRef.current && !loading && messages.length > 0) {
       const timer = setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
       return () => clearTimeout(timer);
     }
-  }, [messages.length]);
+  }, [messages.length, loading]);
 
   // Track clicks on chat source links
   useEffect(() => {
@@ -432,7 +435,8 @@ export function InlineChat({ variant = "default" }: InlineChatProps = {}) {
             try {
               const parsed = JSON.parse(jsonPayload) as Array<{ title: string; url: string }>;
               const urls: string[] = Array.isArray(parsed) ? parsed.map((s) => s.url).filter(Boolean) : [];
-              if (urls.length > 0) setFocusUrls(urls);
+              // Server caps focusUrls at 10; slice to stay under the limit.
+              if (urls.length > 0) setFocusUrls(urls.slice(0, 10));
             } catch (err) {
               // Validate that source JSON is parseable and has shape
               console.warn("[inline-chat] invalid sources payload", { err });
