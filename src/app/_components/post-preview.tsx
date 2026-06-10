@@ -1,4 +1,5 @@
 import CoverImage from "@/app/_components/cover-image";
+import FallbackCover from "@/app/_components/fallback-cover";
 import { type Author } from "@/interfaces/author";
 import Link from "next/link";
 import DateFormatter from "./date-formatter";
@@ -25,7 +26,7 @@ export function PostPreview({
   return (
     <article className="py-8 md:py-10">
       <div className="grid grid-cols-1 md:grid-cols-12 md:gap-10">
-        <div className={hasCover ? "md:col-span-7" : "md:col-span-12"}>
+        <div className="md:col-span-7">
           <div className="flex items-center gap-3 mb-3 label-eyebrow">
             <span className="tabular">
               <DateFormatter dateString={date} />
@@ -54,11 +55,13 @@ export function PostPreview({
           </Link>
         </div>
 
-        {hasCover && (
-          <div className="md:col-span-5 mt-6 md:mt-1 md:order-last">
+        <div className="md:col-span-5 mt-6 md:mt-1 md:order-last">
+          {hasCover ? (
             <CoverImage title={title} src={coverImage!} slug={slug} />
-          </div>
-        )}
+          ) : (
+            <FallbackCover title={title} slug={slug} />
+          )}
+        </div>
       </div>
     </article>
   );

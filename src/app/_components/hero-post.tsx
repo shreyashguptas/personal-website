@@ -1,5 +1,6 @@
 import Avatar from "@/app/_components/avatar";
 import CoverImage from "@/app/_components/cover-image";
+import FallbackCover from "@/app/_components/fallback-cover";
 import { type Author } from "@/interfaces/author";
 import Link from "next/link";
 import DateFormatter from "./date-formatter";
@@ -43,11 +44,13 @@ export function HeroPost({
           </div>
         </div>
 
-        {coverImage && coverImage.trim() !== "" && (
-          <div className="md:col-span-5 mt-8 md:mt-2">
+        <div className="md:col-span-5 mt-8 md:mt-2">
+          {coverImage && coverImage.trim() !== "" ? (
             <CoverImage title={title} src={coverImage} slug={slug} variant="hero" />
-          </div>
-        )}
+          ) : (
+            <FallbackCover title={title} slug={slug} variant="hero" />
+          )}
+        </div>
       </div>
     </section>
   );
