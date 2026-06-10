@@ -46,6 +46,16 @@ const nextConfig = {
     ]
   },
 
+  // Permanent redirects. `/blogs` (and anything under it) is a common
+  // mistyped/stale URL for the real `/blog` index — send those visitors there
+  // instead of a 404, and consolidate any inbound link equity onto /blog.
+  async redirects() {
+    return [
+      { source: "/blogs", destination: "/blog", permanent: true },
+      { source: "/blogs/:path*", destination: "/blog", permanent: true },
+    ];
+  },
+
   // This is required to support PostHog trailing slash API requests
   skipTrailingSlashRedirect: true,
 

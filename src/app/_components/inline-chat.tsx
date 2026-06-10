@@ -348,11 +348,38 @@ export function InlineChat({ variant = "default" }: InlineChatProps = {}) {
       const history = messages
         .filter((m) => m.role === "user" || m.role === "assistant")
         .map((m) => ({ role: m.role === "system" ? "user" : m.role, content: m.content }));
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ message: trimmed, focusUrls, history }),
-      });
+      // Network-level resilience: a slow cold start or a dropped connection
+      // makes fetch() itself reject (the browser surfaces this as "Load
+      // failed" / "Failed to fetch"). Guard the connection phase with a
+      // timeout and retry once before giving up, so a one-off blip recovers
+      // silently. The timeout is cleared as soon as headers arrive, so it
+      // never interrupts an in-progress streamed response.
+      const REQUEST_TIMEOUT_MS = 30000;
+      const MAX_ATTEMPTS = 2;
+      let res: Response | undefined;
+      for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+        try {
+          res = await fetch("/api/chat", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ message: trimmed, focusUrls, history }),
+            signal: controller.signal,
+          });
+          clearTimeout(timeout);
+          break;
+        } catch (err) {
+          clearTimeout(timeout);
+          if (attempt < MAX_ATTEMPTS) {
+            console.warn(`[inline-chat] request failed (attempt ${attempt}/${MAX_ATTEMPTS}), retrying`, err);
+            await new Promise((r) => setTimeout(r, 700));
+            continue;
+          }
+          throw err;
+        }
+      }
+      if (!res) throw new Error("No response from chat service");
       // Check if response is JSON error (even with 200 status) or actual error
       const contentType = res.headers.get("content-type");
       const isJsonError = contentType?.includes("application/json");
