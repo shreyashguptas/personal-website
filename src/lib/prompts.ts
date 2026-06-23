@@ -47,11 +47,14 @@ OUTPUT:
 // You can add more prompt configurations here in the future
 export const PROMPT_CONFIG = {
   maxTokens: 500,
-  model: "groq/compound",
+  // Plain, fast production chat model. Replaced groq/compound (an agentic system
+  // with built-in tool/web-search routing) which added first-token latency this
+  // context-fed RAG bot doesn't need. llama-3.3-70b-versatile has a 128k window.
+  model: "llama-3.3-70b-versatile",
   temperature: 0.7,
 
   // Retrieval: hybrid (dense + lexical, RRF fused). Send more chunks to the LLM
-  // and let compound's large context filter, rather than aggressively pre-filtering.
+  // and let the model's large context filter, rather than aggressively pre-filtering.
   search: {
     defaultResults: 15,
     techQueryResults: 25,
