@@ -4,6 +4,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { getAllPosts, getAllProjects } from "@/lib/api";
 import DateFormatter from "@/app/_components/date-formatter";
+import { ChatWarmup } from "@/app/_components/chat-warmup";
 
 const InlineChat = dynamic(
   () => import("@/app/_components/inline-chat").then((mod) => ({ default: mod.InlineChat })),
@@ -25,6 +26,7 @@ export default function HomePage() {
 
   return (
     <Container className="animate-fade-in">
+      <ChatWarmup />
       {/* ── Zone A · The Column ─────────────────────────────────── */}
       <section className="py-12 md:py-20 border-b border-border">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">

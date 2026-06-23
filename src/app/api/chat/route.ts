@@ -21,6 +21,13 @@ import { captureAiGeneration } from "@/lib/analytics-server";
 
 export const runtime = 'nodejs';
 
+// Reuse a single Groq client across requests instead of constructing one per call.
+let groqClient: Groq | null = null;
+function getGroqClient(apiKey: string): Groq {
+  if (!groqClient) groqClient = new Groq({ apiKey });
+  return groqClient;
+}
+
 // Cleanup cache on process termination
 process.on('SIGINT', () => {
   console.info('[chat] Received SIGINT, cleaning up cache...');
@@ -322,13 +329,74 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const groq = new Groq({ apiKey: groqKey });
+    const groq = getGroqClient(groqKey);
 
-    // Load index early for vague question detection
+    // Detect vague follow-up questions that need context
+    const isVagueFollowUp = /^(tell me more|what else|anything else|more|and\?|go on|continue|interesting|cool|nice|okay|ok)$/i.test(userMessage.trim());
+
+    // Vague question with no context: return helpful suggestions (needs index, no embedding)
+    if (isVagueFollowUp && history.length === 0 && focusUrls.length === 0) {
+      let suggestIndex: ReturnType<typeof loadIndex>;
+      try {
+        suggestIndex = loadIndex();
+      } catch {
+        suggestIndex = [];
+      }
+      console.info('[chat] Vague question with no context, providing suggestions');
+      const { suggestions } = generateSmartSuggestions(suggestIndex || []);
+
+      return new Response(JSON.stringify({
+        error: "vague_question",
+        message: `What would you like to know more about? I can tell you about: ${suggestions.map(s => s.title).join(', ')}`,
+        suggestions
+      }), {
+        status: 200,
+        headers: { "content-type": "application/json" }
+      });
+    }
+
+    // Build embedding input (uses conversation history, not the index)
+    const lastUser = [...history].reverse().find((h) => h.role === "user");
+    const lastAssistant = [...history].reverse().find((h) => h.role === "assistant");
+    const pronounFollowUp = /\b(it|that|this|the post|the blog)\b/i.test(userMessage);
+
+    let embedInput = userMessage;
+    if (isVagueFollowUp && lastAssistant) {
+      embedInput = `Previous topic: ${lastAssistant.content.substring(0, 200)}\nFollow-up: ${userMessage}`;
+    } else if (pronounFollowUp && lastUser) {
+      embedInput = `${lastUser.content}\nFollow-up: ${userMessage}`;
+    }
+
+    // Dispatch the remote embedding FIRST so its network round-trip overlaps with
+    // the synchronous index load/parse below (no-tradeoff latency win on cold/un-warmed
+    // requests; a no-op when the index is already cached via warmup).
+    const t1 = Date.now();
+    const ac = new AbortController();
+    const timer = setTimeout(() => ac.abort(), 30000);
+    const embedPromise = fetch("https://openrouter.ai/api/v1/embeddings", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "authorization": `Bearer ${openRouterKey}`,
+      },
+      body: JSON.stringify({
+        model: PROMPT_CONFIG.embeddings.model,
+        input: embedInput,
+        encoding_format: "float",
+        provider: { only: ["deepinfra"], allow_fallbacks: false },
+      }),
+      signal: ac.signal,
+    });
+    // Avoid an unhandled rejection if we bail out (e.g. index error) before awaiting.
+    embedPromise.catch(() => {});
+
+    // Load the index (synchronous parse) while the embedding request is in flight.
     let index;
     try {
       index = loadIndex();
       if (!index || index.length === 0) {
+        ac.abort();
+        clearTimeout(timer);
         const isDev = process.env.NODE_ENV !== 'production';
         console.error('[chat] ✗ No documents available in vector index');
         if (isDev) {
@@ -348,6 +416,8 @@ export async function POST(req: NextRequest) {
         });
       }
     } catch (error) {
+      ac.abort();
+      clearTimeout(timer);
       const errorMessage = error instanceof Error ? error.message : 'Unknown index loading error';
       console.error('[chat] ✗ Failed to load vector index:', errorMessage);
       return new Response(JSON.stringify({
@@ -359,61 +429,12 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Compute query embedding with timeout
-    const t1 = Date.now();
+    // Await the embedding result (network call dispatched above).
     let queryEmbedding: number[] = [];
-
-    // Detect vague follow-up questions that need context
-    const isVagueFollowUp = /^(tell me more|what else|anything else|more|and\?|go on|continue|interesting|cool|nice|okay|ok)$/i.test(userMessage.trim());
-
-    // If vague question with no context, return helpful suggestions
-    if (isVagueFollowUp && history.length === 0 && focusUrls.length === 0) {
-      console.info('[chat] Vague question with no context, providing suggestions');
-      const { suggestions } = generateSmartSuggestions(index);
-
-      return new Response(JSON.stringify({
-        error: "vague_question",
-        message: `What would you like to know more about? I can tell you about: ${suggestions.map(s => s.title).join(', ')}`,
-        suggestions
-      }), {
-        status: 200,
-        headers: { "content-type": "application/json" }
-      });
-    }
-
     try {
-      // Enrich embedding input for follow-ups
-      const lastUser = [...history].reverse().find((h) => h.role === "user");
-      const lastAssistant = [...history].reverse().find((h) => h.role === "assistant");
-      const pronounFollowUp = /\b(it|that|this|the post|the blog)\b/i.test(userMessage);
-
-      let embedInput = userMessage;
-
-      // Enrich with previous context for vague or pronoun follow-ups
-      if (isVagueFollowUp && lastAssistant) {
-        embedInput = `Previous topic: ${lastAssistant.content.substring(0, 200)}\nFollow-up: ${userMessage}`;
-      } else if (pronounFollowUp && lastUser) {
-        embedInput = `${lastUser.content}\nFollow-up: ${userMessage}`;
-      }
-      
-      const ac = new AbortController();
-      const timer = setTimeout(() => ac.abort(), 30000);
       let embedRes: Response;
       try {
-        embedRes = await fetch("https://openrouter.ai/api/v1/embeddings", {
-          method: "POST",
-          headers: {
-            "content-type": "application/json",
-            "authorization": `Bearer ${openRouterKey}`,
-          },
-          body: JSON.stringify({
-            model: PROMPT_CONFIG.embeddings.model,
-            input: embedInput,
-            encoding_format: "float",
-            provider: { only: ["deepinfra"], allow_fallbacks: false },
-          }),
-          signal: ac.signal,
-        });
+        embedRes = await embedPromise;
       } finally {
         clearTimeout(timer);
       }
