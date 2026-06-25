@@ -49,8 +49,12 @@ export const PROMPT_CONFIG = {
   maxTokens: 500,
   // Plain, fast production chat model. Replaced groq/compound (an agentic system
   // with built-in tool/web-search routing) which added first-token latency this
-  // context-fed RAG bot doesn't need. llama-3.3-70b-versatile has a 128k window.
-  model: "llama-3.3-70b-versatile",
+  // context-fed RAG bot doesn't need. Migrated off llama-3.3-70b-versatile, which
+  // Groq deprecated on 2026-06-17 (decommission 2026-08-16), to its recommended
+  // replacement. gpt-oss-120b is a reasoning model, so the route sends it with
+  // reasoning_effort:"low" + reasoning_format:"hidden" to preserve low latency and
+  // keep reasoning tokens out of the streamed answer. 128k context window.
+  model: "openai/gpt-oss-120b",
   temperature: 0.7,
 
   // Retrieval: hybrid (dense + lexical, RRF fused). Send more chunks to the LLM

@@ -826,6 +826,11 @@ export async function POST(req: NextRequest) {
         // GROQ parameters
         max_tokens: PROMPT_CONFIG.maxTokens,
         temperature: PROMPT_CONFIG.temperature,
+        // gpt-oss-120b is a reasoning model. Keep reasoning minimal to protect
+        // first-token latency, and hidden so thinking never leaks into the
+        // streamed answer (the stream below forwards delta.content verbatim).
+        reasoning_effort: "low",
+        reasoning_format: "hidden",
         stream: true,
       });
       
