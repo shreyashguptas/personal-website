@@ -53,6 +53,10 @@ export async function GET() {
               model: PROMPT_CONFIG.model,
               messages: [{ role: "user", content: "hi" }],
               max_tokens: 1,
+              // Mirror the real chat call: gpt-oss-120b reasons by default, which
+              // would consume the single warmup token. Keep it minimal/hidden.
+              reasoning_effort: "low",
+              reasoning_format: "hidden",
               stream: false,
             }),
           }).catch(() => {})
