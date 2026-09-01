@@ -1,5 +1,4 @@
 import { NextRequest } from "next/server";
-import Groq from "groq-sdk";
 import { z } from "zod";
 import { getRateLimiter, localRateLimit } from "@/lib/rateLimit";
 import { logSecurityEvent, sanitizeClientKey } from "@/lib/security";
@@ -21,12 +20,12 @@ import { captureAiGeneration } from "@/lib/analytics-server";
 
 export const runtime = 'nodejs';
 
-// Reuse a single Groq client across requests instead of constructing one per call.
-let groqClient: Groq | null = null;
-function getGroqClient(apiKey: string): Groq {
-  if (!groqClient) groqClient = new Groq({ apiKey });
-  return groqClient;
-}
+// Chat completions and embeddings both go to OpenRouter, so this route needs a
+// single vendor and a single key.
+const OPENROUTER_CHAT_URL = "https://openrouter.ai/api/v1/chat/completions";
+// Attribution shown on the OpenRouter dashboard; optional to the API.
+const SITE_URL = "https://shreyashg.com";
+const SITE_TITLE = "shreyashg.com chat";
 
 // Cleanup cache on process termination
 process.on('SIGINT', () => {
@@ -312,13 +311,11 @@ export async function POST(req: NextRequest) {
     const focusUrls = (parsed.data.focusUrls || []).filter((u) => typeof u === 'string');
     const history = (parsed.data.history || []).slice(-PROMPT_CONFIG.chat.maxHistoryLength); // limit context size
 
-    const groqKey = process.env.GROQ_API_KEY;
     const openRouterKey = process.env.OPENROUTER_API_KEY;
 
-    if (!groqKey || !openRouterKey) {
-      console.error('[chat] API keys not configured', {
-        hasGroq: !!groqKey,
-        hasOpenRouter: !!openRouterKey,
+    if (!openRouterKey) {
+      console.error('[chat] API key not configured', {
+        hasOpenRouter: false,
       });
       return new Response(JSON.stringify({
         error: "server_configuration",
@@ -328,8 +325,6 @@ export async function POST(req: NextRequest) {
         headers: { "content-type": "application/json" }
       });
     }
-
-    const groq = getGroqClient(groqKey);
 
     // Detect vague follow-up questions that need context
     const isVagueFollowUp = /^(tell me more|what else|anything else|more|and\?|go on|continue|interesting|cool|nice|okay|ok)$/i.test(userMessage.trim());
@@ -811,53 +806,171 @@ export async function POST(req: NextRequest) {
     // Put current time, context and question into a single user message
     const combinedUser = `Now: ${nowIso} (UTC)\n\nContext:\n${context}\n\nRules:\n- When the question asks for the first blog/post, identify the earliest by date in the Context.\n- When asked for the latest project or post, use the most recent by date.\n- When interpreting relative time terms (today/this week/last month/yesterday), use the Now timestamp above.\n- When asked for the previous item ("before that"), select the chronologically previous item of the same type.\n- When asked about work experience, employment, skills, or education, prioritize resume information.\n- Prefer projects when the user asks about what I built or worked on.\n- Include inline links using markdown [Title](URL).\n- Use the conversation history to resolve pronouns and follow-ups, but never override or invent facts beyond Context.\n${contactRule ? contactRule + "\n" : ""}\nQuestion: ${userMessage}`;
 
-    // Use model from prompts configuration
-    const preferred = PROMPT_CONFIG.model;
-    console.info("[chat] model selection", { preferred, source: "prompts.ts" });
+    // Model, failover chain and provider pin. Env vars win so a bad model or a
+    // provider outage can be routed around without a redeploy.
+    const preferred = process.env.OPENROUTER_MODEL || PROMPT_CONFIG.model;
+    // `??` not `||`: a blank OPENROUTER_FALLBACK_MODELS deliberately turns
+    // failover off, rather than restoring the default chain.
+    const fallbackModels = (
+      process.env.OPENROUTER_FALLBACK_MODELS ?? PROMPT_CONFIG.fallbackModels
+    )
+      .split(",")
+      .map((slug) => slug.trim())
+      .filter(Boolean);
+    // `||` not `??`: a blank override falls back to the pinned default rather
+    // than dropping the pin and letting any provider serve visitor questions.
+    const providers = (process.env.OPENROUTER_PROVIDERS || PROMPT_CONFIG.providers)
+      .split(",")
+      .map((slug) => slug.trim())
+      .filter(Boolean);
+    console.info("[chat] model selection", {
+      preferred,
+      fallbackModels,
+      providers,
+      source: "prompts.ts",
+    });
+    // Recorded from the stream: with a failover chain, the model that answered
+    // is not necessarily the one we asked for.
+    let servedModel = preferred;
     try {
-      // Add timeout to chat completion request (60 seconds)
-      const chatPromise = groq.chat.completions.create({
-        model: preferred,
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          ...history.map((h) => ({ role: h.role as "user" | "assistant", content: h.content })),
-          { role: "user", content: combinedUser },
-        ],
-        // GROQ parameters
-        max_tokens: PROMPT_CONFIG.maxTokens,
-        temperature: PROMPT_CONFIG.temperature,
-        // gpt-oss-120b is a reasoning model. Keep reasoning minimal to protect
-        // first-token latency, and hidden so thinking never leaks into the
-        // streamed answer (the stream below forwards delta.content verbatim).
-        reasoning_effort: "low",
-        reasoning_format: "hidden",
-        stream: true,
-      });
-      
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Chat completion timeout')), 60000)
-      );
-      
-      const response = await Promise.race([chatPromise, timeoutPromise]) as unknown as AsyncIterable<Groq.Chat.Completions.ChatCompletionChunk>;
+      // Time out the chat completion after 60 seconds.
+      const chatAc = new AbortController();
+      const chatTimer = setTimeout(() => chatAc.abort(), 60000);
+
+      let response: Response;
+      try {
+        response = await fetch(OPENROUTER_CHAT_URL, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "authorization": `Bearer ${openRouterKey}`,
+            "HTTP-Referer": SITE_URL,
+            "X-OpenRouter-Title": SITE_TITLE,
+          },
+          body: JSON.stringify({
+            model: preferred,
+            // Failover chain, tried in order if `model` errors. OpenRouter
+            // prices against whichever model answered and names it in the
+            // stream, which is what `servedModel` above records.
+            ...(fallbackModels.length > 0 && { models: fallbackModels }),
+            provider: {
+              ...(providers.length > 0 && { only: providers }),
+              max_price: PROMPT_CONFIG.maxPrice,
+              // Retention controls. These are FILTERS - they narrow the
+              // eligible provider set - so a visitor's question is never handed
+              // to a provider that stores it or trains on it.
+              data_collection: "deny",
+              zdr: true,
+            },
+            messages: [
+              { role: "system", content: SYSTEM_PROMPT },
+              ...history.map((h) => ({ role: h.role as "user" | "assistant", content: h.content })),
+              { role: "user", content: combinedUser },
+            ],
+            max_tokens: PROMPT_CONFIG.maxTokens,
+            temperature: PROMPT_CONFIG.temperature,
+            // Grounded Q&A over a context we supply: thinking tokens add
+            // first-token latency and output cost without improving the answer,
+            // and the stream below forwards content verbatim.
+            reasoning: { enabled: false },
+            stream: true,
+          }),
+          signal: chatAc.signal,
+        });
+      } catch (fetchErr) {
+        clearTimeout(chatTimer);
+        if ((fetchErr as Error)?.name === "AbortError") {
+          throw new Error("Chat completion timeout");
+        }
+        throw fetchErr;
+      }
+
+      if (!response.ok || !response.body) {
+        clearTimeout(chatTimer);
+        // Redact any echoed bearer token before logging, and truncate to keep
+        // log lines bounded.
+        const body = (await response.text().catch(() => ""))
+          .slice(0, 500)
+          .replace(/Bearer\s+\S+/gi, "Bearer [redacted]");
+        // Carry the HTTP status so the catch below can still map 429 and 401
+        // onto their friendlier visitor-facing messages.
+        const httpErr = new Error(
+          `OpenRouter ${response.status} ${response.statusText}: ${body}`
+        ) as Error & { status?: number };
+        httpErr.status = response.status;
+        throw httpErr;
+      }
       const encoder = new TextEncoder();
+      const decoder = new TextDecoder();
       const stream = new ReadableStream<Uint8Array>({
         start(controller) {
           (async () => {
+            const reader = response.body!.getReader();
+            // OpenRouter answers as Server-Sent Events. A single read can split
+            // a frame in half, so hold a buffer and only consume whole lines.
+            let buffer = "";
+            let finished = false;
             try {
-              for await (const chunk of response) {
-                const choice = chunk.choices?.[0];
-                const delta = choice?.delta?.content ?? "";
-                if (delta) controller.enqueue(encoder.encode(delta));
+              while (!finished) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                buffer += decoder.decode(value, { stream: true });
+                let nl: number;
+                while ((nl = buffer.indexOf("\n")) !== -1) {
+                  const line = buffer.slice(0, nl).trim();
+                  buffer = buffer.slice(nl + 1);
+                  // Blank separators and ": OPENROUTER PROCESSING" keepalive
+                  // comments carry no payload.
+                  if (!line || line.startsWith(":")) continue;
+                  if (!line.startsWith("data:")) continue;
+                  const payload = line.slice(5).trim();
+                  if (payload === "[DONE]") {
+                    finished = true;
+                    break;
+                  }
+                  let chunk: {
+                    model?: string;
+                    error?: unknown;
+                    choices?: Array<{ delta?: { content?: string } }>;
+                  };
+                  try {
+                    chunk = JSON.parse(payload);
+                  } catch {
+                    // A frame we cannot parse is not worth killing the answer for.
+                    continue;
+                  }
+                  // OpenRouter can start a 200 stream and then report that no
+                  // upstream provider could serve the request.
+                  if (chunk.error) {
+                    console.error(
+                      `[chat] OpenRouter stream error for ${preferred}: ${JSON.stringify(chunk.error).slice(0, 500)}`
+                    );
+                    throw new Error("stream_error");
+                  }
+                  if (typeof chunk.model === "string") servedModel = chunk.model;
+                  const delta = chunk.choices?.[0]?.delta?.content ?? "";
+                  if (delta) controller.enqueue(encoder.encode(delta));
+                }
+              }
+              if (servedModel !== preferred) {
+                console.info(
+                  `[chat] OpenRouter served ${servedModel} instead of requested ${preferred}`
+                );
               }
             } catch {
               controller.error(new Error("stream_error"));
             } finally {
+              // Release the reader and the 60s abort timer on every exit path,
+              // including a client that disconnected mid-answer.
+              clearTimeout(chatTimer);
+              reader.cancel().catch(() => {});
               const genEnd = Date.now();
               // Server-side LLM analytics capture
               try {
                 const clientKey = getClientKey(req);
                 await captureAiGeneration({
-                  model: preferred,
+                  // What answered, not what we asked for.
+                  model: servedModel,
                   latencyMs: genEnd - t1,
                   inputMessages: [
                     ...history.map(h => ({ role: h.role, content: h.content })),

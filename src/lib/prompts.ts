@@ -47,14 +47,44 @@ OUTPUT:
 // You can add more prompt configurations here in the future
 export const PROMPT_CONFIG = {
   maxTokens: 500,
-  // Plain, fast production chat model. Replaced groq/compound (an agentic system
-  // with built-in tool/web-search routing) which added first-token latency this
-  // context-fed RAG bot doesn't need. Migrated off llama-3.3-70b-versatile, which
-  // Groq deprecated on 2026-06-17 (decommission 2026-08-16), to its recommended
-  // replacement. gpt-oss-120b is a reasoning model, so the route sends it with
-  // reasoning_effort:"low" + reasoning_format:"hidden" to preserve low latency and
-  // keep reasoning tokens out of the streamed answer. 128k context window.
-  model: "openai/gpt-oss-120b",
+  /**
+   * Chat completions run through OpenRouter, the same vendor that already
+   * serves this site's embeddings, so the whole chat path needs one provider
+   * and one key. Groq is gone entirely.
+   *
+   * Model and failover chain are kept in step with Bills in Congress
+   * (convex/llm.ts) so both sites run the same tier. Pinned to a DATED release
+   * rather than a floating alias: an alias can resolve to a version no
+   * allowlisted provider carries yet, which the allowlist below turns into a
+   * chat outage. Override per-deployment with OPENROUTER_MODEL.
+   */
+  model: "deepseek/deepseek-v4-flash-0731",
+  /**
+   * Automatic failover chain, tried in order when the primary errors. The first
+   * entry is a FLOATING alias on purpose, so the family tier outlives the dated
+   * primary; if it resolves to a release DeepInfra has not picked up, that hop
+   * 404s and the chain skips to Nova.
+   *
+   * Override with OPENROUTER_FALLBACK_MODELS. A blank value DISABLES failover
+   * rather than restoring this default.
+   */
+  fallbackModels: "deepseek/deepseek-v4-flash,amazon/nova-lite-v1",
+  /**
+   * Provider allowlist — comma-separated OpenRouter provider slugs. Every slug
+   * here must ALSO be permitted by the OpenRouter account's own
+   * allowed-providers setting: if the two lists do not overlap, OpenRouter
+   * rejects every request with a 404 rather than falling back.
+   *
+   * Override with OPENROUTER_PROVIDERS. A blank override falls back to this
+   * default rather than dropping the pin.
+   */
+  providers: "deepinfra,amazon-bedrock",
+  /**
+   * Runaway-cost guard, USD per million tokens — not the target price. It
+   * exists so a provider repricing or a careless OPENROUTER_MODEL change fails
+   * loudly instead of multiplying the bill.
+   */
+  maxPrice: { prompt: 0.2, completion: 0.4 },
   temperature: 0.7,
 
   // Retrieval: hybrid (dense + lexical, RRF fused). Send more chunks to the LLM

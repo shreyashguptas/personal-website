@@ -10,7 +10,7 @@ The AI chat on shreyashg.com uses retrieval-augmented generation (RAG). The embe
 
 ## Overview
 
-- **Chat model (Groq):** `groq/compound`, called from the Vercel function in `src/app/api/chat/route.ts`. Not related to this document.
+- **Chat model (OpenRouter):** `deepseek/deepseek-v4-flash-0731`, called from the Vercel function in `src/app/api/chat/route.ts`. Not related to this document.
 - **Embedding model (self-hosted):** `bge-m3` running on Ollama on a Raspberry Pi 5 (8GB, Debian Trixie). 1024-dim vectors, 8192-token context, open-source, top-tier retrieval quality.
 - **Access path:** Vercel function → `https://embed.blockscopes.com/api/embed` → Cloudflare Tunnel → Pi auth proxy → Ollama.
 
@@ -163,7 +163,7 @@ A rebuild takes ~60 seconds on a warm Pi (bge-m3 already in RAM). First build af
 
 | Symptom | Likely cause | Where to look |
 |---|---|---|
-| Chat returns `503 server_configuration` | Env vars missing on Vercel | `npx vercel env ls` — confirm `EMBED_URL`, `EMBED_SECRET`, `GROQ_API_KEY` |
+| Chat returns `503 server_configuration` | Env vars missing on Vercel | `npx vercel env ls` — confirm `EMBED_URL`, `EMBED_SECRET`, `OPENROUTER_API_KEY` |
 | Chat returns `502 embed upstream` | Pi or proxy is down | `ssh pi-5-1 systemctl is-active ollama embed-proxy cloudflared` |
 | Chat returns `401 unauthorized` from upstream | Secret mismatch | Compare `/etc/embed-proxy.env` on Pi to Vercel env var value |
 | Chat returns `429 rate_limited` | Burst or DoS | `journalctl -u embed-proxy -f` — count rate_limit events |

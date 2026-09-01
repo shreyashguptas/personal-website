@@ -18,7 +18,6 @@ export async function GET() {
 
     if (WARM_UPSTREAMS) {
       const openRouterKey = process.env.OPENROUTER_API_KEY;
-      const groqKey = process.env.GROQ_API_KEY;
       const tasks: Promise<unknown>[] = [];
 
       // Prime the DeepInfra embedding path (TLS/DNS/provider routing).
@@ -40,23 +39,33 @@ export async function GET() {
         );
       }
 
-      // Prime the Groq chat path with a 1-token throwaway completion.
-      if (groqKey) {
+      // Prime the OpenRouter chat path with a 1-token throwaway completion.
+      // Same key as the embedding call above - chat and embeddings are one vendor.
+      if (openRouterKey) {
         tasks.push(
-          fetch("https://api.groq.com/openai/v1/chat/completions", {
+          fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
             headers: {
               "content-type": "application/json",
-              "authorization": `Bearer ${groqKey}`,
+              "authorization": `Bearer ${openRouterKey}`,
             },
             body: JSON.stringify({
-              model: PROMPT_CONFIG.model,
+              model: process.env.OPENROUTER_MODEL || PROMPT_CONFIG.model,
               messages: [{ role: "user", content: "hi" }],
               max_tokens: 1,
-              // Mirror the real chat call: gpt-oss-120b reasons by default, which
-              // would consume the single warmup token. Keep it minimal/hidden.
-              reasoning_effort: "low",
-              reasoning_format: "hidden",
+              // Mirror the real chat call so the warmed route matches the routed
+              // one: same provider pin, same retention filters, no thinking
+              // tokens to eat the single warmup token.
+              provider: {
+                only: (process.env.OPENROUTER_PROVIDERS || PROMPT_CONFIG.providers)
+                  .split(",")
+                  .map((slug) => slug.trim())
+                  .filter(Boolean),
+                max_price: PROMPT_CONFIG.maxPrice,
+                data_collection: "deny",
+                zdr: true,
+              },
+              reasoning: { enabled: false },
               stream: false,
             }),
           }).catch(() => {})

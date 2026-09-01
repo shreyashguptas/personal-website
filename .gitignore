@@ -8,7 +8,10 @@ website-data-export/
 
 .DS_Store
 
-.env
+# Every local env file, however it is suffixed (.env.local, .env.production...).
+# The example file carries no real values and stays tracked.
+.env*
+!.env.example
 src/data/vector-index.json
 CLAUDE.md
 tsconfig.tsbuildinfo
