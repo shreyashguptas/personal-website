@@ -57,9 +57,11 @@ This document explains the end-to-end AI chat feature: how it's built, where to 
   Centralized prompt configuration with enhanced content type awareness:
   - **Enhanced System Prompt**: Explicit content type recognition (projects vs blog posts vs resume)
   - **Content Type Instructions**: Clear guidance for distinguishing between different content types
-  - Model selection (currently `llama-3.3-70b-versatile` via GROQ - 70B params, 128K context window)
-  - Configurable parameters (max tokens: 1200, temperature: 0.7, context sizes)
-  - **GROQ Integration**: Ultra-fast inference with OpenAI-compatible API
+  - Model selection (currently `deepseek/deepseek-v4-flash-0731` via OpenRouter), plus the
+    failover chain, provider allowlist and max-price guard
+  - Configurable parameters (max tokens, temperature, context sizes)
+  - **OpenRouter Integration**: one vendor and one key for chat *and* embeddings, with
+    automatic model failover and a provider allowlist
   - **Advanced Embedding Settings**: Semantic chunking, structure preservation, enhanced chunk sizes
   - Retrieval settings (results count, context size per query type)
 
@@ -101,17 +103,20 @@ This document explains the end-to-end AI chat feature: how it's built, where to 
 ### Environment Variables
 
 #### Required Variables
-- **`GROQ_API_KEY`** (required): GROQ API key for ultra-fast chat completions. Never quote in `.env` file.
-  - Format: `GROQ_API_KEY=gsk_...`
-  - Used for: `llama-3.3-70b-versatile` (chat completions with streaming)
-  - Get your key from: https://console.groq.com/
-
-- **`OPENAI_API_KEY`** (required): OpenAI API key for embeddings only. Never quote in `.env` file.
-  - Format: `OPENAI_API_KEY=sk-...`
-  - Used for: `text-embedding-3-small` (embeddings for build-time and query processing)
-  - Get your key from: https://platform.openai.com/api-keys
+- **`OPENROUTER_API_KEY`** (required): the single key for the whole chat path. Never quote in `.env` file.
+  - Format: `OPENROUTER_API_KEY=sk-or-v1-...`
+  - Used for: chat completions (`deepseek/deepseek-v4-flash-0731`, streaming) **and**
+    embeddings (`qwen/qwen3-embedding-8b` on DeepInfra, build-time + query)
+  - Get your key from: https://openrouter.ai/keys
 
 #### Optional Variables
+- **`OPENROUTER_MODEL`**: overrides the primary chat model from `src/lib/prompts.ts`.
+- **`OPENROUTER_FALLBACK_MODELS`**: comma-separated failover chain, tried in order when the
+  primary errors. A **blank** value disables failover rather than restoring the default.
+- **`OPENROUTER_PROVIDERS`**: comma-separated provider allowlist. Every slug must also be
+  permitted by the OpenRouter account's own allowed-providers setting - if the two lists do
+  not overlap, OpenRouter rejects every request with a 404 instead of falling back.
+
 - **`UPSTASH_REDIS_REST_URL`** & **`UPSTASH_REDIS_REST_TOKEN`**: Enable production-grade Redis rate limiting
   - If not provided, falls back to local in-memory rate limiting
   - Recommended for production deployments
@@ -132,15 +137,15 @@ This document explains the end-to-end AI chat feature: how it's built, where to 
 The index is generated before build via `prebuild`:
 
 ```bash
-npm install
-npm run build:index   # optional manual run - requires OPENAI_API_KEY
-npm run dev           # or: npm run build && npm start - requires GROQ_API_KEY
+pnpm install
+pnpm run build:index   # optional manual run - requires OPENROUTER_API_KEY
+pnpm run dev           # or: pnpm run build && pnpm start - requires OPENROUTER_API_KEY
 ```
 
 **Note on API Keys:**
-- **Build-time**: Requires `OPENAI_API_KEY` for embeddings generation. If not set, an empty index is written to allow local builds (answers will be limited).
-- **Runtime**: Requires both `GROQ_API_KEY` (for chat) and `OPENAI_API_KEY` (for query embeddings).
-- **Hybrid Approach**: OpenAI handles embeddings (build + query), GROQ provides ultra-fast chat completions.
+- **Build-time**: Requires `OPENROUTER_API_KEY` for embeddings generation. If not set, an empty index is written to allow local builds (answers will be limited).
+- **Runtime**: Requires `OPENROUTER_API_KEY` for both chat completions and query embeddings.
+- **Single Vendor**: OpenRouter serves both halves of the path, so there is one key to rotate and one dashboard to watch.
 
 ### Data Ingestion: Content Processing Pipeline
 
@@ -219,7 +224,7 @@ LastUpdated: {timestamp}          // resume only
 Regenerate the index after adding/editing posts or projects:
 
 ```bash
-npm run build:index
+pnpm run build:index
 ```
 
 ### Request Processing Flow (Server)
@@ -382,7 +387,7 @@ npm run build:index
 #### Common Issues
 
 **"I don't know" responses:**
-- **Empty Vector Index**: Run `npm run build:index` to regenerate embeddings
+- **Empty Vector Index**: Run `pnpm run build:index` to regenerate embeddings
 - **Missing API Key**: Ensure `OPENAI_API_KEY` is set during build process
 - **Index File Issues**: Verify `src/data/vector-index.json` exists and is readable
 - **Diagnostics**: Check response headers (`x-index-size`, `x-retrieved`) for debugging
@@ -398,10 +403,12 @@ npm run build:index
 - **CORS Headers**: Check that Origin header matches Host header
 
 **Server Errors (500/502):**
-- **API Key Issues**: Verify both `GROQ_API_KEY` and `OPENAI_API_KEY` are valid and have sufficient credits
+- **API Key Issues**: Verify `OPENROUTER_API_KEY` is valid and the account has credit
 - **Model Availability**:
-  - Check GROQ service status for `llama-3.3-70b-versatile` at https://status.groq.com/
-  - Check OpenAI service status for `text-embedding-3-small` at https://status.openai.com/
+  - Check OpenRouter status at https://status.openrouter.ai/
+  - A 404 on every request usually means the provider allowlist (`OPENROUTER_PROVIDERS`)
+    and the OpenRouter account's own allowed-providers setting do not overlap
+  - Check `x-model-used` against the requested model to see whether failover engaged
 - **Timeout Issues**: Embedding requests timeout after 30s, chat completion after 60s
 - **Memory Issues**: Vector index loading may fail if system memory is constrained
 
@@ -459,10 +466,10 @@ curl -v -X POST http://localhost:3000/api/chat \
 
 Expected headers:
 ```
-x-latency-ms: 800   # Improved with GROQ (was ~1250ms with GPT-5)
+x-latency-ms: 800
 x-embed-ms: 450
 x-retrieve-ms: 150
-x-model-used: llama-3.3-70b-versatile
+x-model-used: deepseek/deepseek-v4-flash-0731   # the model REQUESTED, not necessarily the one that answered
 x-index-size: 70
 x-retrieved: 5
 ```
@@ -470,17 +477,14 @@ x-retrieved: 5
 ### Deployment & Production
 
 #### Build Configuration
-- **Prebuild Process**: `npm run build:index` generates vector embeddings before main build
+- **Prebuild Process**: `pnpm run build:index` generates vector embeddings before main build
 - **Runtime Requirement**: `export const runtime = 'nodejs'` required for file system access
 - **Index Storage**: `src/data/vector-index.json` excluded from git (generated at build time)
 
 #### Environment Setup
 ```bash
-# Required - Chat completions (ultra-fast inference)
-GROQ_API_KEY=gsk_...
-
-# Required - Embeddings (build-time and query processing)
-OPENAI_API_KEY=sk-...
+# Required - chat completions AND embeddings (build-time + query processing)
+OPENROUTER_API_KEY=sk-or-v1-...
 
 # Optional (recommended for production)
 UPSTASH_REDIS_REST_URL=https://...
@@ -490,9 +494,11 @@ UPSTASH_REDIS_REST_TOKEN=...
 NEXT_PUBLIC_SITE_URL=https://yourdomain.com
 ```
 
-**Hybrid LLM Architecture:**
-- **GROQ** (chat completions): 2-5x faster inference, ~70% cost reduction, excellent quality
-- **OpenAI** (embeddings): Text-embedding-3-small for semantic search (build-time + runtime)
+**Single-Vendor LLM Architecture:**
+- **OpenRouter** (chat completions): `deepseek/deepseek-v4-flash-0731`, with an automatic
+  failover chain and a provider allowlist pinned to zero-retention providers
+- **OpenRouter** (embeddings): `qwen/qwen3-embedding-8b` on DeepInfra for semantic search
+  (build-time + runtime)
 
 #### Production Security
 - **HTTPS Enforcement**: Required for proper same-origin validation
@@ -509,7 +515,37 @@ NEXT_PUBLIC_SITE_URL=https://yourdomain.com
 
 ### Recent Improvements (Latest Release)
 
-#### LLM Provider Migration: OpenAI → GROQ (Hybrid Architecture)
+#### LLM Provider Migration: GROQ → OpenRouter (Single Vendor)
+- **🧹 One vendor, one key**: chat completions moved off GROQ onto OpenRouter, which was
+  already serving this site's embeddings. `GROQ_API_KEY` is gone; `OPENROUTER_API_KEY` now
+  covers the whole path, so there is one key to rotate and one dashboard to watch.
+- **🤝 Shared model tier with Bills in Congress**: the primary model and failover chain are
+  kept in step with that project's `convex/llm.ts`, so both sites run the same tier.
+  - Primary: `deepseek/deepseek-v4-flash-0731` — pinned to a **dated** release, because a
+    floating alias can resolve to a version no allowlisted provider carries yet, which the
+    allowlist turns into a chat outage.
+  - Failover: `deepseek/deepseek-v4-flash` (floating, so the family tier outlives the dated
+    primary), then `amazon/nova-lite-v1`.
+- **🔒 Provider allowlist + retention filters**: requests are pinned to `deepinfra` and
+  `amazon-bedrock` with `data_collection: "deny"` and `zdr: true`, so a visitor's question is
+  never handed to a provider that stores it or trains on it. These are *filters* — they narrow
+  the eligible provider set, so a model or provider change needs re-checking.
+- **💸 Max-price guard**: a ceiling of $0.20/$0.40 per million prompt/completion tokens, so a
+  provider repricing or a careless `OPENROUTER_MODEL` change fails loudly instead of
+  multiplying the bill.
+- **🔧 Implementation details**:
+  - Dropped the `groq-sdk` dependency; the route now calls OpenRouter over plain `fetch` and
+    parses the SSE stream directly, matching the existing embeddings call in the same file.
+  - `reasoning_effort` / `reasoning_format` (GROQ-specific) replaced by OpenRouter's
+    `reasoning: { enabled: false }`.
+  - Failover means the answering model can differ from the requested one, so the served model
+    is read off the stream and reported to analytics; `x-model-used` still carries the
+    requested model.
+  - Runtime overrides without a redeploy: `OPENROUTER_MODEL`, `OPENROUTER_FALLBACK_MODELS`,
+    `OPENROUTER_PROVIDERS`.
+  - Zero breaking changes to the frontend or the API interface.
+
+#### LLM Provider Migration: OpenAI → GROQ (Hybrid Architecture) *(superseded by the entry above)*
 - **⚡ Ultra-Fast Inference**: Migrated chat completions from GPT-5 Mini to GROQ's Llama 3.3 70B
   - **2-5x faster responses**: First token latency reduced from ~500-1000ms to ~100-300ms
   - **~70% cost reduction**: Combined pricing of $0.59/1M tokens vs GPT-5's split pricing

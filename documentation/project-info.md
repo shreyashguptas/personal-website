@@ -156,12 +156,12 @@ Notes:
 ## 🔧 Development
 
 ### Scripts
-- `npm run dev` - Start development server with Turbopack
-- `npm run build` - Build for production (includes vector index generation)
-- `npm run build:index` - Generate/update vector embeddings from content
-- `npm run prebuild` - Automatically run before build (embedding generation)
-- `npm start` - Start production server
-- `npm run lint` - Run ESLint checks
+- `pnpm run dev` - Start development server with Turbopack
+- `pnpm run build` - Build for production (includes vector index generation)
+- `pnpm run build:index` - Generate/update vector embeddings from content
+- `pnpm run prebuild` - Automatically run before build (embedding generation)
+- `pnpm start` - Start production server
+- `pnpm run lint` - Run ESLint checks
 
 ### Key Components
 - **InlineChat**: Enhanced AI-powered chat with GPT-5 Mini, personalized greetings, typing indicators, and quick start questions

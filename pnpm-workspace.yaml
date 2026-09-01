@@ -1,0 +1,19 @@
+# pnpm 11 config lives here, not in .npmrc — .npmrc is limited to auth/registry
+# settings from v11 onward.
+#
+# pnpm 11 enables strictDepBuilds by default: the install FAILS with
+# ERR_PNPM_IGNORED_BUILDS if any dependency has an unreviewed postinstall
+# script. These three are the only ones in the tree, so each needs an explicit
+# verdict. All are denied: lint, tsc --noEmit, build:index (tsx/esbuild) and
+# next build were each verified to pass with the scripts not run.
+#   - core-js        postinstall only prints a funding message.
+#   - esbuild        postinstall swaps the JS bin shim for the native binary;
+#                    the shim resolves the platform optionalDependency fine.
+#   - unrs-resolver  postinstall is a napi binding check; eslint resolves
+#                    imports correctly without it.
+# If a future dependency bump makes one of these genuinely necessary, flip the
+# relevant entry to `true` rather than disabling strictDepBuilds.
+allowBuilds:
+  core-js: false
+  esbuild: false
+  unrs-resolver: false

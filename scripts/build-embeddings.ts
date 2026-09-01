@@ -486,7 +486,7 @@ async function main() {
   }
 
   console.info(`\n[build-embeddings] ✓ Index written to ${outPath}`);
-  console.info(`[build-embeddings] ✓ Build complete! Run "npm run dev" to test.`);
+  console.info(`[build-embeddings] ✓ Build complete! Run "pnpm run dev" to test.`);
 
   try { await flushPosthog(); } catch {
     // no-op
