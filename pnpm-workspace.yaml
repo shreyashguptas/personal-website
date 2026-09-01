@@ -1,3 +1,12 @@
+# Vercel's builder resolves pnpm from the lockfile format and the project's
+# creation date, NOT from package.json's packageManager field (that needs
+# Corepack), so production installs run pnpm 9. pnpm 9 treats the mere presence
+# of this file as a workspace declaration and hard-fails with "packages field
+# missing or empty" unless it is listed. This repo is a single package, so the
+# root is the only member.
+packages:
+  - '.'
+
 # pnpm 11 config lives here, not in .npmrc — .npmrc is limited to auth/registry
 # settings from v11 onward.
 #
