@@ -59,7 +59,7 @@ export function loadIndex(): RetrievedDoc[] {
   // Check if file exists
   if (!fs.existsSync(p)) {
     console.warn('[rag] Vector index file not found at', p);
-    console.warn('[rag] Run "npm run build:index" to generate embeddings');
+    console.warn('[rag] Run "pnpm run build:index" to generate embeddings');
     cacheMetrics.errors++;
     cachedIndex = { data: [], timestamp: Date.now(), fileSize: 0 };
     return cachedIndex.data;

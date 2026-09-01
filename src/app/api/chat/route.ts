@@ -395,11 +395,11 @@ export async function POST(req: NextRequest) {
         const isDev = process.env.NODE_ENV !== 'production';
         console.error('[chat] ✗ No documents available in vector index');
         if (isDev) {
-          console.error('[chat] 💡 Run "npm run build:index" to generate embeddings from your content');
+          console.error('[chat] 💡 Run "pnpm run build:index" to generate embeddings from your content');
         }
 
         const errorMessage = isDev
-          ? "AI chat is initializing. Please run 'npm run build:index' to generate the content index, then restart the server."
+          ? "AI chat is initializing. Please run 'pnpm run build:index' to generate the content index, then restart the server."
           : "AI chat is initializing. Please check back in a moment.";
 
         return new Response(JSON.stringify({

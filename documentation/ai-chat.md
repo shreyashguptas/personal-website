@@ -137,9 +137,9 @@ This document explains the end-to-end AI chat feature: how it's built, where to 
 The index is generated before build via `prebuild`:
 
 ```bash
-npm install
-npm run build:index   # optional manual run - requires OPENROUTER_API_KEY
-npm run dev           # or: npm run build && npm start - requires OPENROUTER_API_KEY
+pnpm install
+pnpm run build:index   # optional manual run - requires OPENROUTER_API_KEY
+pnpm run dev           # or: pnpm run build && pnpm start - requires OPENROUTER_API_KEY
 ```
 
 **Note on API Keys:**
@@ -224,7 +224,7 @@ LastUpdated: {timestamp}          // resume only
 Regenerate the index after adding/editing posts or projects:
 
 ```bash
-npm run build:index
+pnpm run build:index
 ```
 
 ### Request Processing Flow (Server)
@@ -387,7 +387,7 @@ npm run build:index
 #### Common Issues
 
 **"I don't know" responses:**
-- **Empty Vector Index**: Run `npm run build:index` to regenerate embeddings
+- **Empty Vector Index**: Run `pnpm run build:index` to regenerate embeddings
 - **Missing API Key**: Ensure `OPENAI_API_KEY` is set during build process
 - **Index File Issues**: Verify `src/data/vector-index.json` exists and is readable
 - **Diagnostics**: Check response headers (`x-index-size`, `x-retrieved`) for debugging
@@ -477,7 +477,7 @@ x-retrieved: 5
 ### Deployment & Production
 
 #### Build Configuration
-- **Prebuild Process**: `npm run build:index` generates vector embeddings before main build
+- **Prebuild Process**: `pnpm run build:index` generates vector embeddings before main build
 - **Runtime Requirement**: `export const runtime = 'nodejs'` required for file system access
 - **Index Storage**: `src/data/vector-index.json` excluded from git (generated at build time)
 

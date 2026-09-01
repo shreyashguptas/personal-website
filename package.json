@@ -1,9 +1,10 @@
 {
   "private": true,
+  "packageManager": "pnpm@11.21.0",
   "scripts": {
     "dev": "next dev --turbopack",
     "build:index": "tsx scripts/build-embeddings.ts",
-    "prebuild": "npm run build:index",
+    "prebuild": "pnpm run build:index",
     "build": "next build",
     "lint": "eslint . --ext .ts,.tsx",
     "start": "next start"
