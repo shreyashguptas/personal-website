@@ -910,6 +910,9 @@ export async function POST(req: NextRequest) {
             // a frame in half, so hold a buffer and only consume whole lines.
             let buffer = "";
             let finished = false;
+            // Once the stream is errored, enqueue() and close() both throw, so
+            // the finally block below must not try to append the sources footer.
+            let errored = false;
             try {
               while (!finished) {
                 const { done, value } = await reader.read();
@@ -958,6 +961,7 @@ export async function POST(req: NextRequest) {
                 );
               }
             } catch {
+              errored = true;
               controller.error(new Error("stream_error"));
             } finally {
               // Release the reader and the 60s abort timer on every exit path,
@@ -987,9 +991,11 @@ export async function POST(req: NextRequest) {
                 // ignore analytics errors
                 void 0;
               }
-              const footer = `\n\n[[SOURCES]]${JSON.stringify(sources)}[[/SOURCES]]`;
-              controller.enqueue(encoder.encode(footer));
-              controller.close();
+              if (!errored) {
+                const footer = `\n\n[[SOURCES]]${JSON.stringify(sources)}[[/SOURCES]]`;
+                controller.enqueue(encoder.encode(footer));
+                controller.close();
+              }
             }
           })();
         },
